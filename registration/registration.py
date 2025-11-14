@@ -105,10 +105,11 @@ def register_buyer():
     if request.method == 'POST':
         name = request.form['Name']
         email = request.form['Email']
-        address = request.form['Address']
+        # address = request.form['Address']
         phone_number = request.form['Phone_Number']
         username = request.form['Username']
         password = request.form['Password']
+        address = None
 
         if not is_username_unique("buyer", username) or not is_username_unique("seller", username):
             error = "Username already exists. Please choose a different username."
@@ -132,10 +133,11 @@ def register_seller():
     if request.method == 'POST':
         name = request.form['Name']
         email = request.form['Email']
-        address = request.form['Address']
+        # address = request.form['Address']
         phone_number = request.form['Phone_Number']
         username = request.form['Username']
         password = request.form['Password']
+        address = None
 
         if not is_username_unique("buyer", username) or not is_username_unique("seller", username):
             error = "Username already exists. Please choose a different username."
