@@ -20,13 +20,19 @@ app.secret_key = secrets.token_hex(16)
 
 # URL serializer for generating reset tokens
 s = URLSafeTimedSerializer(app.secret_key)
-
+print("AIVEN_HOST:", os.getenv("AIVEN_HOST"))
+print("AIVEN_PORT:", os.getenv("AIVEN_PORT"))
+print("AIVEN_USER:", os.getenv("AIVEN_USER"))
+print("AIVEN_PASSWORD:", os.getenv("AIVEN_PASSWORD"))
+print("AIVEN_DATABASE:", os.getenv("AIVEN_DATABASE"))
 # Database configuration
 db_config = {
-    "host": "localhost",
-    "user": "root",
-    "password": "",
-    "database": "agrimart"
+    "host": os.getenv("AIVEN_HOST"),
+    "port": int(os.getenv("AIVEN_PORT", 19441)),  # default port if not set
+    "user": os.getenv("AIVEN_USER"),
+    "password": os.getenv("AIVEN_PASSWORD"),
+    "database": os.getenv("AIVEN_DATABASE"),
+    "use_pure": True                          
 }
 
 def get_db_connection():
@@ -36,15 +42,15 @@ def get_db_connection():
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = 'agrimart.batstate.u@gmail.com'
-app.config['MAIL_PASSWORD'] = 'wrcg qudb rjaq etuh'
-app.config['MAIL_DEFAULT_SENDER'] = 'agrimart.batstate.u@gmail.com'
+app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
+app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER")
 
 mail = Mail(app)
 
 # File upload path
 home_directory = os.path.expanduser("~")
-relative_path = 'Desktop/AGRIMART/static/images/products'
+relative_path = 'Desktop/AGRIMARTv3/static/images/products'
 upload_folder = os.path.join(home_directory, relative_path)
 app.config['UPLOAD_FOLDER'] = upload_folder
 
@@ -58,7 +64,6 @@ app.register_blueprint(seller_orders_app)
 app.register_blueprint(homepage_buyer_app)
 app.register_blueprint(cart_app)
 app.register_blueprint(viewproduct_app)
-
 
 from reset_password.routes import reset_app
 app.register_blueprint(reset_app)

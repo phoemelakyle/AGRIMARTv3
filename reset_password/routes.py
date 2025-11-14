@@ -2,10 +2,13 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from werkzeug.security import generate_password_hash
 from flask_mail import Message
+import os
 
 import mysql.connector
 
+
 reset_app = Blueprint('reset', __name__)
+
 
 # Route: Forgot Password
 @reset_app.route('/forgot-password', methods=['GET', 'POST'])
@@ -13,21 +16,26 @@ def forgot_password():
     if request.method == 'POST':
         email = request.form['email']
 
+
         # Database connection
         db = get_db_connection()
         cursor = db.cursor()
 
+
         cursor.execute("SELECT * FROM buyer WHERE email = %s", (email,))
         user = cursor.fetchone()
+
 
         if not user:
             cursor.execute("SELECT * FROM seller WHERE email = %s", (email,))
             user = cursor.fetchone()
 
+
         if user:
             # Generate token
             s = URLSafeTimedSerializer(current_app.secret_key)
             token = s.dumps(email, salt='password-reset')
+
 
             # Save token to DB
             if user[0].startswith('B'):
@@ -36,7 +44,9 @@ def forgot_password():
                 cursor.execute("UPDATE seller SET reset_token = %s WHERE email = %s", (token, email))
             db.commit()
 
+
             reset_url = url_for('reset.reset_password', token=token, _external=True)
+
 
             html_body = f"""
             <html>
@@ -52,8 +62,10 @@ def forgot_password():
             </html>
             """
 
+
             msg = Message('Reset Your Password', recipients=[email])
             msg.html = html_body
+
 
             try:
                 mail = current_app.extensions['mail']
@@ -63,11 +75,14 @@ def forgot_password():
                 flash(f'Error sending email: {str(e)}', 'danger')
                 return redirect(url_for('login.login'))
 
+
             return redirect(url_for('login.login'))
         else:
             flash('No account found with that email.', 'danger')
 
+
     return render_template('login.html')
+
 
 # Route: Reset Password via Token
 @reset_app.route('/reset-password/<token>', methods=['GET', 'POST'])
@@ -82,19 +97,24 @@ def reset_password(token):
         flash('The reset link is invalid or has expired.', 'danger')
         return redirect(url_for('login.login'))
 
+
     if request.method == 'POST':
         new_password = request.form['new_password']
         hashed_password = generate_password_hash(new_password)
 
+
         db = get_db_connection()
         cursor = db.cursor()
+
 
         cursor.execute("SELECT * FROM buyer WHERE email = %s", (email,))
         user = cursor.fetchone()
 
+
         if not user:
             cursor.execute("SELECT * FROM seller WHERE email = %s", (email,))
             user = cursor.fetchone()
+
 
         if user:
             if user[0].startswith('B'):
@@ -103,16 +123,24 @@ def reset_password(token):
                 cursor.execute("UPDATE seller SET password = %s, reset_token = NULL WHERE email = %s", (hashed_password, email))
             db.commit()
 
+
             flash('Your password has been reset successfully.', 'success')
             return redirect(url_for('login.login'))
 
+
     return render_template('reset_password.html', token=token)
+
 
 # --- DB helper (should match the one from app.py) ---
 def get_db_connection():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="agrimart"
+        host=os.getenv("AIVEN_HOST"),
+        port=os.getenv("AIVEN_PORT"),
+        user=os.getenv("AIVEN_USER"),
+        password=os.getenv("AIVEN_PASSWORD"),
+        database=os.getenv("AIVEN_DATABASE"),
+        use_pure=True
     )
+
+
+

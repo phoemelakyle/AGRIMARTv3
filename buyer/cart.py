@@ -3,14 +3,17 @@ import mysql.connector
 import json
 from decimal import Decimal
 from datetime import datetime
+import os
 
 cart_app = Blueprint('cart', __name__)
 
 db_config = {
-    "host": "localhost",
-    "user": "root",
-    "password": "",
-    "database": "agrimart"
+    "host": os.getenv("AIVEN_HOST"),
+    "port": int(os.getenv("AIVEN_PORT", 19441)),  # default port if not set
+    "user": os.getenv("AIVEN_USER"),
+    "password": os.getenv("AIVEN_PASSWORD"),
+    "database": os.getenv("AIVEN_DATABASE"),
+    "use_pure": True                            
 }
 
 def get_db_connection():
@@ -21,11 +24,11 @@ def fetch_cart_items_for_buyer(user_id):
     cursor = conn.cursor()
 
     query = """
-        SELECT Cart.CartID, Cart.ProductID, Cart.VariationID, Product.Product_Name, Product.ImageFilename, Cart.Cart_Quantity, Product_Variation.Unit, Product_Variation.Price
-        FROM Cart
-        JOIN Product ON Cart.ProductID = Product.ProductID
-        JOIN Product_Variation ON Cart.VariationID = Product_Variation.VariationID
-        WHERE Cart.BuyerID = %s;
+        SELECT cart.CartID, cart.ProductID, cart.VariationID, product.Product_Name, product.ImageFilename, cart.Cart_Quantity, product_variation.Unit, product_variation.Price
+        FROM cart
+        JOIN product ON cart.ProductID = product.ProductID
+        JOIN product_variation ON cart.VariationID = product_variation.VariationID
+        WHERE cart.BuyerID = %s;
 
     """
     cursor.execute(query, (user_id,))
@@ -40,11 +43,11 @@ def fetch_selected_items_details(selected_items):
     cursor = conn.cursor()
 
     query = f"""
-        SELECT Cart.ProductID, Cart.VariationID, Product.Product_Name, Product_Variation.Unit, Product_Variation.Price, Cart.Cart_Quantity, Product.ImageFilename, Product.Shipping_Fee, Product.SellerID
-        FROM Cart
-        JOIN Product ON Cart.ProductID = Product.ProductID
-        JOIN Product_Variation ON Cart.VariationID = Product_Variation.VariationID
-        WHERE CONCAT(Cart.ProductID, '_', Cart.VariationID) IN ({','.join(['%s'] * len(selected_items))});
+        SELECT cart.ProductID, cart.VariationID, product.Product_Name, product_Variation.Unit, product_Variation.Price, cart.Cart_Quantity, product.ImageFilename, product.Shipping_Fee, product.SellerID
+        FROM cart
+        JOIN product ON cart.ProductID = product.ProductID
+        JOIN product_variation ON cart.VariationID = product_variation.VariationID
+        WHERE CONCAT(cart.ProductID, '_', cart.VariationID) IN ({','.join(['%s'] * len(selected_items))});
     """
     cursor.execute(query, selected_items)
     selected_items_details = cursor.fetchall()
@@ -68,8 +71,8 @@ def fetch_payment_options(selected_items_details):
     payment_query = """
         SELECT po.sellerid, po.payment_optionsid, p.product_name, pv.variationid, po.payment_method, po.account_number, pv.unit
         FROM payment_options po
-        JOIN Product p ON po.sellerid = p.SellerID
-        JOIN Product_Variation pv ON p.ProductID = pv.ProductID
+        JOIN product p ON po.sellerid = p.SellerID
+        JOIN product_variation pv ON p.ProductID = pv.ProductID
         WHERE po.sellerid IN ({})
     """.format(', '.join(['%s'] * len(set(item[-1] for item in selected_items_details))))
 
@@ -105,7 +108,7 @@ def fetch_payment_options(selected_items_details):
 def generate_order_id_for_buyer():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(f"SELECT MAX(OrderID) FROM Buyer_Order")
+    cursor.execute(f"SELECT MAX(OrderID) FROM buyer_order")
     latest_order_id = cursor.fetchone()[0]
 
     if latest_order_id is not None:
@@ -123,7 +126,7 @@ def generate_order_id_for_buyer():
 def generate_order_id_for_seller():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(f"SELECT MAX(OrderID) FROM Seller_Order")
+    cursor.execute(f"SELECT MAX(OrderID) FROM seller_order")
     latest_order_id = cursor.fetchone()[0]
 
     if latest_order_id is not None:
@@ -150,8 +153,8 @@ def insert_into_buyer_order(user_id, item_id, shipping_address, product_total, p
     cursor = conn.cursor()
 
     order_query = """
-        INSERT INTO Buyer_Order 
-        (OrderID, BuyerID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Order_Status, Shipping_Address, Shipping_Date, Payment_OptionsID) 
+        INSERT INTO buyer_order
+        (OrderID, BuyerID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Order_Status, Shipping_Address, Shipping_Date, Payment_OptionsID)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
@@ -177,8 +180,8 @@ def insert_into_seller_order(seller_id, user_id, item_id, shipping_address, prod
     cursor = conn.cursor()
 
     order_query = """
-        INSERT INTO Seller_Order 
-        (OrderID, SellerID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Order_Status, Shipping_Address, Shipping_Date, Payment_OptionsID) 
+        INSERT INTO seller_order
+        (OrderID, SellerID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Order_Status, Shipping_Address, Shipping_Date, Payment_OptionsID)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
@@ -203,7 +206,7 @@ def get_quantity_from_cart(user_id, product_id, variation_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    query = "SELECT Cart_Quantity FROM Cart WHERE BuyerID = %s AND ProductID = %s AND VariationID = %s"
+    query = "SELECT Cart_Quantity FROM cart WHERE BuyerID = %s AND ProductID = %s AND VariationID = %s"
     cursor.execute(query, (user_id, product_id, variation_id))
     quantity = cursor.fetchone()
 
@@ -231,7 +234,7 @@ def update_quantity():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        update_query = "UPDATE Cart SET Cart_Quantity = %s WHERE ProductID = %s AND VariationID = %s AND BuyerID = %s"
+        update_query = "UPDATE cart SET Cart_Quantity = %s WHERE ProductID = %s AND VariationID = %s AND BuyerID = %s"
         cursor.execute(update_query, (new_quantity, *item_id.split('_'), session['user_id']))
         conn.commit()
 
@@ -241,7 +244,7 @@ def update_quantity():
         return {'success': True, 'message': 'Quantity updated successfully'}
     except Exception as e:
         return {'success': False, 'message': str(e)}
-    
+   
 @cart_app.route('/remove_item', methods=['POST'])
 def remove_item():
     try:
@@ -250,7 +253,7 @@ def remove_item():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        remove_query = "DELETE FROM Cart WHERE ProductID = %s AND VariationID = %s AND BuyerID = %s"
+        remove_query = "DELETE FROM cart WHERE ProductID = %s AND VariationID = %s AND BuyerID = %s"
         cursor.execute(remove_query, (*item_id.split('_'), session['user_id']))
         conn.commit()
 
@@ -279,7 +282,7 @@ def process_checkout():
         user_id = session.get('user_id')
         shipping_address = request.form.get('shipping_address')
         selected_items = request.form.getlist('selected_items')
-        product_totals = request.form.getlist('product_total[]') 
+        product_totals = request.form.getlist('product_total[]')
         payment_options_json = request.form.get('payment_option_id')
         payment_options = json.loads(payment_options_json)
 
@@ -299,7 +302,7 @@ def process_checkout():
 
             print("Data saved to the database.")
             return redirect('/homepage_buyer')
-        else: 
+        else:
             message = "Please select items and payment option first."
             return render_template('checkout.html', message=message)
 
@@ -308,12 +311,11 @@ def process_checkout():
         message = "An error occurred. Please try again."
         return render_template('checkout.html', message=message)
 
-
 def delete_item_from_cart(user_id, item_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    delete_query = "DELETE FROM Cart WHERE ProductID = %s AND VariationID = %s AND BuyerID = %s"
+    delete_query = "DELETE FROM cart WHERE ProductID = %s AND VariationID = %s AND BuyerID = %s"
 
     try:
         item_id = eval(item_id)
@@ -335,13 +337,13 @@ def decrease_quantity(variation_id, cart_quantity):
     cursor = conn.cursor()
 
     try:
-        quantity_query = "SELECT Quantity FROM Product_Variation WHERE VariationID = %s"
+        quantity_query = "SELECT Quantity FROM product_variation WHERE VariationID = %s"
         cursor.execute(quantity_query, (variation_id,))
         current_quantity = cursor.fetchone()[0]
 
         new_quantity = max(current_quantity - cart_quantity, 0)
 
-        update_query = "UPDATE Product_Variation SET Quantity = %s WHERE VariationID = %s"
+        update_query = "UPDATE product_variation SET Quantity = %s WHERE VariationID = %s"
         cursor.execute(update_query, (new_quantity, variation_id))
         conn.commit()
 
