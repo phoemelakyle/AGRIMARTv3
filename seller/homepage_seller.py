@@ -235,6 +235,17 @@ def logout():
     session.pop('user_id', None)
     return redirect('/login')
 
+@homepage_seller_app.route('/account')
+def account():
+    return render_template('account.html')
+@homepage_seller_app.route('/payment_options')
+def buyer_payment():
+    return render_template('payment_options.html')
+
+@homepage_seller_app.route('/seller_address')
+def buyer_address():
+    return render_template('seller_address.html')
+
 @homepage_seller_app.route('/edit_product/<string:product_id>')
 def variations(product_id):
     variations = fetch_variations_for_product(product_id)

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="../static/css/account.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrimart - Address</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+  
+    
+    <header class="top-bar">
+      <div class="logo">
+          <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
+          Agrimart
+      </div>          
+      <div class="tagline">Connecting you to Local Farmers</div>
+    </header>
+  
+    <nav class="nav-menu">
+      <ul>
+        <li><a href="/homepage_seller">Home</a></li>
+        <li><a href="#contacts">Contacts</a></li>
+      </ul>
+    </nav>
+    
+  <nav class="main-nav">
+    <ul class="breadcrumb">
+      <li><a href="/homepage_seller"><i class="fas fa-home"></i></a></li>
+      <li>›</li>
+      <li>
+        <a href="/cart" class="button">Address</a>
+      </li>
+      
+        
+    </ul>
+    
+
+  </nav>
+  
+<div class="container">
+  <!-- Sidebar -->
+   <aside class="sidebar">
+    <div class="status">
+      <h3>ACCOUNT</h3>
+      <ul class="status-list">
+        <li>
+          <a href="{{ url_for('homepage_seller.account') }}" class="account-btn">My Account</a>
+        </li>
+       <li>
+    <a href="{{ url_for('homepage_buyer.seller_payment') }}" class="account-btn">
+        Banks & Cards
+    </a>
+</li>
+        <li><a href="{{ url_for('homepage_seller.seller_address') }}" class="account-btn">Addresses</a></li>
+        <form action="{{ url_for('homepage_seller.logout') }}" method="post">
+          <button class="logout-btn" type="submit">Logout</button>
+        </form>
+      </ul>
+    </div>
+  </aside>
+
+        <!-- RIGHT CONTENT PANEL -->
+       <section class="profile-content">
+    <div class="profile-header">
+        <h2>My Addresses</h2>
+        <span class="add-btn">+ Add New Address</span> <!-- not clickable -->
+    </div>
+
+    <div class="address-list">
+        {% for address in addresses %}
+        <div class="address-card">
+            <div class="address-info">
+                <p><strong>{{ address.name }}</strong> <span>{{ address.phone }}</span></p>
+                <p>{{ address.street }}</p>
+                <p>{{ address.city }}, {{ address.province }}, {{ address.region }}, {{ address.zipcode }}</p>
+            </div>
+            <div class="address-actions">
+                <span class="edit-btn">Edit</span> <!-- not clickable -->
+                {% if address.is_default %}
+                    <span class="default-badge">Default</span>
+                {% else %}
+                    <button type="button" class="set-default-btn">Set as default</button> <!-- not clickable -->
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+    </div>
+
+</main>
+
+
+ <!-- Newsletter -->
+ <section class="newsletter">
+    <div class="newsletter-content">
+      <div class="newsletter-text">
+        <h3><i class="fas fa-envelope"></i> Subscribe to our Newsletter</h3>
+        <p>Stay connected with the latest updates and local farm offers.</p>
+      </div>
+      <form class="newsletter-form">
+        <input type="email" placeholder="Your email address" required />
+        <button type="submit">Subscribe</button>
+      </form>
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="footer-content">
+      <div class="footer-about">
+        <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
+        Agrimart
+    
+        <p>Empowering farmers and connecting communities through sustainable commerce.</p>
+        <p><strong>09271674524</strong><br />agrimart@.com</p>
+      </div>
+      <div class="footer-columns">
+        <div>
+          <h5>My Account</h5>
+          <ul>
+            <li>My Account</li>
+            <li>Order History</li>
+            <li>Shopping Cart</li>
+            <li>Wishlist</li>
+          </ul>
+        </div>
+        <div>
+          <h5>Help</h5>
+          <ul>
+            <li>Contact</li>
+            <li>FAQs</li>
+            <li>Terms & Conditions</li>
+            <li>Privacy Policy</li>
+          </ul>
+        </div>
+        <div>
+          <h5>Proxy</h5>
+          <ul>
+            <li>About</li>
+            <li>Shop</li>
+            <li>Product</li>
+            <li>Track Order</li>
+          </ul>
+        </div>
+        <div>
+          <h5>Categories</h5>
+          <ul>
+            <li>Order History</li>
+            <li>Shopping Cart</li>
+            <li>Wishlist</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

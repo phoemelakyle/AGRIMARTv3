@@ -52,6 +52,7 @@
     <div class="user-dropdown" id="userDropdown">
       <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
       <div class="user-menu" id="userMenu">
+     <a href="{{ url_for('homepage_buyer.account') }}" class="account-btn">My Account</a>
         <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
           <button class="logout-btn" type="submit">Logout</button>
         </form>

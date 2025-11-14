@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="../static/css/account.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrimart - Cart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+  
+    
+    <header class="top-bar">
+      <div class="logo">
+          <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
+          Agrimart
+      </div>          
+      <div class="tagline">Connecting you to Local Farmers</div>
+    </header>
+  
+    <nav class="nav-menu">
+      <ul>
+        <li><a href="/homepage_buyer">Home</a></li>
+        <li><a href="#contacts">Contacts</a></li>
+      </ul>
+    </nav>
+    
+  <nav class="main-nav">
+    <ul class="breadcrumb">
+      <li><a href="/homepage_buyer"><i class="fas fa-home"></i></a></li>
+      <li>›</li>
+      <li>
+        <a href="/cart" class="button">Cart</a>
+      </li>
+      
+        
+    </ul>
+    
+  
+  </nav>
+  
+<div class="container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="status">
+      <h3>ACCOUNT</h3>
+      <ul class="status-list">
+        <li>
+          <a href="{{ url_for('homepage_buyer.account') }}" class="account-btn">My Account</a>
+        </li>
+       <li>
+    <a href="{{ url_for('homepage_buyer.buyer_payment') }}" class="account-btn">
+        Banks & Cards
+    </a>
+</li>
+        <li><a href="{{ url_for('homepage_buyer.buyer_address') }}" class="account-btn">Addresses</a></li>
+        <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
+          <button class="logout-btn" type="submit">Logout</button>
+        </form>
+      </ul>
+    </div>
+  </aside>
+
+        <!-- RIGHT CONTENT PANEL -->
+        <section class="profile-content">
+            <h2>My Profile</h2>
+            <p class="subtitle">Manage and protect your account</p>
+
+            <div class="profile-form">
+
+                <div class="form-group">
+                    <label>Username</label>
+                    <span>phemkyle</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" value="Phoemela Kyle">
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <span>ph*********@gmail.com</span>
+                    <a href="#" class="change-link">Change</a>
+                </div>
+
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <span>*********24</span>
+                    <a href="#" class="change-link">Change</a>
+                </div>
+
+                <div class="form-group">
+                    <label>Gender</label>
+                    <div class="gender-options">
+                        <label><input type="radio" name="gender"> Male</label>
+                        <label><input type="radio" name="gender"> Female</label>
+                        <label><input type="radio" name="gender"> Other</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <span>**/**/2004</span>
+                    <p class="note">You have already done KYC. Changing your birthday is not permitted.</p>
+                </div>
+
+                <button class="save-btn">Save</button>
+
+            </div>
+
+        </section>
+    </div>
+
+</main>
+
+
+ <!-- Newsletter -->
+ <section class="newsletter">
+    <div class="newsletter-content">
+      <div class="newsletter-text">
+        <h3><i class="fas fa-envelope"></i> Subscribe to our Newsletter</h3>
+        <p>Stay connected with the latest updates and local farm offers.</p>
+      </div>
+      <form class="newsletter-form">
+        <input type="email" placeholder="Your email address" required />
+        <button type="submit">Subscribe</button>
+      </form>
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="footer-content">
+      <div class="footer-about">
+        <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
+        Agrimart
+    
+        <p>Empowering farmers and connecting communities through sustainable commerce.</p>
+        <p><strong>09271674524</strong><br />agrimart@.com</p>
+      </div>
+      <div class="footer-columns">
+        <div>
+          <h5>My Account</h5>
+          <ul>
+            <li>My Account</li>
+            <li>Order History</li>
+            <li>Shopping Cart</li>
+            <li>Wishlist</li>
+          </ul>
+        </div>
+        <div>
+          <h5>Help</h5>
+          <ul>
+            <li>Contact</li>
+            <li>FAQs</li>
+            <li>Terms & Conditions</li>
+            <li>Privacy Policy</li>
+          </ul>
+        </div>
+        <div>
+          <h5>Proxy</h5>
+          <ul>
+            <li>About</li>
+            <li>Shop</li>
+            <li>Product</li>
+            <li>Track Order</li>
+          </ul>
+        </div>
+        <div>
+          <h5>Categories</h5>
+          <ul>
+            <li>Order History</li>
+            <li>Shopping Cart</li>
+            <li>Wishlist</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
