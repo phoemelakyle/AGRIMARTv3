@@ -5,39 +5,29 @@ import os
 
 seller_orders_app = Blueprint('seller_orders', __name__)
 
-
 db_config = {
     "host": os.getenv("AIVEN_HOST"),
-    "port": int(os.getenv("AIVEN_PORT", 19441)),  # default port if not set
+    "port": int(os.getenv("AIVEN_PORT", 19441)),  
     "user": os.getenv("AIVEN_USER"),
     "password": os.getenv("AIVEN_PASSWORD"),
     "database": os.getenv("AIVEN_DATABASE"),
     "use_pure": True                              
 }
 
-
 def get_db_connection():
     return mysql.connector.connect(**db_config)
 
-
 def get_unpaid_orders_data(user_id, sort='recent'):
     order_details = []
-
 
     try:
         with get_db_connection() as connection:
             cursor = connection.cursor(dictionary=True)
 
-
-
-
             if sort == 'old':
                 order_by = 'ASC'
             else:
                 order_by = 'DESC'
-
-
-
 
             query_orders = f"""
             SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Shipping_Address, Order_Date
@@ -53,7 +43,6 @@ def get_unpaid_orders_data(user_id, sort='recent'):
                 variation_id = order['VariationID']
                 order_date = order['Order_Date']
 
-
                 query_product = """
                 SELECT Product_Name, ImageFileName, Shipping_Fee
                 FROM product
@@ -62,7 +51,6 @@ def get_unpaid_orders_data(user_id, sort='recent'):
                 cursor.execute(query_product, (product_id,))
                 product_info = cursor.fetchone()
 
-
                 query_variation = """
                 SELECT Unit, Price
                 FROM product_variation
@@ -70,7 +58,6 @@ def get_unpaid_orders_data(user_id, sort='recent'):
                 """
                 cursor.execute(query_variation, (variation_id,))
                 variation_info = cursor.fetchone()
-
 
                 order_detail = {
                     'ImageFileName': product_info['ImageFileName'],
@@ -86,20 +73,14 @@ def get_unpaid_orders_data(user_id, sort='recent'):
                 }
                 order_details.append(order_detail)
 
-
-
-
             print(sort)
             print("ORDER BY:", order_by)
             print("Final Query:", query_orders)
 
-
     except mysql.connector.Error as err:
         print(f"Error: {err}")
 
-
     return order_details
-
 
 @seller_orders_app.route('/unpaid_orders', methods=['POST','GET'])
 def unpaid_orders():
@@ -107,27 +88,20 @@ def unpaid_orders():
     sort = request.args.get('sort', 'recent')
     order_details = get_unpaid_orders_data(user_id, sort)
 
-
     order_type = 'unpaid'
     return render_template('seller_orders.html', order_details=order_details, order_type=order_type)
 
-
 def get_to_ship_orders_data(user_id, sort='recent'):
     order_details = []
-
 
     try:
         with get_db_connection() as connection:
             cursor = connection.cursor(dictionary=True)
 
-
             if sort == 'old':
                 order_by = 'ASC'
             else:
                 order_by = 'DESC'
-
-
-
 
             query_orders = f"""
             SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Shipping_Address, Order_Date
@@ -143,7 +117,6 @@ def get_to_ship_orders_data(user_id, sort='recent'):
                 variation_id = order['VariationID']
                 order_date = order['Order_Date']
 
-
                 query_product = """
                 SELECT Product_Name, ImageFileName, Shipping_Fee
                 FROM product
@@ -152,7 +125,6 @@ def get_to_ship_orders_data(user_id, sort='recent'):
                 cursor.execute(query_product, (product_id,))
                 product_info = cursor.fetchone()
 
-
                 query_variation = """
                 SELECT Unit, Price
                 FROM product_variation
@@ -160,7 +132,6 @@ def get_to_ship_orders_data(user_id, sort='recent'):
                 """
                 cursor.execute(query_variation, (variation_id,))
                 variation_info = cursor.fetchone()
-
 
                 order_detail = {
                     'ImageFileName': product_info['ImageFileName'],
@@ -176,13 +147,10 @@ def get_to_ship_orders_data(user_id, sort='recent'):
                 }
                 order_details.append(order_detail)
 
-
     except mysql.connector.Error as err:
         print(f"Error: {err}")
 
-
     return order_details
-
 
 @seller_orders_app.route('/to_ship_orders', methods=['POST','GET'])
 def to_ship_orders():
@@ -190,10 +158,8 @@ def to_ship_orders():
     sort = request.args.get('sort', 'recent')
     order_details = get_to_ship_orders_data(user_id, sort)
 
-
     order_type = 'to_ship'
     return render_template('seller_orders.html', order_details=order_details, order_type=order_type)
-
 
 @seller_orders_app.route('/shipping_orders', methods=['POST','GET'])
 def shipping_orders():
@@ -201,14 +167,11 @@ def shipping_orders():
     order_details = []  
     sort = request.args.get('sort', 'recent')
 
-
     try:
         with get_db_connection() as connection:
             cursor = connection.cursor(dictionary=True)
 
-
             order_by = 'ASC' if sort == 'old' else 'DESC'
-
 
             query_orders = f"""
             SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Shipping_Address, Shipping_Date, Order_Date
@@ -224,7 +187,6 @@ def shipping_orders():
                 variation_id = order['VariationID']
                 order_date = order['Order_Date']
 
-
                 query_product = """
                 SELECT Product_Name, ImageFileName, Shipping_Fee
                 FROM product
@@ -233,7 +195,6 @@ def shipping_orders():
                 cursor.execute(query_product, (product_id,))
                 product_info = cursor.fetchone()
 
-
                 query_variation = """
                 SELECT Unit, Price
                 FROM product_variation
@@ -241,7 +202,6 @@ def shipping_orders():
                 """
                 cursor.execute(query_variation, (variation_id,))
                 variation_info = cursor.fetchone()
-
 
                 order_detail = {
                     'ImageFileName': product_info['ImageFileName'],
@@ -258,14 +218,11 @@ def shipping_orders():
                 }
                 order_details.append(order_detail)
 
-
     except mysql.connector.Error as err:
         print(f"Error: {err}")
 
-
     order_type = 'shipping'  
     return render_template('seller_orders.html', order_details=order_details, order_type=order_type)
-
 
 @seller_orders_app.route('/delivered_orders', methods=['POST','GET'])
 def delivered_orders():
@@ -273,14 +230,11 @@ def delivered_orders():
     order_details = []  
     sort = request.args.get('sort', 'recent')
 
-
     try:
         with get_db_connection() as connection:
             cursor = connection.cursor(dictionary=True)
 
-
             order_by = 'ASC' if sort == 'old' else 'DESC'
-
 
             query_orders = f"""
             SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Shipping_Address, Shipping_Date, Order_Date
@@ -296,7 +250,6 @@ def delivered_orders():
                 variation_id = order['VariationID']
                 order_date = order['Order_Date']
 
-
                 query_product = """
                 SELECT Product_Name, ImageFileName, Shipping_Fee
                 FROM product
@@ -305,7 +258,6 @@ def delivered_orders():
                 cursor.execute(query_product, (product_id,))
                 product_info = cursor.fetchone()
 
-
                 query_variation = """
                 SELECT Unit, Price
                 FROM product_variation
@@ -313,7 +265,6 @@ def delivered_orders():
                 """
                 cursor.execute(query_variation, (variation_id,))
                 variation_info = cursor.fetchone()
-
 
                 order_detail = {
                     'ImageFileName': product_info['ImageFileName'],
@@ -330,14 +281,11 @@ def delivered_orders():
                 }
                 order_details.append(order_detail)
 
-
     except mysql.connector.Error as err:
         print(f"Error: {err}")
 
-
     order_type = 'delivered'  
     return render_template('seller_orders.html', order_details=order_details, order_type=order_type)
-
 
 @seller_orders_app.route('/cancelled_orders', methods=['POST','GET'])
 def cancelled_orders():
@@ -345,14 +293,11 @@ def cancelled_orders():
     order_details = []  
     sort = request.args.get('sort', 'recent')
 
-
     try:
         with get_db_connection() as connection:
             cursor = connection.cursor(dictionary=True)
 
-
             order_by = 'ASC' if sort == 'old' else 'DESC'
-
 
             query_orders = f"""
             SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Shipping_Address, Order_Date
@@ -368,7 +313,6 @@ def cancelled_orders():
                 variation_id = order['VariationID']
                 order_date = order['Order_Date']
 
-
                 query_product = """
                 SELECT Product_Name, ImageFileName, Shipping_Fee
                 FROM product
@@ -377,7 +321,6 @@ def cancelled_orders():
                 cursor.execute(query_product, (product_id,))
                 product_info = cursor.fetchone()
 
-
                 query_variation = """
                 SELECT Unit, Price
                 FROM product_variation
@@ -385,7 +328,6 @@ def cancelled_orders():
                 """
                 cursor.execute(query_variation, (variation_id,))
                 variation_info = cursor.fetchone()
-
 
                 order_detail = {
                     'ImageFileName': product_info['ImageFileName'],
@@ -401,14 +343,11 @@ def cancelled_orders():
                 }
                 order_details.append(order_detail)
 
-
     except mysql.connector.Error as err:
         print(f"Error: {err}")
 
-
     order_type = 'cancelled'
     return render_template('seller_orders.html', order_details=order_details, order_type=order_type)
-
 
 @seller_orders_app.route('/ship_now/<order_id>', methods=['POST', 'GET'])
 def ship_now(order_id):
@@ -416,15 +355,12 @@ def ship_now(order_id):
    
     order_details = get_to_ship_orders_data(user_id)
 
-
     try:
         with get_db_connection() as connection:
             cursor = connection.cursor()
 
-
             current_datetime = datetime.now()
             formatted_date = current_datetime.strftime('%Y-%m-%d')
-
 
             update_query = """
             UPDATE buyer_order
@@ -434,7 +370,6 @@ def ship_now(order_id):
             cursor.execute(update_query, (formatted_date, order_id))
             connection.commit()
 
-
             update_query = """
             UPDATE seller_order
             SET Order_Status = 'shipping', Shipping_Date = %s
@@ -443,16 +378,12 @@ def ship_now(order_id):
             cursor.execute(update_query, (formatted_date, order_id))
             connection.commit()
 
-
     except mysql.connector.Error as err:
         print(f"Error: {err}")
 
-
     order_type = 'to_ship'
 
-
     return render_template('seller_orders.html', order_details=order_details, order_type=order_type, refresh_page=True)
-
 
 @seller_orders_app.route('/cancel_unpaid_order/<order_id>', methods=['POST', 'GET'])
 def cancel_unpaid_order(order_id):
@@ -460,11 +391,9 @@ def cancel_unpaid_order(order_id):
    
     order_details = get_unpaid_orders_data(user_id)
 
-
     try:
         with get_db_connection() as connection:
             cursor = connection.cursor()
-
 
             update_query = """
             UPDATE buyer_order
@@ -474,7 +403,6 @@ def cancel_unpaid_order(order_id):
             cursor.execute(update_query, (order_id,))
             connection.commit()
 
-
             update_query = """
             UPDATE seller_order
             SET Order_Status = 'cancelled'
@@ -483,42 +411,33 @@ def cancel_unpaid_order(order_id):
             cursor.execute(update_query, (order_id,))
             connection.commit()
 
-
             get_variation_id_query = "SELECT VariationID FROM seller_order WHERE OrderID = %s"
             cursor.execute(get_variation_id_query, (order_id,))
             variation_id = cursor.fetchone()[0]
-
 
             seller_order_quantity_query = "SELECT Quantity FROM seller_order WHERE OrderID = %s"
             cursor.execute(seller_order_quantity_query, (order_id,))
             sl_quantity = cursor.fetchone()[0]
             print(sl_quantity)
 
-
             product_variation_quantity_query = "SELECT Quantity FROM product_variation WHERE VariationID = %s"
             cursor.execute(product_variation_quantity_query, (variation_id,))      
             pv_quantity = cursor.fetchone()[0]
             print(pv_quantity)
 
-
             new_quantity = max(pv_quantity + sl_quantity, 0)
             print(new_quantity)
-
 
             update_query = "UPDATE product_variation SET Quantity = %s WHERE VariationID = %s"
             cursor.execute(update_query, (new_quantity, variation_id))
             connection.commit()
 
-
     except mysql.connector.Error as err:
         print(f"Error: {err}")
 
-
     order_type = 'unpaid'
 
-
     return redirect(url_for('seller_orders.unpaid_orders'))
-
 
 @seller_orders_app.route('/cancel_to_ship_order/<order_id>', methods=['POST', 'GET'])
 def cancel_to_ship_order(order_id):
@@ -526,11 +445,9 @@ def cancel_to_ship_order(order_id):
    
     order_details = get_to_ship_orders_data(user_id)
 
-
     try:
         with get_db_connection() as connection:
             cursor = connection.cursor()
-
 
             update_query = """
             UPDATE buyer_order
@@ -540,7 +457,6 @@ def cancel_to_ship_order(order_id):
             cursor.execute(update_query, (order_id,))
             connection.commit()
 
-
             update_query = """
             UPDATE seller_order
             SET Order_Status = 'cancelled'
@@ -549,39 +465,30 @@ def cancel_to_ship_order(order_id):
             cursor.execute(update_query, (order_id,))
             connection.commit()
 
-
             get_variation_id_query = "SELECT VariationID FROM seller_order WHERE OrderID = %s"
             cursor.execute(get_variation_id_query, (order_id,))
             variation_id = cursor.fetchone()[0]
-
 
             seller_order_quantity_query = "SELECT Quantity FROM seller_order WHERE OrderID = %s"
             cursor.execute(seller_order_quantity_query, (order_id,))
             sl_quantity = cursor.fetchone()[0]
             print(sl_quantity)
 
-
             product_variation_quantity_query = "SELECT Quantity FROM product_variation WHERE VariationID = %s"
             cursor.execute(product_variation_quantity_query, (variation_id,))      
             pv_quantity = cursor.fetchone()[0]
             print(pv_quantity)
 
-
             new_quantity = max(pv_quantity + sl_quantity, 0)
             print(new_quantity)
-
 
             update_query = "UPDATE product_variation SET Quantity = %s WHERE VariationID = %s"
             cursor.execute(update_query, (new_quantity, variation_id))
             connection.commit()
 
-
     except mysql.connector.Error as err:
         print(f"Error: {err}")
 
-
     order_type = 'to_ship'
 
-
     return redirect(url_for('seller_orders.to_ship_orders'))
-

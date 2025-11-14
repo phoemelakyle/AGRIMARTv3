@@ -20,11 +20,7 @@ app.secret_key = secrets.token_hex(16)
 
 # URL serializer for generating reset tokens
 s = URLSafeTimedSerializer(app.secret_key)
-print("AIVEN_HOST:", os.getenv("AIVEN_HOST"))
-print("AIVEN_PORT:", os.getenv("AIVEN_PORT"))
-print("AIVEN_USER:", os.getenv("AIVEN_USER"))
-print("AIVEN_PASSWORD:", os.getenv("AIVEN_PASSWORD"))
-print("AIVEN_DATABASE:", os.getenv("AIVEN_DATABASE"))
+
 # Database configuration
 db_config = {
     "host": os.getenv("AIVEN_HOST"),

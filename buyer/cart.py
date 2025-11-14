@@ -9,7 +9,7 @@ cart_app = Blueprint('cart', __name__)
 
 db_config = {
     "host": os.getenv("AIVEN_HOST"),
-    "port": int(os.getenv("AIVEN_PORT", 19441)),  # default port if not set
+    "port": int(os.getenv("AIVEN_PORT", 19441)), 
     "user": os.getenv("AIVEN_USER"),
     "password": os.getenv("AIVEN_PASSWORD"),
     "database": os.getenv("AIVEN_DATABASE"),
@@ -43,7 +43,7 @@ def fetch_selected_items_details(selected_items):
     cursor = conn.cursor()
 
     query = f"""
-        SELECT cart.ProductID, cart.VariationID, product.Product_Name, product_Variation.Unit, product_Variation.Price, cart.Cart_Quantity, product.ImageFilename, product.Shipping_Fee, product.SellerID
+        SELECT cart.ProductID, cart.VariationID, product.Product_Name, product_variation.Unit, product_variation.Price, cart.Cart_Quantity, product.ImageFilename, product.Shipping_Fee, product.SellerID
         FROM cart
         JOIN product ON cart.ProductID = product.ProductID
         JOIN product_variation ON cart.VariationID = product_variation.VariationID
