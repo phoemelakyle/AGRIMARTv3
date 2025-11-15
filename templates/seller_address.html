@@ -131,7 +131,7 @@
             <ul class="status-list">
                 <li><a href="{{ url_for('homepage_seller.seller_account') }}" class="account-btn">My Account</a></li>
 
-                 <li><a href="{{ url_for('payment_options.payment_options') }}" class="account-btn">Banks & Cards</a></li>
+                <li><a href="{{ url_for('payment_options.payment_options') }}" class="account-btn">Banks & Cards</a></li>
 
                 <li><a href="{{ url_for('seller_address.seller_address') }}" class="account-btn">Addresses</a></li>
 
@@ -180,21 +180,21 @@
     </section>
 </div>
 
-<!-- ADD ADDRESS POPUP -->
+<!-- ADDRESS POPUP -->
 <div id="addAddressModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeAddAddress()">&times;</span>
         <h3 id="modalTitle">Add New Address</h3>
         <input type="hidden" name="address_id" id="address_id">
-        <form id="addressForm"  method="POST" action="{{ url_for('seller_address.save_address') }}">
+        <form id="addressForm"  method="POST" action="{{ url_for('seller_address.save_seller_address') }}">
             <input type="text" name="full_name" placeholder="Full Name" required>
             <input type="text" name="phone_number" placeholder="Phone Number" required>
             <input type="text" name="street" placeholder="Street" required>
             <input type="text" name="province" placeholder="Province" required>
             <input type="text" name="region" placeholder="Region" required>
             <input type="text" name="zip_code" placeholder="Zip Code" required>
-            <input type="hidden" name="latitude" id="lat">
-            <input type="hidden" name="longitude" id="lng">
+            <input type="hidden" name="latitude" id="lat" value="0.0">
+            <input type="hidden" name="longitude" id="lng" value="0.0">
 
             <label><b>Pin Your Location:</b></label>
             <div id="map"></div>

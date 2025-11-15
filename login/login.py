@@ -62,6 +62,7 @@ def login():
             session['user_type']= user_type
 
             if user_type == 'buyer':
+                session['BuyerID'] = user_id
                 return redirect('/homepage_buyer')
             elif user_type == 'seller':
                 session['SellerID'] = user_id

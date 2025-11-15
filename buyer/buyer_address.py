@@ -37,8 +37,8 @@ def buyer_address():
         addresses=addresses
     )
 
-@buyer_address_app.route('/save_address', methods=['POST'])
-def save_address():
+@buyer_address_app.route('/save_buyer_address', methods=['POST'])
+def save_buyer_address():
     # Get buyer ID from session 
     buyer_id = session.get('BuyerID')
     if not buyer_id:
@@ -59,7 +59,7 @@ def save_address():
     cursor.execute("SELECT MAX(AddressID) FROM buyer_addresses")
     last_id = cursor.fetchone()[0]
     if last_id:
-        new_id = f"AD{int(last_id[2:]) + 1:04d}"
+        new_id = f"BA{int(last_id[2:]) + 1:04d}"
     else:
         new_id = "BA1000"
 

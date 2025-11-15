@@ -37,8 +37,8 @@ def seller_address():
         addresses=addresses
     )
 
-@seller_address_app.route('/save_address', methods=['POST'])
-def save_address():
+@seller_address_app.route('/save_seller_address', methods=['POST'])
+def save_seller_address():
     # Get seller ID from session 
     seller_id = session.get('SellerID')
     if not seller_id:
@@ -51,15 +51,15 @@ def save_address():
     province = request.form['province']
     region = request.form['region']
     zip_code = request.form['zip_code']
-    latitude = request.form['latitude']
-    longitude = request.form['longitude']
+    latitude = float(request.form['latitude'])
+    longitude = float(request.form['longitude'])
 
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT MAX(AddressID) FROM seller_addresses")
     last_id = cursor.fetchone()[0]
     if last_id:
-        new_id = f"AD{int(last_id[2:]) + 1:04d}"
+        new_id = f"SA{int(last_id[2:]) + 1:04d}"
     else:
         new_id = "SA1000"
 

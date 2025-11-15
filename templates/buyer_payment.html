@@ -60,8 +60,12 @@
         <li>
           <a href="{{ url_for('homepage_buyer.account') }}" class="account-btn">My Account</a>
         </li>
-        <li><a href="{{ url_for('payment_options.payment_options') }}" class="account-btn">Banks & Cards</a></li>
-        <li><a href="{{ url_for('homepage_buyer.buyer_address') }}" class="account-btn">Addresses</a></li>
+       <li>
+    <a href="{{ url_for('homepage_buyer.buyer_payment') }}" nclass="account-bt">
+        Banks & Cards
+    </a>
+</li>
+         <li><a href="{{ url_for('buyer_address.buyer_address') }}" class="account-btn">Addresses</a></li>
         <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
           <button class="logout-btn" type="submit">Logout</button>
         </form>

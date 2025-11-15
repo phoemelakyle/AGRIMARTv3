@@ -16,7 +16,7 @@ from buyer.homepage_buyer import homepage_buyer_app
 from buyer.cart import cart_app
 from buyer.viewproduct import viewproduct_app
 from seller.seller_address import seller_address_app
-
+from buyer.buyer_address import buyer_address_app
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -64,6 +64,7 @@ app.register_blueprint(homepage_buyer_app)
 app.register_blueprint(cart_app)
 app.register_blueprint(viewproduct_app)
 app.register_blueprint(seller_address_app)
+app.register_blueprint(buyer_address_app)
 
 from reset_password.routes import reset_app
 app.register_blueprint(reset_app)

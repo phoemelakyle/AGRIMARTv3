@@ -58,13 +58,10 @@ def logout():
 @homepage_buyer_app.route('/account')
 def account():
     return render_template('account.html')
+
 @homepage_buyer_app.route('/buyer_payment')
 def buyer_payment():
     return render_template('buyer_payment.html')
-
-@homepage_buyer_app.route('/buyer_address')
-def buyer_address():
-    return render_template('buyer_address.html')
 
 @homepage_buyer_app.route('/filter/<string:category_name>', methods=['POST','GET'])
 def filter_products(category_name):

@@ -6,9 +6,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agrimart - Address</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
-  <body>
+
+    <!-- POPUP STYLES -->
+    <style>
+        .add-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-block;
+            transition: 0.2s ease;
+        }
+
+        .add-btn:hover {
+            background-color: #218838;
+            transform: scale(1.03);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+        }
+
+        .modal-content {
+            background: #fff;
+            width: 400px;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            animation: fadeIn 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        #map {
+            width: 100%;
+            height: 250px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+
+        .save-btn {
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .close {
+            float: right;
+            cursor: pointer;
+            font-size: 22px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .custom-map-control-button {
+            background-color: #fff;
+            border: none;
+            outline: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+            margin: 10px;
+            font-size: 18px;
+        }
+    </style>
+
+</head>
+<body>
   
     
     <header class="top-bar">
@@ -31,7 +121,7 @@
       <li><a href="/homepage_buyer"><i class="fas fa-home"></i></a></li>
       <li>›</li>
       <li>
-        <a href="/cart" class="button">Address</a>
+        <a href="/buyer_address" class="button">Address</a>
       </li>
       
         
@@ -49,9 +139,9 @@
         <li>
           <a href="{{ url_for('homepage_buyer.account') }}" class="account-btn">My Account</a>
         </li>
-        <li><a href="{{ url_for('payment_options.payment_options') }}" class="account-btn">Banks & Cards</a></li>
+        <li><a href="{{ url_for('homepage_buyer.buyer_payment') }}" class="account-btn">Banks & Cards</a></li>
 </li>
-        <li><a href="{{ url_for('homepage_buyer.buyer_address') }}" class="account-btn">Addresses</a></li>
+        <li><a href="{{ url_for('buyer_address.buyer_address') }}" class="account-btn">Addresses</a></li>
         <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
           <button class="logout-btn" type="submit">Logout</button>
         </form>
@@ -61,36 +151,52 @@
 
         <!-- RIGHT CONTENT PANEL -->
        <section class="profile-content">
-    <div class="profile-header">
-        <h2>My Addresses</h2>
-        <span class="add-btn">+ Add New Address</span> <!-- not clickable -->
-    </div>
-
-    <div class="address-list">
-        {% for address in addresses %}
-        <div class="address-card">
-            <div class="address-info">
-                <p><strong>{{ address.name }}</strong> <span>{{ address.phone }}</span></p>
-                <p>{{ address.street }}</p>
-                <p>{{ address.city }}, {{ address.province }}, {{ address.region }}, {{ address.zipcode }}</p>
-            </div>
-            <div class="address-actions">
-                <span class="edit-btn">Edit</span> <!-- not clickable -->
-                {% if address.is_default %}
-                    <span class="default-badge">Default</span>
+        <div class="profile-header">
+            <h2>My Addresses</h2>
+            <div class="saved-addresses">
+                {% if addresses %}
+                    <ul>
+                    {% for addr in addresses %}
+                        <li>
+                            {{ addr.Full_Name }} - {{ addr.Phone_Number }}<br>
+                            {{ addr.Street }}, {{ addr.Province }}, {{ addr.Region }} {{ addr.Zip_Code }}
+                        </li>
+                    {% endfor %}
+                    </ul>
                 {% else %}
-                    <button type="button" class="set-default-btn">Set as default</button> <!-- not clickable -->
+                    <p>No saved addresses yet.</p>
                 {% endif %}
             </div>
+            <span class="add-btn" onclick="openAddAddress()">+ Add New Address</span>
         </div>
-        {% endfor %}
-    </div>
-</section>
+    </section>
 
     </div>
 
-</main>
+    <!-- ADDRESS POPUP -->
+<div id="addAddressModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAddAddress()">&times;</span>
+        <h3>Add New Address</h3>
 
+        <form id="addressForm"  method="POST" action="{{ url_for('buyer_address.save_buyer_address') }}">
+            <input type="text" name="full_name" placeholder="Full Name" required>
+            <input type="text" name="phone_number" placeholder="Phone Number" required>
+            <input type="text" name="street" placeholder="Street" required>
+            <input type="text" name="province" placeholder="Province" required>
+            <input type="text" name="region" placeholder="Region" required>
+            <input type="text" name="zip_code" placeholder="Zip Code" required>
+            <input type="hidden" name="latitude" id="lat">
+            <input type="hidden" name="longitude" id="lng">
+
+            <label><b>Pin Your Location:</b></label>
+            <div id="map"></div>
+
+            <button type="submit" class="save-btn">Save</button>
+        </form>
+
+    </div>
+</div>
 
  <!-- Newsletter -->
  <section class="newsletter">
@@ -160,6 +266,136 @@
       </div>
     </div>
   </footer>
+
+
+<!-- POPUP SCRIPT -->
+<script>
+function openAddAddress() {
+    document.getElementById("addAddressModal").style.display = "block";
+    setTimeout(initMap, 200); 
+}
+
+function closeAddAddress() {
+    document.getElementById("addAddressModal").style.display = "none";
+}
+
+window.onclick = function(event) {
+    let modal = document.getElementById("addAddressModal");
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+};
+
+let map, marker, geocoder;
+
+function initMap() {
+    // Try to get user's current location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                loadMap(userLocation);
+            },
+            function() {
+                // If user denies or error, default to Manila
+                const defaultLocation = { lat: 14.5995, lng: 120.9842 };
+                loadMap(defaultLocation);
+            }
+        );
+    } else {
+        // Browser doesn't support Geolocation
+        const defaultLocation = { lat: 14.5995, lng: 120.9842 };
+        loadMap(defaultLocation);
+    }
+}
+
+// Separate function to initialize map with any given location
+function loadMap(location) {
+    map = new google.maps.Map(document.getElementById("map"), {
+        center: location,
+        zoom: 14,
+        mapTypeControl: false,
+        fullscreenControl: true,
+        streetViewControl: false,
+        zoomControl: true,
+    });
+
+    // Add the marker
+    marker = new google.maps.Marker({
+        position: location,
+        map: map,
+        draggable: true
+    });
+
+    geocoder = new google.maps.Geocoder();
+    updateAddressFields(location);
+
+    marker.addListener("dragend", function () {
+        const pos = marker.getPosition();
+        updateAddressFields(pos);
+    });
+
+    // Add default My Location button
+    const locationButton = document.createElement("button");
+    locationButton.textContent = "📍";
+    locationButton.classList.add("custom-map-control-button");
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(locationButton);
+
+    locationButton.addEventListener("click", () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    map.setCenter(pos);
+                    marker.setPosition(pos);
+                    updateAddressFields(pos);
+                },
+                () => alert("Unable to retrieve your location.")
+            );
+        } else {
+            alert("Geolocation is not supported by your browser.");
+        }
+    });
+}
+
+function updateAddressFields(latlng) {
+    geocoder.geocode({ location: latlng }, function(results, status) {
+        if (status === "OK") {
+            if (results[0]) {
+                let components = results[0].address_components;
+                let streetNumber = "", route = "", province = "", region = "", zip = "";
+
+                components.forEach(function(component) {
+                    if (component.types.includes("street_number")) streetNumber = component.long_name;
+                    if (component.types.includes("route")) route = component.long_name;
+                    if (component.types.includes("administrative_area_level_1")) province = component.long_name;
+                    if (component.types.includes("administrative_area_level_2")) region = component.long_name;
+                    if (component.types.includes("postal_code")) zip = component.long_name;
+                });
+
+                const street = streetNumber && route ? streetNumber + " " + route : route;
+
+                document.querySelector('input[placeholder="Street"]').value = street;
+                document.querySelector('input[placeholder="Province"]').value = province;
+                document.querySelector('input[placeholder="Region"]').value = region;
+                document.querySelector('input[placeholder="Zip Code"]').value = zip;
+                document.querySelector('input[name="latitude"]').value = latlng.lat;
+                document.querySelector('input[name="longitude"]').value = latlng.lng;
+            }
+        } else {
+            console.error("Geocoder failed: " + status);
+        }
+    });
+}
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
 
 </body>
 </html>
