@@ -160,6 +160,21 @@
                         <li>
                             {{ addr.Full_Name }} - {{ addr.Phone_Number }}<br>
                             {{ addr.Street }}, {{ addr.Province }}, {{ addr.Region }} {{ addr.Zip_Code }}
+                        <button class="edit-btn"
+                                onclick="openEditAddress(
+                                    '{{ addr.AddressID }}',
+                                    '{{ addr.Full_Name }}',
+                                    '{{ addr.Phone_Number }}',
+                                    '{{ addr.Street }}',
+                                    '{{ addr.Province }}',
+                                    '{{ addr.Region }}',
+                                    '{{ addr.Zip_Code }}',
+                                    '{{ addr.Latitude }}',
+                                    '{{ addr.Longitude }}'
+                                )">
+                                Edit
+                            </button>
+                            <button class="delete-btn" onclick="confirmDelete('{{ addr.AddressID }}')">Delete</button>
                         </li>
                     {% endfor %}
                     </ul>
@@ -177,9 +192,9 @@
 <div id="addAddressModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeAddAddress()">&times;</span>
-        <h3>Add New Address</h3>
-
+         <h3 id="modalTitle">Add New Address</h3>
         <form id="addressForm"  method="POST" action="{{ url_for('buyer_address.save_buyer_address') }}">
+            <input type="hidden" name="address_id" id="address_id">
             <input type="text" name="full_name" placeholder="Full Name" required>
             <input type="text" name="phone_number" placeholder="Phone Number" required>
             <input type="text" name="street" placeholder="Street" required>
@@ -394,6 +409,47 @@ function updateAddressFields(latlng) {
     });
 }
 
+function openEditAddress(id, full, phone, street, province, region, zip, lat, lng) {
+    // Switch title
+    document.getElementById("modalTitle").innerText = "Edit Address";
+
+    // Fill the form
+    document.querySelector('input[name="address_id"]').value = id;
+    document.querySelector('input[name="full_name"]').value = full;
+    document.querySelector('input[name="phone_number"]').value = phone;
+    document.querySelector('input[name="street"]').value = street;
+    document.querySelector('input[name="province"]').value = province;
+    document.querySelector('input[name="region"]').value = region;
+    document.querySelector('input[name="zip_code"]').value = zip;
+    document.querySelector('input[name="latitude"]').value = lat;
+    document.querySelector('input[name="longitude"]').value = lng;
+
+    // Open modal
+    document.getElementById("addAddressModal").style.display = "block";
+
+    // Load map with saved location
+    setTimeout(() => {
+        loadMap({ lat: parseFloat(lat), lng: parseFloat(lng) });
+    }, 200);
+}
+
+function openAddAddress() {
+    document.getElementById("modalTitle").innerText = "Add New Address";
+
+    // Clear form
+    document.getElementById("addressForm").reset();
+    document.querySelector('input[name="address_id"]').value = "";
+
+    document.getElementById("addAddressModal").style.display = "block";
+
+    setTimeout(initMap, 200);
+}
+
+function confirmDelete(id) {
+    if (confirm("Are you sure you want to delete this address?")) {
+        window.location.href = "/delete_buyer_address/" + id;
+    }
+}
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
 

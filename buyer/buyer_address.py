@@ -45,6 +45,7 @@ def save_buyer_address():
         flash("You must be logged in.")
         return redirect(url_for('buyer_address.buyer_address'))
 
+    address_id = request.form.get('address_id')
     full_name = request.form['full_name']
     phone_number = request.form['phone_number']
     street = request.form['street']
@@ -56,6 +57,30 @@ def save_buyer_address():
 
     conn = get_db_connection()
     cursor = conn.cursor()
+    if address_id and address_id.strip() != "":
+        update_query = """
+            UPDATE buyer_addresses
+            SET Full_Name=%s,
+                Phone_Number=%s,
+                Street=%s,
+                Province=%s,
+                Region=%s,
+                Zip_Code=%s,
+                Latitude=%s,
+                Longitude=%s
+            WHERE AddressID=%s AND BuyerID=%s
+        """
+        cursor.execute(update_query, (full_name, phone_number, street, province,
+                                      region, zip_code, latitude, longitude,
+                                      address_id, buyer_id))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        flash("Address updated successfully!")
+        return redirect(url_for('buyer_address.buyer_address'))
+
+
     cursor.execute("SELECT MAX(AddressID) FROM buyer_addresses")
     last_id = cursor.fetchone()[0]
     if last_id:
@@ -76,4 +101,24 @@ def save_buyer_address():
     conn.close()
 
     flash("Address saved successfully!")
+    return redirect(url_for('buyer_address.buyer_address'))
+
+@buyer_address_app.route('/delete_buyer_address/<address_id>')
+def delete_buyer_address(address_id):
+    buyer_id = session.get('BuyerID')
+    if not buyer_id:
+        flash("You must be logged in.")
+        return redirect(url_for('buyer_address.buyer_address'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    query = "DELETE FROM buyer_addresses WHERE AddressID = %s AND BuyerID = %s"
+    cursor.execute(query, (address_id, buyer_id))
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    flash("Address deleted successfully!")
     return redirect(url_for('buyer_address.buyer_address'))

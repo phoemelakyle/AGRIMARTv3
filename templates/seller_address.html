@@ -151,24 +151,25 @@
                     <ul>
                     {% for addr in addresses %}
                        <li>
-    <strong>{{ addr.Full_Name }}</strong> - {{ addr.Phone_Number }}<br>
-    {{ addr.Street }}, {{ addr.Province }}, {{ addr.Region }} {{ addr.Zip_Code }}
+                            <strong>{{ addr.Full_Name }}</strong> - {{ addr.Phone_Number }}<br>
+                            {{ addr.Street }}, {{ addr.Province }}, {{ addr.Region }} {{ addr.Zip_Code }}
 
-    <button class="edit-btn"
-        onclick="openEditAddress(
-            '{{ addr.id }}',
-            '{{ addr.Full_Name }}',
-            '{{ addr.Phone_Number }}',
-            '{{ addr.Street }}',
-            '{{ addr.Province }}',
-            '{{ addr.Region }}',
-            '{{ addr.Zip_Code }}',
-            '{{ addr.Latitude }}',
-            '{{ addr.Longitude }}'
-        )">
-        Edit
-    </button>
-</li>
+                            <button class="edit-btn"
+                                onclick="openEditAddress(
+                                    '{{ addr.AddressID }}',
+                                    '{{ addr.Full_Name }}',
+                                    '{{ addr.Phone_Number }}',
+                                    '{{ addr.Street }}',
+                                    '{{ addr.Province }}',
+                                    '{{ addr.Region }}',
+                                    '{{ addr.Zip_Code }}',
+                                    '{{ addr.Latitude }}',
+                                    '{{ addr.Longitude }}'
+                                )">
+                                Edit
+                            </button>
+                            <button class="delete-btn" onclick="confirmDelete('{{ addr.AddressID }}')">Delete</button>
+                        </li>
                     {% endfor %}
                     </ul>
                 {% else %}
@@ -185,8 +186,8 @@
     <div class="modal-content">
         <span class="close" onclick="closeAddAddress()">&times;</span>
         <h3 id="modalTitle">Add New Address</h3>
-        <input type="hidden" name="address_id" id="address_id">
         <form id="addressForm"  method="POST" action="{{ url_for('seller_address.save_seller_address') }}">
+            <input type="hidden" name="address_id" id="address_id">
             <input type="text" name="full_name" placeholder="Full Name" required>
             <input type="text" name="phone_number" placeholder="Phone Number" required>
             <input type="text" name="street" placeholder="Street" required>
@@ -399,10 +400,6 @@ function updateAddressFields(latlng) {
     });
 }
 
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
-
-<script>
 function openEditAddress(id, full, phone, street, province, region, zip, lat, lng) {
     // Switch title
     document.getElementById("modalTitle").innerText = "Edit Address";
@@ -438,8 +435,14 @@ function openAddAddress() {
 
     setTimeout(initMap, 200);
 }
-</script>
 
+function confirmDelete(id) {
+    if (confirm("Are you sure you want to delete this address?")) {
+        window.location.href = "/delete_seller_address/" + id;
+    }
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
 
 </body>
 </html>
