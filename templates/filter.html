@@ -60,11 +60,24 @@
 
 
 
+
+
+
+
  <!-- Main Container -->
 <div class="container">
   <aside class="sidebar">
     <!-- Redesigned CATEGORY Section -->
     <div class="category-filter">
+      <div class="filter-inside-categories">
+          <button class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
+        </div>
+        <!-- Price Range -->
+        <div class="location-range" style="margin-bottom:20px;">
+    <label for="locationRange">Location Range (km): </label>
+    <input type="range" id="locationRange" name="locationRange" min="0" max="50" step="1" oninput="this.nextElementSibling.value = this.value">
+    <output>25</output>
+  </div>
       <h3>CATEGORIES</h3>
       <ul class="category-list">
         <li>
@@ -87,6 +100,8 @@
     </div>
 
 
+
+
     <!-- Buyer Menu -->
     <div class="status">
       <h3>BUYER MENU</h3>
@@ -106,8 +121,13 @@
   </aside>
 
 
+
+
         <div class="column column-right">
             <h4>PRODUCTS</h4>
+             <div class="search-filter-container">
+        <input type="text" class="product-search" placeholder="Search products...">
+      </div>
             <div class="product-container">
             {% if product_data %}
                 {% for product in product_data %}
@@ -133,6 +153,8 @@
     </div>
 
 
+
+
     <!-- Newsletter -->
  <section id="contacts" class="newsletter">
   <div class="newsletter-content">
@@ -151,6 +173,8 @@
     </div>
   </div>
 </section>
+
+
 
 
 <!-- Footer -->
@@ -203,6 +227,7 @@
   </div>
 </footer>
 
+
  <!-- JavaScript -->
  <script>
   document.querySelectorAll('.category-option input[type="radio"]').forEach(radio => {
@@ -216,10 +241,12 @@
     const userIcon = document.getElementById('userIcon');
     const userMenu = document.getElementById('userMenu');
 
+
     userIcon.addEventListener('click', function (event) {
       userMenu.classList.toggle('show');
       event.stopPropagation(); // Prevents event from bubbling up
     });
+
 
     // Close the dropdown if clicked outside
     document.addEventListener('click', function (event) {
@@ -230,6 +257,11 @@
   });
 </script>
 
+
 </body>
 </html>
+
+
+
+
 

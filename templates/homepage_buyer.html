@@ -11,6 +11,8 @@
 <body>
 
 
+
+
   <!-- Header -->
   <header class="top-bar">
     <div class="logo">
@@ -19,6 +21,8 @@
     </div>          
     <div class="tagline">Connecting you to Local Farmers</div>
   </header>
+
+
 
 
   <!-- Navigation Menu -->
@@ -45,7 +49,7 @@
     <span class="cart">
       <a href="{{ url_for('cart.cart') }}" class="cart-link">
         <i class="fas fa-shopping-cart"></i>
-        
+       
       </a>
     </span>
    
@@ -64,11 +68,24 @@
 
 
 
+
+
+
+
 <div class="container">
   <!-- Sidebar -->
   <aside class="sidebar">
     <!-- Category Filter -->
     <div class="category-filter">
+      <div class="filter-inside-categories">
+          <button class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
+        </div>
+        <!-- Price Range -->
+        <div class="location-range" style="margin-bottom:20px;">
+    <label for="locationRange">Location Range (km): </label>
+    <input type="range" id="locationRange" name="locationRange" min="0" max="50" step="1" oninput="this.nextElementSibling.value = this.value">
+    <output>25</output>
+  </div>
       <h3>CATEGORIES</h3>
       <ul class="category-list">
         <li>
@@ -91,6 +108,8 @@
     </div>
 
 
+
+
     <!-- Buyer Menu -->
     <div class="status">
       <h3>BUYER MENU</h3>
@@ -110,9 +129,15 @@
   </aside>
 
 
+
+
   <!-- Right Column -->
   <div class="column-right">
-    <h4>Welcome to Agrimart!</h4>
+ 
+    <!-- Search Bar and Filter Button -->
+      <div class="search-filter-container">
+        <input type="text" class="product-search" placeholder="Search products...">
+      </div>
     <div class="product-container">
       {% for product in product_data %}
       <div class="product-box">
@@ -152,6 +177,8 @@
     </div>
   </div>
 </section>
+
+
 
 
 <!-- Footer -->
@@ -205,6 +232,8 @@
 </footer>
 
 
+
+
   <!-- JavaScript -->
   <script>
     document.querySelectorAll('.category-option input[type="radio"]').forEach(radio => {
@@ -233,6 +262,11 @@
   </script>
 
 
+
+
  
 </body>
 </html>
+
+
+
