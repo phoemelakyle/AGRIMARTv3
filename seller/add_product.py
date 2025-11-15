@@ -94,6 +94,14 @@ class Product:
             self.product_id = product_id
            
             for variation in self.variations:
+                cursor.execute("""
+                SELECT 1 FROM product_variation 
+                WHERE ProductID = %s AND Unit = %s AND Price = %s AND Quantity = %s
+            """, (self.product_id, variation.get('unit'), variation['price'], variation['quantity']))
+
+                if cursor.fetchone():  # Already exists
+                    continue  # Skip inserting this duplicate
+
                 variation_id = self.generate_variation_id()
                 variation_query = "INSERT INTO product_variation (VariationID, ProductID, Unit, Price, Quantity) VALUES (%s, %s, %s, %s, %s)"
                 variation_values = (variation_id, self.product_id, variation.get('unit', None), variation['price'], variation['quantity'])

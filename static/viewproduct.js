@@ -28,15 +28,12 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateProductInfo() {
         if (selectedUnit) {
             console.log('Selected Unit:', selectedUnit);
+            const productId = addToCartButton.getAttribute('data-product-id');
 
             fetch('/api/pro-var-unit', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    unit: selectedUnit,
-                }),
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ unit: selectedUnit, product_id: productId })
             })
             .then(response => response.json())
             .then(data => {
@@ -121,8 +118,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         };
-
-        var data = JSON.stringify({ unit: unit });
+        var productId = document.querySelector('.btn-addtocart').getAttribute('data-product-id');
+        var data = JSON.stringify({ 
+            unit: unit,
+            product_id: productId 
+        });
         xhr.send(data);
     }
 

@@ -100,8 +100,14 @@ def viewproduct(product_id):
 def viewprovar():
     data = request.json
     selected_unit = data.get('unit')
+    product_id = data.get('product_id')
+    print("product_id")
+    print(product_id)
+    print("unit:", selected_unit)
+    print("Raw data:", request.data)
+    print("Parsed JSON:", data)
 
-    query = f"SELECT Price, Quantity FROM product_variation WHERE Unit = '{selected_unit}'"
+    query = f"SELECT Price, Quantity FROM product_variation WHERE Unit = '{selected_unit}' AND ProductID = '{product_id}'"
    
     with get_db_connection() as connection:
         cursor = connection.cursor()
@@ -169,6 +175,7 @@ def add_to_cart_quan():
 def view_product_variation():
     data = request.get_json()
     unit_var = data.get('unit')
+    product_id = data.get('product_id')
 
     print(unit_var)
    
@@ -177,7 +184,7 @@ def view_product_variation():
     if connection:
         try:
             cursor = connection.cursor(dictionary=True)
-            query = f"SELECT VariationID FROM product_variation WHERE Unit = '{unit_var}'"
+            query = f"SELECT VariationID FROM product_variation WHERE Unit = '{unit_var}' AND ProductID ='{product_id}'"
             cursor.execute(query)
             product_variation_info = cursor.fetchone()
             print(product_variation_info)
