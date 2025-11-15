@@ -241,9 +241,10 @@ def logout():
 @homepage_seller_app.route('/seller_account')
 def seller_account():
     return render_template('seller_account.html')
-@homepage_seller_app.route('/payment_options')
-def payment_options():
-    return render_template('payment_options.html')
+
+@homepage_seller_app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
 
 @homepage_seller_app.route('/edit_product/<string:product_id>')
 def variations(product_id):

@@ -3,7 +3,7 @@ import mysql.connector
 from datetime import datetime
 import os
 
-seller_address_app = Blueprint('seller_address', __name__)
+buyer_address_app = Blueprint('buyer_address', __name__)
 
 db_config = {
     "host": os.getenv("AIVEN_HOST"),
@@ -17,33 +17,33 @@ db_config = {
 def get_db_connection():
     return mysql.connector.connect(**db_config)
 
-@seller_address_app.route('/seller_address')
-def seller_address():
-    seller_id = session.get('SellerID')
+@buyer_address_app.route('/buyer_address')
+def buyer_address():
+    buyer_id = session.get('BuyerID')
     key = os.getenv("GOOGLE_MAPS_API_KEY").strip()
 
     addresses = []
-    if seller_id:
+    if buyer_id:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM seller_addresses WHERE SellerID = %s", (seller_id,))
+        cursor.execute("SELECT * FROM buyer_addresses WHERE BuyerID = %s", (buyer_id,))
         addresses = cursor.fetchall()
         cursor.close()
         conn.close()
 
     return render_template(
-        "seller_address.html",
+        "buyer_address.html",
         google_maps_api_key=key,
         addresses=addresses
     )
 
-@seller_address_app.route('/save_address', methods=['POST'])
+@buyer_address_app.route('/save_address', methods=['POST'])
 def save_address():
-    # Get seller ID from session 
-    seller_id = session.get('SellerID')
-    if not seller_id:
+    # Get buyer ID from session 
+    buyer_id = session.get('BuyerID')
+    if not buyer_id:
         flash("You must be logged in.")
-        return redirect(url_for('seller_address.seller_address'))
+        return redirect(url_for('buyer_address.buyer_address'))
 
     full_name = request.form['full_name']
     phone_number = request.form['phone_number']
@@ -56,24 +56,24 @@ def save_address():
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT MAX(AddressID) FROM seller_addresses")
+    cursor.execute("SELECT MAX(AddressID) FROM buyer_addresses")
     last_id = cursor.fetchone()[0]
     if last_id:
         new_id = f"AD{int(last_id[2:]) + 1:04d}"
     else:
-        new_id = "SA1000"
+        new_id = "BA1000"
 
     # Insert into DB
     insert_query = """
-        INSERT INTO seller_addresses
-        (AddressID, SellerID, Full_Name, Phone_Number, Street, Province, Region, Zip_Code, Latitude, Longitude)
+        INSERT INTO buyer_addresses
+        (AddressID, BuyerID, Full_Name, Phone_Number, Street, Province, Region, Zip_Code, Latitude, Longitude)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
-    cursor.execute(insert_query, (new_id, seller_id, full_name, phone_number, street,
+    cursor.execute(insert_query, (new_id, buyer_id, full_name, phone_number, street,
                                   province, region, zip_code, latitude, longitude))
     conn.commit()
     cursor.close()
     conn.close()
 
     flash("Address saved successfully!")
-    return redirect(url_for('seller_address.seller_address'))
+    return redirect(url_for('buyer_address.buyer_address'))

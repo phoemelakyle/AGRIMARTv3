@@ -52,41 +52,22 @@
     </nav>
    
     <div class="container">
-        <aside class="sidebar">
-            <div class="status">
-                <h3>SELLER MENU</h3>
-                <ul class="status-list">
-                    <li>
-                        <form action="/homepage_seller" method="get">
-                            <button type="submit" class="status-item">
-                                <i class="fas fa-home"></i> Homepage
-                            </button>
-                        </form>
-                    </li>
-                    <li>
-                        <form action="{{ url_for('seller_orders.unpaid_orders') }}" method="get">
-                            <button type="submit" class="status-item">
-                                <i class="fas fa-receipt"></i> Orders
-                            </button>
-                        </form>
-                    </li>
-                    <li>
-                        <form action="/add_product" method="get">
-                            <button type="submit" class="status-item">
-                                <i class="fas fa-plus-circle"></i> Add Product
-                            </button>
-                        </form>
-                    </li>
-                    <li>
-                        <form action="/payment_options" method="get">
-                            <button type="submit" class="status-item">
-                                <i class="fas fa-credit-card"></i> Payment Options
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-        </aside>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="status">
+      <h3>ACCOUNT</h3>
+      <ul class="status-list">
+        <li>
+          <a href="{{ url_for('homepage_seller.seller_account') }}" class="account-btn">My Account</a>
+        </li>
+        <li><a href="{{ url_for('payment_options.payment_options') }}" class="account-btn">Banks & Cards</a></li>
+        <li><a href="{{ url_for('seller_address.seller_address') }}" class="account-btn">Addresses</a></li>
+        <form action="{{ url_for('homepage_seller.logout') }}" method="post">
+          <button class="logout-btn" type="submit">Logout</button>
+        </form>
+      </ul>
+    </div>
+  </aside>
 
 
         <main class="main-container">
