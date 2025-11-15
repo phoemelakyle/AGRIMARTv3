@@ -1,6 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for
 import mysql.connector
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 payment_options_app = Blueprint('payment_options', __name__)
 

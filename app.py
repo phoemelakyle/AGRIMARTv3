@@ -1,4 +1,11 @@
 from flask import Flask, render_template
+from dotenv import load_dotenv
+import os
+load_dotenv()
+import secrets
+import mysql.connector
+from flask_mail import Mail
+from itsdangerous import URLSafeTimedSerializer
 from registration.registration import registration_app
 from login.login import login_app
 from seller.homepage_seller import homepage_seller_app
@@ -8,12 +15,8 @@ from seller.seller_orders import seller_orders_app
 from buyer.homepage_buyer import homepage_buyer_app
 from buyer.cart import cart_app
 from buyer.viewproduct import viewproduct_app
+from seller.seller_address import seller_address_app
 
-import secrets
-import os
-import mysql.connector
-from flask_mail import Mail
-from itsdangerous import URLSafeTimedSerializer
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -60,6 +63,7 @@ app.register_blueprint(seller_orders_app)
 app.register_blueprint(homepage_buyer_app)
 app.register_blueprint(cart_app)
 app.register_blueprint(viewproduct_app)
+app.register_blueprint(seller_address_app)
 
 from reset_password.routes import reset_app
 app.register_blueprint(reset_app)
@@ -67,7 +71,7 @@ app.register_blueprint(reset_app)
 # Main route
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html')    
 
 if __name__ == '__main__':
     app.run(debug=True)

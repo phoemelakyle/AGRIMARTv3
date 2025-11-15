@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, flash
 import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash  # Import from werkzeug
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 registration_app = Blueprint('registration', __name__)
 

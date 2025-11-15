@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, flash, session, url_for
 import mysql.connector
-import os
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 homepage_seller_app = Blueprint('homepage_seller', __name__)
 
@@ -241,10 +244,6 @@ def seller_account():
 @homepage_seller_app.route('/payment_options')
 def payment_options():
     return render_template('payment_options.html')
-
-@homepage_seller_app.route('/seller_address')
-def seller_address():
-    return render_template('seller_address.html')
 
 @homepage_seller_app.route('/edit_product/<string:product_id>')
 def variations(product_id):

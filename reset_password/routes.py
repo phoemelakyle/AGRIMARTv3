@@ -2,7 +2,10 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from werkzeug.security import generate_password_hash
 from flask_mail import Message
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 import mysql.connector
 

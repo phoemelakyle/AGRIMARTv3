@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, flash, session, url_for
 import mysql.connector
 from datetime import datetime
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 seller_orders_app = Blueprint('seller_orders', __name__)
 

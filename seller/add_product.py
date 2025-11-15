@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, session
 import mysql.connector
-import os
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 add_product_app = Blueprint('add_product', __name__)
 

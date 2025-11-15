@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, flash, session, url_for
 import mysql.connector
 import bcrypt
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 homepage_buyer_app = Blueprint('homepage_buyer', __name__)
 

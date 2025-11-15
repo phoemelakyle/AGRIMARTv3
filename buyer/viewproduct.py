@@ -1,7 +1,10 @@
 from flask import Blueprint, request, render_template, redirect, session
 import mysql.connector
 from flask import jsonify
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 viewproduct_app = Blueprint('viewproduct', __name__)
 

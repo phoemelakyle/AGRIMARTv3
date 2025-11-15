@@ -2,7 +2,10 @@ from flask import Blueprint, render_template, request, redirect, flash, session
 import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 import bcrypt
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 login_app = Blueprint('login', __name__)
 
@@ -61,6 +64,7 @@ def login():
             if user_type == 'buyer':
                 return redirect('/homepage_buyer')
             elif user_type == 'seller':
+                session['SellerID'] = user_id
                 return redirect('/homepage_seller')
             else:
                 error_message = "Invalid user type"

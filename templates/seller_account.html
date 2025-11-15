@@ -31,7 +31,7 @@
       <li><a href="/homepage_seller"><i class="fas fa-home"></i></a></li>
       <li>›</li>
       <li>
-        <a href="/cart" class="button">Cart</a>
+        <a href="/seller_account" class="button">Account</a>
       </li>
       
         
@@ -54,7 +54,7 @@
         Banks & Cards
     </a>
 </li>
-        <li><a href="{{ url_for('homepage_seller.seller_address') }}" class="account-btn">Addresses</a></li>
+        <li><a href="{{ url_for('seller_address.seller_address') }}" class="account-btn">Addresses</a></li>
         <form action="{{ url_for('homepage_seller.logout') }}" method="post">
           <button class="logout-btn" type="submit">Logout</button>
         </form>

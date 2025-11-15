@@ -3,8 +3,10 @@ import mysql.connector
 import json
 from decimal import Decimal
 from datetime import datetime
+from dotenv import load_dotenv
 import os
 
+load_dotenv()
 cart_app = Blueprint('cart', __name__)
 
 db_config = {
