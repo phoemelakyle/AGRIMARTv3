@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="../static/css/edit_product.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_buyer.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
@@ -93,8 +94,6 @@
             </div>
         </aside>
 
-
-        <!-- Product Edit Form -->
        <!-- Product Edit Form -->
        <div class="product-info">
         <h1>EDIT PRODUCT</h1>
@@ -136,6 +135,29 @@
 
 
                 <div class="outer-container">
+                <div class="chosen-address-box">
+                  {% if address %}
+                          <h3>Address</h3>
+                          <p>{{ address['Street'] }}</p>
+                          <p>{{ address['Municipality'] }}, {{ address['Province'] }} </p>
+                          <p>{{ address['Region'] }}, {{ address['Zip_Code'] }}</p>
+                      {% else %}
+                          <h3>No address selected</h3>
+                      {% endif %}
+                      <button type="button" onclick="openAddressModal()" class="button1">
+                          Change Address
+                      </button>
+                </div>
+
+                <div id="addressModal" class="modal" style="display:none;">
+                    <div class="modal-content">
+                        <h3>Select New Address</h3>
+                        <div id="addressList"></div>
+
+                        <button onclick="closeAddressModal()" class="button1">Close</button>
+                    </div>
+                </div>
+
     <h2>Variations</h2>
         {% for variation in variations %}
             <div class="variation-table">
@@ -175,12 +197,6 @@
                     
             </div>
         {% endfor %}
-
-
-
-
-
-
 
                 <!-- Container for new variations -->
                 <div id="new-variation-container"></div>
@@ -359,7 +375,58 @@
         }
       });
     });
-  </script>
+
+function openAddressModal() {
+
+    fetch('/get_seller_addresses')
+        .then(response => response.json())
+        .then(data => {
+
+            let html = "";
+            data.forEach(addr => {
+                html += `
+                    <div class="address-option"
+                         style="padding:10px; border:1px solid #ccc; border-radius:8px; margin-bottom:10px; cursor:pointer;"
+                         onclick="chooseAddress('${addr.AddressID}')">
+
+                        <strong>${addr.Street}</strong><br>
+                        ${addr.Municipality}, ${addr.Province}<br>
+                        ${addr.Region}, ${addr.Zip_Code}
+                    </div>
+                `;
+            });
+
+            Swal.fire({
+                title: "Select New Address",
+                html: html,
+                showConfirmButton: false,
+                width: 500,
+                scrollbarPadding: false,
+            });
+        });
+}
+
+function chooseAddress(addressID) {
+    fetch(`/update_product_address/{{ product['ProductID'] }}/${addressID}`, {
+        method: "POST"
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: "success",
+                title: "Address Updated!",
+                text: "The product address has been changed.",
+                timer: 1500,
+                showConfirmButton: false
+            });
+
+            setTimeout(() => location.reload(), 1500);
+        }
+    });
+}
+
+</script>
 </body>
 </html>
 

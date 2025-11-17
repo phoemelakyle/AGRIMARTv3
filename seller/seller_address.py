@@ -26,7 +26,7 @@ def seller_address():
     if seller_id:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM seller_addresses WHERE SellerID = %s", (seller_id,))
+        cursor.execute("SELECT *, CAST(IsDefault AS UNSIGNED) AS IsDefaultInt FROM seller_addresses WHERE SellerID = %s", (seller_id,))
         addresses = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -49,6 +49,7 @@ def save_seller_address():
     full_name = request.form['full_name']
     phone_number = request.form['phone_number']
     street = request.form['street']
+    municipality = request.form['municipality']
     province = request.form['province']
     region = request.form['region']
     zip_code = request.form['zip_code']
@@ -63,6 +64,7 @@ def save_seller_address():
             SET Full_Name=%s,
                 Phone_Number=%s,
                 Street=%s,
+                Municipality=%s,
                 Province=%s,
                 Region=%s,
                 Zip_Code=%s,
@@ -70,7 +72,7 @@ def save_seller_address():
                 Longitude=%s
             WHERE AddressID=%s AND SellerID=%s
         """
-        cursor.execute(update_query, (full_name, phone_number, street, province,
+        cursor.execute(update_query, (full_name, phone_number, street, municipality, province,
                                       region, zip_code, latitude, longitude,
                                       address_id, seller_id))
         conn.commit()
@@ -87,14 +89,20 @@ def save_seller_address():
     else:
         new_id = "SA1000"
 
-    # Insert into DB
+    cursor.execute("SELECT COUNT(*) FROM seller_addresses WHERE SellerID=%s", (seller_id,))
+    has_addresses = cursor.fetchone()[0]
+
     insert_query = """
         INSERT INTO seller_addresses
-        (AddressID, SellerID, Full_Name, Phone_Number, Street, Province, Region, Zip_Code, Latitude, Longitude)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        (AddressID, SellerID, Full_Name, Phone_Number, Street, Municipality, Province, Region, Zip_Code, Latitude, Longitude, IsDefault)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
+    # If seller has no address yet, set IsDefault=1, else 0
+    is_default = 1 if has_addresses == 0 else 0
+
     cursor.execute(insert_query, (new_id, seller_id, full_name, phone_number, street,
-                                  province, region, zip_code, latitude, longitude))
+                                  municipality, province, region, zip_code,
+                                  latitude, longitude, is_default))
     conn.commit()
     cursor.close()
     conn.close()
@@ -112,12 +120,67 @@ def delete_seller_address(address_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    query = "DELETE FROM seller_addresses WHERE AddressID = %s AND SellerID = %s"
-    cursor.execute(query, (address_id, seller_id))
-    conn.commit()
+    try:
+        # Check if address is used in any product
+        cursor.execute("SELECT COUNT(*) FROM product WHERE AddressID = %s", (address_id,))
+        count = cursor.fetchone()[0]
 
-    cursor.close()
-    conn.close()
+        if count > 0:
+            # Address is in use, prevent deletion
+            cursor.close()
+            conn.close()
+            return redirect(url_for('seller_address.seller_address', delete_error=1))
+        else:
+            # Safe to delete
+            cursor.execute(
+                "DELETE FROM seller_addresses WHERE AddressID = %s AND SellerID = %s",
+                (address_id, seller_id)
+            )
+            conn.commit()
+            cursor.close()
+            conn.close()
+            flash("Address deleted successfully!")
+            return redirect(url_for('seller_address.seller_address'))
 
-    flash("Address deleted successfully!")
-    return redirect(url_for('seller_address.seller_address'))
+    except Exception as e:
+        print(e)
+        cursor.close()
+        conn.close()
+        flash("Something went wrong!")
+        return redirect(url_for('seller_address.seller_address'))
+
+
+@seller_address_app.route('/set_default_seller_address', methods=['POST'])
+def set_default_address():
+    seller_id = session.get('SellerID')
+    if not seller_id:
+        return {"success": False, "error": "Not logged in"}, 401
+
+    data = request.get_json()
+    address_id = data.get("address_id")
+    if not address_id:
+        return {"success": False, "error": "No address ID provided"}, 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Set all addresses of the seller to not default
+        cursor.execute(
+            "UPDATE seller_addresses SET IsDefault=0 WHERE SellerID=%s", (seller_id,)
+        )
+        # Set selected address as default
+        cursor.execute(
+            "UPDATE seller_addresses SET IsDefault=1 WHERE AddressID=%s AND SellerID=%s",
+            (address_id, seller_id)
+        )
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        print(e)
+        return {"success": False, "error": str(e)}, 500
+    finally:
+        cursor.close()
+        conn.close()
+
+    return {"success": True}

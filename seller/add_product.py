@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, session
+from flask import Blueprint, render_template, request, redirect, session, jsonify
 import mysql.connector
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
@@ -79,7 +79,7 @@ class Product:
         volumetric_weight = (self.packaging_length * self.packaging_width * self.packaging_height) / self.VOLUMETRIC_FACTOR
         return max(actual_weight, volumetric_weight) * self.SHIPPING_RATE_PER_UNIT_WEIGHT
 
-    def insert_into_database(self, user_id):
+    def insert_into_database(self, user_id, address_id):
         conn = get_db_connection()
         cursor = conn.cursor()
 
@@ -87,8 +87,8 @@ class Product:
 
         shipping_fee = self.calculate_shipping_fee()
 
-        sql_query = "INSERT INTO product (ProductID, SellerID, Product_Name, Weight, Packaging_Length, Packaging_Width, Packaging_Height, CategoryID, ImageFilename, Shipping_Fee) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        values = (product_id, user_id, self.productname, self.weight, self.packaging_length, self.packaging_width, self.packaging_height, self.category_id, self.image, shipping_fee)
+        sql_query = "INSERT INTO product (ProductID, SellerID, Product_Name, Weight, Packaging_Length, Packaging_Width, Packaging_Height, CategoryID, ImageFilename, Shipping_Fee, AddressID) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        values = (product_id, user_id, self.productname, self.weight, self.packaging_length, self.packaging_width, self.packaging_height, self.category_id, self.image, shipping_fee, address_id)
 
         try:
             cursor.execute(sql_query, values)
@@ -102,8 +102,8 @@ class Product:
                 WHERE ProductID = %s AND Unit = %s AND Price = %s AND Quantity = %s
             """, (self.product_id, variation.get('unit'), variation['price'], variation['quantity']))
 
-                if cursor.fetchone():  # Already exists
-                    continue  # Skip inserting this duplicate
+                if cursor.fetchone():  
+                    continue  
 
                 variation_id = self.generate_variation_id()
                 variation_query = "INSERT INTO product_variation (VariationID, ProductID, Unit, Price, Quantity) VALUES (%s, %s, %s, %s, %s)"
@@ -152,7 +152,8 @@ def add_product():
                 quantity = int(quantity) if quantity else None
                 product.add_variation(price, quantity, unit)
 
-            success = product.insert_into_database(session['user_id'])
+            address_id = request.form.get('AddressID') 
+            success = product.insert_into_database(session['user_id'], address_id)
 
             if success:
                 return redirect('/add_product')  
@@ -163,10 +164,35 @@ def add_product():
     cursor = conn.cursor()
     cursor.execute("SELECT CategoryID, Category_Name FROM product_category")
     categories = cursor.fetchall()
+
+    user_id = session.get('user_id')
+    cursor.execute("""
+        SELECT Full_Name, Phone_Number, Street, Municipality, Province, Region, Zip_Code 
+        FROM seller_addresses 
+        WHERE SellerID = %s AND isDefault = 1
+    """, (user_id,))
+    default_address = cursor.fetchone()  
+
     cursor.close()
     conn.close()
 
-    return render_template('add_product.html', categories=categories)
+    return render_template('add_product.html', categories=categories, default_address=default_address)
+
+@add_product_app.route('/get_seller_addresses', methods=['GET'])
+def get_seller_addresses():
+    user_id = session.get('user_id')
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT AddressID, Full_Name, Phone_Number, Street, Municipality, Province, Region, Zip_Code
+        FROM seller_addresses
+        WHERE SellerID = %s
+    """, (user_id,))
+    addresses = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    return jsonify(addresses)  
 
 @add_product_app.route('/logout', methods=['POST'])
 def logout():

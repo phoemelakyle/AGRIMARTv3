@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agrimart - Address</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- POPUP STYLES -->
     <style>
         .add-btn {
@@ -158,14 +158,21 @@
                     <ul>
                     {% for addr in addresses %}
                         <li>
-                            {{ addr.Full_Name }} - {{ addr.Phone_Number }}<br>
-                            {{ addr.Street }}, {{ addr.Province }}, {{ addr.Region }} {{ addr.Zip_Code }}
+                            <!-- Radio button to select default address -->
+                              <input type="radio" name="default_address" value="{{ addr.AddressID }}" id="addr_{{ addr.AddressID }}"
+                                {% if addr.IsDefaultInt == 1 %} checked {% endif %}
+                                onchange="setDefaultAddress('{{ addr.AddressID }}')">
+                              <label for="addr_{{ addr.AddressID }}"></label>
+
+                              <strong>{{ addr.Full_Name }}</strong> - {{ addr.Phone_Number }}<br>
+                            {{ addr.Street }}, {{ addr.Municipality }}, {{ addr.Province }}, {{ addr.Region }} {{ addr.Zip_Code }}
                         <button class="edit-btn"
                                 onclick="openEditAddress(
                                     '{{ addr.AddressID }}',
                                     '{{ addr.Full_Name }}',
                                     '{{ addr.Phone_Number }}',
                                     '{{ addr.Street }}',
+                                    '{{ addr.Municipality }}',
                                     '{{ addr.Province }}',
                                     '{{ addr.Region }}',
                                     '{{ addr.Zip_Code }}',
@@ -198,11 +205,12 @@
             <input type="text" name="full_name" placeholder="Full Name" required>
             <input type="text" name="phone_number" placeholder="Phone Number" required>
             <input type="text" name="street" placeholder="Street" required>
+            <input type="text" name="municipality" placeholder="Municipality" required>
             <input type="text" name="province" placeholder="Province" required>
             <input type="text" name="region" placeholder="Region" required>
             <input type="text" name="zip_code" placeholder="Zip Code" required>
-            <input type="hidden" name="latitude" id="lat">
-            <input type="hidden" name="longitude" id="lng">
+            <input type="hidden" name="latitude" id="lat" value="0.0">
+            <input type="hidden" name="longitude" id="lng" value="0.0">
 
             <label><b>Pin Your Location:</b></label>
             <div id="map"></div>
@@ -350,7 +358,7 @@ function loadMap(location) {
 
     marker.addListener("dragend", function () {
         const pos = marker.getPosition();
-        updateAddressFields(pos);
+        updateAddressFields({ lat: pos.lat(), lng: pos.lng() });
     });
 
     // Add default My Location button
@@ -381,43 +389,45 @@ function loadMap(location) {
 
 function updateAddressFields(latlng) {
     geocoder.geocode({ location: latlng }, function(results, status) {
-        if (status === "OK") {
-            if (results[0]) {
-                let components = results[0].address_components;
-                let streetNumber = "", route = "", province = "", region = "", zip = "";
+        if (status === "OK" && results[0]) {
+            const components = results[0].address_components;
+            let streetNumber = "", route = "", province = "", region = "", municipality = "", zip = "";
 
-                components.forEach(function(component) {
-                    if (component.types.includes("street_number")) streetNumber = component.long_name;
-                    if (component.types.includes("route")) route = component.long_name;
-                    if (component.types.includes("administrative_area_level_1")) province = component.long_name;
-                    if (component.types.includes("administrative_area_level_2")) region = component.long_name;
-                    if (component.types.includes("postal_code")) zip = component.long_name;
-                });
+            components.forEach(function(component) {
+                if (component.types.includes("street_number")) streetNumber = component.long_name;
+                if (component.types.includes("route")) route = component.long_name;
+                if (component.types.includes("administrative_area_level_2")) province = component.long_name;
+                if (component.types.includes("administrative_area_level_1")) region = component.long_name;
+                if (component.types.includes("locality")) municipality = component.long_name;
+                else if (component.types.includes("sublocality_level_1")) municipality = component.long_name;
+                if (component.types.includes("postal_code")) zip = component.long_name;
+            });
 
-                const street = streetNumber && route ? streetNumber + " " + route : route;
+            const street = streetNumber && route ? streetNumber + " " + route : route;
 
-                document.querySelector('input[placeholder="Street"]').value = street;
-                document.querySelector('input[placeholder="Province"]').value = province;
-                document.querySelector('input[placeholder="Region"]').value = region;
-                document.querySelector('input[placeholder="Zip Code"]').value = zip;
-                document.querySelector('input[name="latitude"]').value = latlng.lat;
-                document.querySelector('input[name="longitude"]').value = latlng.lng;
-            }
+            document.querySelector('input[placeholder="Street"]').value = street;
+            document.querySelector('input[placeholder="Municipality"]').value = municipality;
+            document.querySelector('input[placeholder="Province"]').value = province;
+            document.querySelector('input[placeholder="Region"]').value = region;
+            document.querySelector('input[placeholder="Zip Code"]').value = zip;
+            document.querySelector('input[name="latitude"]').value = latlng.lat;  
+            document.querySelector('input[name="longitude"]').value = latlng.lng;
         } else {
             console.error("Geocoder failed: " + status);
         }
     });
 }
 
-function openEditAddress(id, full, phone, street, province, region, zip, lat, lng) {
-    // Switch title
+function openEditAddress(id, full, phone, street, municipality, province, region, zip, lat, lng) {
+    
     document.getElementById("modalTitle").innerText = "Edit Address";
 
-    // Fill the form
+    
     document.querySelector('input[name="address_id"]').value = id;
     document.querySelector('input[name="full_name"]').value = full;
     document.querySelector('input[name="phone_number"]').value = phone;
     document.querySelector('input[name="street"]').value = street;
+    document.querySelector('input[name="municipality"]').value = municipality;
     document.querySelector('input[name="province"]').value = province;
     document.querySelector('input[name="region"]').value = region;
     document.querySelector('input[name="zip_code"]').value = zip;
@@ -449,6 +459,43 @@ function confirmDelete(id) {
     if (confirm("Are you sure you want to delete this address?")) {
         window.location.href = "/delete_buyer_address/" + id;
     }
+}
+
+
+function setDefaultAddress(addressID) {
+    fetch('/set_default_buyer_address', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ address_id: addressID })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Default Address Updated!',
+                text: 'This address is now your default.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Failed to update default address.'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong!'
+        });
+    });
 }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>

@@ -1,113 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Agrimart - Homepage Buyer</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_buyer.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-
-
-
-
-  <!-- Header -->
-  <header class="top-bar">
-    <div class="logo">
-        <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-        Agrimart
-    </div>          
-    <div class="tagline">Connecting you to Local Farmers</div>
-  </header>
-
-
-
-
-  <!-- Navigation Menu -->
-  <nav class="nav-menu">
-    <ul>
-      <li><a href="/homepage_buyer">Home</a></li>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrimart - Filtered Products</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/homepage_buyer.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+ 
+    <!-- Header -->
+    <header class="top-bar">
+      <div class="logo">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo-icon"/>
+          Agrimart
+      </div>          
+      <div class="tagline">Connecting you to Local Farmers</div>
+    </header>
+ 
+    <!-- Navigation Menu -->
+    <nav class="nav-menu">
+      <ul>
+        <li><a href="/homepage_buyer">Home</a></li>
         <li><a href="#contacts">Contacts</a></li>
-    </ul>
-  </nav>
- 
-  <!-- Breadcrumb Navigation -->
-<nav class="main-nav">
-  <ul class="breadcrumb">
-    <li><a href="/homepage_buyer"> <i class="fas fa-home"></i></a></li>
-    <li>›</li>
-    <li>
-      <a href="/homepage_buyer" class="button">All Products</a>
-    </li>
+      </ul>
+    </nav>
    
+    <!-- Breadcrumb Navigation -->
+  <nav class="main-nav">
+    <ul class="breadcrumb">
+      <li><a href="/homepage_buyer"> <i class="fas fa-home"></i></a></li>
+      <li>›</li>
+      <li>
+        <a href="/homepage_buyer" class="button">All Products</a>
+      </li>
      
-  </ul>
- 
-  <div class="icons">
-    <span class="cart">
-      <a href="{{ url_for('cart.cart') }}" class="cart-link">
-        <i class="fas fa-shopping-cart"></i>
-       
-      </a>
-    </span>
+    </ul>
    
-    <div class="user-dropdown" id="userDropdown">
-      <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
-      <div class="user-menu" id="userMenu">
-     <a href="{{ url_for('homepage_buyer.account') }}" class="account-btn">My Account</a>
-        <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
-          <button class="logout-btn" type="submit">Logout</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</nav>
-
-
-
-
-
-
-
-
-<div class="container">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <!-- Category Filter -->
-    <div class="category-filter">
-      <div class="filter-inside-categories">
-          <button class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
+    <div class="icons">
+        <span class="cart">
+          <a href="{{ url_for('cart.cart') }}" class="cart-link">
+            <i class="fas fa-shopping-cart"></i>
+          </a>
+        </span>
+        <div class="user-dropdown" id="userDropdown">
+            <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
+            <div class="user-menu" id="userMenu">
+              <a href="{{ url_for('homepage_buyer.account') }}" class="account-btn">My Account</a>
+              <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
+                <button class="logout-btn" type="submit">Logout</button>
+              </form>
+            </div>
+          </div>
         </div>
+      </nav>
+     
+ <!-- Main Container -->
+<div class="container">
+  <aside class="sidebar">
+    <!-- Redesigned CATEGORY Section -->
+    <div class="category-filter">
+    <form id="filterForm" action="{{ url_for('homepage_buyer.filter_products') }}" method="get">
+      <button type="submit" class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
         <!-- Price Range -->
         <div class="location-range" style="margin-bottom:20px;">
-    <label for="locationRange">Location Range (km): </label>
-    <input type="range" id="locationRange" name="locationRange" min="0" max="50" step="1" oninput="this.nextElementSibling.value = this.value">
-    <output>25</output>
-  </div>
-      <h3>CATEGORIES</h3>
-      <ul class="category-list">
-        <li>
-          <form action="{{ url_for('homepage_buyer.filter_products', category_name='all') }}" method="get">
-            <button type="submit" class="category-item {% if selected_category == 'all' %}active{% endif %}">
-              All Products
-            </button>
-          </form>
-        </li>
-        {% for category in categories %}
-        <li>
-          <form action="{{ url_for('homepage_buyer.filter_products', category_name=category.Category_Name) }}" method="get">
-            <button type="submit" class="category-item {% if selected_category == category.CategoryID %}active{% endif %}">
-              {{ category.Category_Name }}
-            </button>
-          </form>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
+            <label for="locationRange">Location Range (km): </label>
+            <input type="range" id="locationRange" name="range_km" min="0" max="50" step="1" value="{{ selected_km }}" oninput="this.nextElementSibling.value = this.value">
+            <output>{{ selected_km }}</output>
+        </div>
 
+        <!-- Categories -->
+        <h3>CATEGORIES</h3>
+        <div class="category-buttons">
+            <button type="button" class="category-item {% if selected_category == 'all' %}active{% endif %}" data-category="all">All Products</button>
+            {% for category in categories %}
+            <button type="button" class="category-item {% if selected_category == category.Category_Name|lower %}active{% endif %}" data-category="{{ category.Category_Name }}">{{ category.Category_Name }}</button>
+            {% endfor %}
+        </div>
 
+        <!-- Hidden input to store selected category -->
+        <input type="hidden" name="category" id="selectedCategory" value="{{ selected_category or 'all' }}">
+    </form>
+</div>
 
 
     <!-- Buyer Menu -->
@@ -128,38 +104,37 @@
     </div>
   </aside>
 
-
-
-
-  <!-- Right Column -->
-  <div class="column-right">
- 
-    <!-- Search Bar and Filter Button -->
-      <div class="search-filter-container">
+        <div class="column column-right">
+            <h4>PRODUCTS</h4>
+             <div class="search-filter-container">
         <input type="text" class="product-search" placeholder="Search products...">
       </div>
-    <div class="product-container">
-      {% for product in product_data %}
-      <div class="product-box">
-        <div class="image-container">
-          <a href="{{ url_for('viewproduct.viewproduct', product_id=product['ProductID']) }}">
-            <img src="{{ url_for('static', filename='images/products/' + product['ImageFileName']) }}" alt="Product Image">
-          </a>
+            <div class="product-container">
+            {% if product_data %}
+                {% for product in product_data %}
+                    <div class="product-box">
+                        <div class="image-container">
+                        <a href="{{ url_for('viewproduct.viewproduct', product_id=product['ProductID']) }}">
+                            <img src="{{ url_for('static', filename='images/products/' + product['ImageFileName']) }}"  alt="Product Image" width="200" height="200">
+                        </a>
+                        </div>
+                        <p>{{ product['Product_Name'] }}</p>
+                        {% if product['MinPrice'] == product['MaxPrice'] %}
+                        <p>P{{ product['MinPrice'] }}</p>
+                        {% else %}
+                        <p>P{{ product['MinPrice'] }} - P{{ product['MaxPrice'] }}</p>
+                        {% endif %}
+                        <p>{{ product['Municipality'] }}, {{ product['Province'] }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No products available for the selected category.</p>
+            {% endif %}
         </div>
-        <div class="product-details">
-          <p class="product-name">{{ product['Product_Name'] }}</p>
-          {% if product['MinPrice'] == product['MaxPrice'] %}
-            <p class="product-price">₱{{ product['MinPrice'] }}</p>
-          {% else %}
-            <p class="product-price">₱{{ product['MinPrice'] }} - ₱{{ product['MaxPrice'] }}</p>
-          {% endif %}
-        </div>
-      </div>
-      {% endfor %}
     </div>
-  </div>
-</div>
- <!-- Newsletter -->
+    </div>
+
+    <!-- Newsletter -->
  <section id="contacts" class="newsletter">
   <div class="newsletter-content">
     <div class="newsletter-text">
@@ -178,14 +153,11 @@
   </div>
 </section>
 
-
-
-
 <!-- Footer -->
 <footer class="main-footer">
   <div class="footer-content">
     <div class="footer-about">
-      <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo-icon"/>
       Agrimart
  
       <p>Empowering farmers and connecting communities through sustainable commerce.</p>
@@ -231,42 +203,80 @@
   </div>
 </footer>
 
+ <!-- JavaScript -->
+ <script>
 
-
-
-  <!-- JavaScript -->
-  <script>
-    document.querySelectorAll('.category-option input[type="radio"]').forEach(radio => {
-      radio.addEventListener('change', function () {
-        this.closest('form').submit();
-      });
-    });
-  </script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const userIcon = document.getElementById('userIcon');
-      const userMenu = document.getElementById('userMenu');
- 
-      userIcon.addEventListener('click', function (event) {
-        userMenu.classList.toggle('show');
-        event.stopPropagation(); // Prevents event from bubbling up
-      });
- 
-      // Close the dropdown if clicked outside
-      document.addEventListener('click', function (event) {
-        if (!userMenu.contains(event.target)) {
-          userMenu.classList.remove('show');
+{% if show_address_alert %}
+    Swal.fire({
+        icon: 'warning',
+        title: 'No Address Found',
+        text: 'For the range filter to work correctly, please add an address first!',
+        confirmButtonText: 'Add Address'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "{{ url_for('buyer_address.buyer_address') }}"; 
         }
-      });
     });
-  </script>
+    {% endif %}
+    
+  document.querySelectorAll('.category-option input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function () {
+      this.closest('form').submit();
+    });
+  });
 
+  document.addEventListener('DOMContentLoaded', function () {
+    const userIcon = document.getElementById('userIcon');
+    const userMenu = document.getElementById('userMenu');
 
+    userIcon.addEventListener('click', function (event) {
+      userMenu.classList.toggle('show');
+      event.stopPropagation(); 
+    });
 
+    // Close the dropdown if clicked outside
+    document.addEventListener('click', function (event) {
+      if (!userMenu.contains(event.target)) {
+        userMenu.classList.remove('show');
+      }
+    });
+  });
 
- 
+ const slider = document.getElementById('locationRange');
+  const outputs = document.querySelectorAll('output');
+  const forms = document.querySelectorAll('.category-form');
+
+  slider.addEventListener('input', function() {
+      outputs.forEach(o => o.value = this.value);
+      forms.forEach(f => {
+          const hidden = f.querySelector('input[name="range_km"]');
+          hidden.value = this.value;
+      });
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const categoryButtons = document.querySelectorAll('.category-item');
+    const selectedInput = document.getElementById('selectedCategory');
+
+    categoryButtons.forEach(btn => {
+        btn.addEventListener('click', function () {
+
+            categoryButtons.forEach(b => b.classList.remove('active'));
+
+            this.classList.add('active');
+
+            selectedInput.value = this.getAttribute('data-category');
+        });
+    });
+
+    // Slider live output
+    const slider = document.getElementById('locationRange');
+    const output = slider.nextElementSibling;
+    slider.addEventListener('input', function() {
+        output.value = this.value;
+    });
+});
+</script>
+
 </body>
 </html>
-
-
-

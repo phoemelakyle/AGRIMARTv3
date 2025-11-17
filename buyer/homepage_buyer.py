@@ -3,6 +3,7 @@ import mysql.connector
 import bcrypt
 from dotenv import load_dotenv
 import os
+import math
 
 load_dotenv()
 
@@ -25,10 +26,23 @@ def get_db_connection():
         print(f"Error: {err}")
         return None
 
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371 
+    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = math.sin(dlat/2)**2 + math.cos(lat1)*math.cos(lat2)*math.sin(dlon/2)**2
+    c = 2 * math.asin(math.sqrt(a))
+    return R * c
+
 @homepage_buyer_app.route('/homepage_buyer', methods=['GET', 'POST'])
 def homepage_buyer():
     product_data = []
     categories = []
+    default_range_km = 25  # default slider value
+    show_address_alert = False
+
+
     try:
         with get_db_connection() as connection:
             cursor = connection.cursor(dictionary=True)
@@ -37,19 +51,58 @@ def homepage_buyer():
             cursor.execute(category_query)
             categories = cursor.fetchall()
 
+            buyer_id = session.get("user_id")
+
+            cursor.execute("SELECT COUNT(*) AS count FROM buyer_addresses WHERE BuyerID = %s", (buyer_id,))
+            address_count = cursor.fetchone()["count"]
+            if address_count == 0:
+                show_address_alert = True  
+
+            cursor.execute("""
+                SELECT Latitude, Longitude
+                FROM buyer_addresses
+                WHERE BuyerID = %s AND isDefault = 1
+            """, (buyer_id,))
+            buyer = cursor.fetchone()
+            buyer_lat = float(buyer["Latitude"]) if buyer else None
+            buyer_lon = float(buyer["Longitude"]) if buyer else None
+
             product_query = """
-            SELECT p.ProductID, p.Product_Name, MIN(pv.Price) as MinPrice, MAX(pv.Price) as MaxPrice, p.ImageFileName
+            SELECT p.ProductID, p.Product_Name, MIN(pv.Price) as MinPrice, MAX(pv.Price) as MaxPrice,
+                   p.ImageFileName, sa.Municipality, sa.Province, sa.Latitude AS SellerLat, sa.Longitude AS SellerLon
             FROM product p
             JOIN product_variation pv ON p.ProductID = pv.ProductID
-            GROUP BY p.ProductID, p.Product_Name, p.ImageFileName
+            JOIN seller_addresses sa ON p.AddressID = sa.AddressID
+            GROUP BY p.ProductID, p.Product_Name, p.ImageFileName, sa.Municipality, sa.Province, sa.Latitude, sa.Longitude
             """
             cursor.execute(product_query)
-            product_data = cursor.fetchall()
+            all_products = cursor.fetchall()
+
+            if buyer_lat and buyer_lon:
+                for p in all_products:
+                    dist = haversine(
+                        buyer_lat, buyer_lon,
+                        float(p["SellerLat"]), float(p["SellerLon"])
+                    )
+                    if dist <= default_range_km:
+                        p["Distance"] = round(dist, 2)
+                        product_data.append(p)
+            else:
+                # if no default address, show all products
+                product_data = all_products
+
 
     except mysql.connector.Error as err:
         print(f"Database error: {err}")
 
-    return render_template('homepage_buyer.html', product_data=product_data, categories=categories)
+
+    return render_template(
+        'homepage_buyer.html',
+        product_data=product_data,
+        categories=categories,
+        selected_km=default_range_km, 
+        show_address_alert=show_address_alert
+    )
 
 @homepage_buyer_app.route('/logout', methods=['POST'])
 def logout():
@@ -63,44 +116,65 @@ def account():
 def buyer_payment():
     return render_template('buyer_payment.html')
 
-@homepage_buyer_app.route('/filter/<string:category_name>', methods=['POST','GET'])
-def filter_products(category_name):
-    global _categories
+@homepage_buyer_app.route('/filter', methods=['GET'])
+def filter_products():
+    product_data = []
+    selected_km = int(request.args.get("range_km", 25))
+    selected_category = request.args.get("category", "all")
+
     try:
-        if category_name.lower() == "all":
-            return redirect(url_for('homepage_buyer.homepage_buyer'))
-           
         with get_db_connection() as connection:
             cursor = connection.cursor(dictionary=True)
+            # Get categories for sidebar
+            cursor.execute("SELECT CategoryID, Category_Name FROM product_category")
+            categories = cursor.fetchall()
 
-            category_query = f"SELECT CategoryID FROM product_category WHERE Category_Name = '{category_name}'"
-            cursor.execute(category_query)
-            category_result = cursor.fetchone()
+            # Get buyer default address
+            buyer_id = session.get("user_id")
+            cursor.execute("""SELECT Latitude, Longitude FROM buyer_addresses WHERE BuyerID = %s AND isDefault = 1""", (buyer_id,))
+            buyer = cursor.fetchone()
+            buyer_lat = float(buyer["Latitude"]) if buyer else None
+            buyer_lon = float(buyer["Longitude"]) if buyer else None
 
-            if category_result:
-                category_id = category_result['CategoryID']
-
-                product_query = f"""
-                SELECT p.ProductID, p.Product_Name, p.ImageFileName,
-                       MIN(pv.Price) AS MinPrice, MAX(pv.Price) AS MaxPrice
-                FROM product p
-                LEFT JOIN product_variation pv ON p.ProductID = pv.ProductID
-                WHERE p.CategoryID = '{category_id}'
-                GROUP BY p.ProductID, p.Product_Name, p.ImageFileName
-                """
+            if selected_category.lower() == "all":
+                product_query = """SELECT p.ProductID, p.Product_Name, MIN(pv.Price) as MinPrice, MAX(pv.Price) as MaxPrice,
+                                   p.ImageFileName, sa.Municipality, sa.Province, sa.Latitude AS SellerLat, sa.Longitude AS SellerLon
+                                   FROM product p 
+                                   LEFT JOIN product_variation pv ON p.ProductID = pv.ProductID
+                                   JOIN seller_addresses sa ON p.AddressID = sa.AddressID
+                                   GROUP BY p.ProductID, p.Product_Name, p.ImageFileName, sa.Municipality, sa.Province, sa.Latitude, sa.Longitude"""
                 cursor.execute(product_query)
-                product_data = cursor.fetchall()
+            else:
+                cursor.execute("SELECT CategoryID FROM product_category WHERE Category_Name = %s", (selected_category,))
+                category_result = cursor.fetchone()
+                if not category_result:
+                    return redirect(url_for('homepage_buyer.homepage_buyer'))
+                category_id = category_result["CategoryID"]
+                product_query = """SELECT p.ProductID, p.Product_Name, MIN(pv.Price) as MinPrice, MAX(pv.Price) as MaxPrice,
+                                   p.ImageFileName, sa.Municipality, sa.Province, sa.Latitude AS SellerLat, sa.Longitude AS SellerLon
+                                   FROM product p
+                                   LEFT JOIN product_variation pv ON p.ProductID = pv.ProductID
+                                   JOIN seller_addresses sa ON p.AddressID = sa.AddressID
+                                   WHERE p.CategoryID = %s
+                                   GROUP BY p.ProductID, p.Product_Name, p.ImageFileName, sa.Municipality, sa.Province, sa.Latitude, sa.Longitude"""
+                cursor.execute(product_query, (category_id,))
 
-                category_query = "SELECT CategoryID, Category_Name FROM product_category"
-                cursor.execute(category_query)
-                categories = cursor.fetchall()
-
-                return render_template('filter.html', product_data=product_data, categories=categories )
-           
+            all_products = cursor.fetchall()
+            # Filter by distance
+            if buyer_lat and buyer_lon:
+                for p in all_products:
+                    dist = haversine(buyer_lat, buyer_lon, float(p["SellerLat"]), float(p["SellerLon"]))
+                    if dist <= selected_km:
+                        p["Distance"] = round(dist, 2)
+                        product_data.append(p)
+            else:
+                product_data = all_products
     except mysql.connector.Error as err:
         print(f"Database error: {err}")
 
-    return "Internal server error", 500
+    return render_template('homepage_buyer.html', product_data=product_data, categories=categories,
+                           selected_km=selected_km, selected_category=selected_category.lower())
+
 
 def get_categories ():
     try:

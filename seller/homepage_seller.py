@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, flash, session, url_for
+from flask import Blueprint, render_template, request, redirect, flash, session, url_for, jsonify
 import mysql.connector
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
@@ -143,6 +143,15 @@ def delete_variation(variation_id):
     cursor.close()
     conn.close()
 
+def fetch_address_by_id(address_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM seller_addresses WHERE AddressID = %s", (address_id,))
+    address = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return address
+
 @homepage_seller_app.route('/delete_product/<string:product_id>', methods=['POST'])
 def delete_product(product_id):
     conn = get_db_connection()
@@ -185,7 +194,8 @@ def edit_product(product_id):
     if request.method == 'GET':
         product = fetch_product_details(product_id)
         variations = fetch_variations_for_product(product_id)
-        return render_template('edit_product.html', product=product, variations=variations)
+        address = fetch_address_by_id(product['AddressID']) if product.get('AddressID') else None
+        return render_template('edit_product.html', product=product, variations=variations, address=address)
    
     elif request.method == 'POST':
         new_product_name = request.form.get('product_name')
@@ -250,3 +260,17 @@ def dashboard():
 def variations(product_id):
     variations = fetch_variations_for_product(product_id)
     return render_template('edit_product.html', variations=variations, product_id=product_id)
+
+@homepage_seller_app.route('/update_product_address/<string:product_id>/<string:address_id>', methods=['POST'])
+def update_product_address(product_id, address_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE product SET AddressID = %s WHERE ProductID = %s", 
+                   (address_id, product_id))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({"success": True})

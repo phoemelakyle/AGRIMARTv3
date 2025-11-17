@@ -26,7 +26,7 @@ def buyer_address():
     if buyer_id:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM buyer_addresses WHERE BuyerID = %s", (buyer_id,))
+        cursor.execute("SELECT *, CAST(IsDefault AS UNSIGNED) AS IsDefaultInt FROM buyer_addresses WHERE BuyerID = %s", (buyer_id,))
         addresses = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -49,11 +49,12 @@ def save_buyer_address():
     full_name = request.form['full_name']
     phone_number = request.form['phone_number']
     street = request.form['street']
+    municipality = request.form['municipality']
     province = request.form['province']
     region = request.form['region']
     zip_code = request.form['zip_code']
-    latitude = request.form['latitude']
-    longitude = request.form['longitude']
+    latitude = float(request.form['latitude'])
+    longitude = float(request.form['longitude'])
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -63,6 +64,7 @@ def save_buyer_address():
             SET Full_Name=%s,
                 Phone_Number=%s,
                 Street=%s,
+                Municipality=%s,
                 Province=%s,
                 Region=%s,
                 Zip_Code=%s,
@@ -70,7 +72,7 @@ def save_buyer_address():
                 Longitude=%s
             WHERE AddressID=%s AND BuyerID=%s
         """
-        cursor.execute(update_query, (full_name, phone_number, street, province,
+        cursor.execute(update_query, (full_name, phone_number, street, municipality, province,
                                       region, zip_code, latitude, longitude,
                                       address_id, buyer_id))
         conn.commit()
@@ -87,15 +89,19 @@ def save_buyer_address():
         new_id = f"BA{int(last_id[2:]) + 1:04d}"
     else:
         new_id = "BA1000"
+    
+    cursor.execute("SELECT COUNT(*) FROM buyer_addresses WHERE BuyerID=%s", (buyer_id,))
+    has_addresses = cursor.fetchone()[0]
 
     # Insert into DB
     insert_query = """
         INSERT INTO buyer_addresses
-        (AddressID, BuyerID, Full_Name, Phone_Number, Street, Province, Region, Zip_Code, Latitude, Longitude)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        (AddressID, BuyerID, Full_Name, Phone_Number, Street, Municipality, Province, Region, Zip_Code, Latitude, Longitude, IsDefault)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
-    cursor.execute(insert_query, (new_id, buyer_id, full_name, phone_number, street,
-                                  province, region, zip_code, latitude, longitude))
+    is_default = 1 if has_addresses == 0 else 0
+    cursor.execute(insert_query, (new_id, buyer_id, full_name, phone_number, street, municipality, 
+                                  province, region, zip_code, latitude, longitude, is_default))
     conn.commit()
     cursor.close()
     conn.close()
@@ -122,3 +128,38 @@ def delete_buyer_address(address_id):
 
     flash("Address deleted successfully!")
     return redirect(url_for('buyer_address.buyer_address'))
+
+@buyer_address_app.route('/set_default_buyer_address', methods=['POST'])
+def set_default_address():
+    buyer_id = session.get('BuyerID')
+    if not buyer_id:
+        return {"success": False, "error": "Not logged in"}, 401
+
+    data = request.get_json()
+    address_id = data.get("address_id")
+    if not address_id:
+        return {"success": False, "error": "No address ID provided"}, 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Set all addresses of the seller to not default
+        cursor.execute(
+            "UPDATE buyer_addresses SET IsDefault=0 WHERE BuyerID=%s", (buyer_id,)
+        )
+        # Set selected address as default
+        cursor.execute(
+            "UPDATE buyer_addresses SET IsDefault=1 WHERE AddressID=%s AND BuyerID=%s",
+            (address_id, buyer_id)
+        )
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        print(e)
+        return {"success": False, "error": str(e)}, 500
+    finally:
+        cursor.close()
+        conn.close()
+
+    return {"success": True}

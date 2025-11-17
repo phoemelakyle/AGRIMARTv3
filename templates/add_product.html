@@ -91,7 +91,7 @@
         <div class="product-info">
             <h1>ADD PRODUCT</h1>
 
-            <!-- ✅ Form Starts Here -->
+            <!-- Form Starts Here -->
             <form action="/add_product" method="POST" enctype="multipart/form-data">
                 <div class="variation-table">
                     <table>
@@ -123,6 +123,7 @@
                                 <td><input type="text" name="Packaging_Length" required></td>
                                 <td><input type="text" name="Packaging_Width" required></td>
                                 <td><input type="text" name="Packaging_Height" required></td>
+                                <input type="hidden" name="AddressID" id="selectedAddressID">
                                 <td>
                                     <select name="Category" required>
                                         {% for category in categories %}
@@ -131,18 +132,50 @@
                                     </select>
                                 </td>
                                 <td><input type="text" name="ShippingFee" id="shipping-fee" readonly></td>
+                                
                             </tr>
                         </tbody>
                     </table>
+                    <p class="address-label">Address</p>
+                    {% if default_address %}
+                        <div class="default-address">
+                            <p><strong>{{ default_address[0] }}</strong></p>  
+                            <p>{{ default_address[1] }}</p>                   
+                            <p>{{ default_address[2] }}, {{ default_address[3] }}, {{ default_address[4] }}, {{ default_address[5] }}, {{ default_address[6] }}</p>  <!-- Street, Province, Region -->
+                            <!-- Change Address Button -->
+                            <form action="/seller_address" method="get" style="margin-top: 10px;">
+                                <button type="button" class="change-address-btn" id="changeAddressBtn">Change Address</button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <p class="default-address">No default address found.</p>
+                        <button type="button" class="add-address-btn" id="addAddressBtn">Add Address</button>
+                    {% endif %}
+
+                    <div id="addressModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-btn">&times;</span>
+                            <h3>Select Address</h3>
+                            <div id="addressList">
+                                <!-- Addresses will be loaded here dynamically -->
+                            </div>
+                        </div>
+                    </div>
 
                     <div id="variations-container"></div>
 
                     <button type="button" class="button1" onclick="addVariation()">ADD VARIATION</button>
-                    <input type="submit" value="SUBMIT" class="button1">
+                    {% if default_address %}
+                        <input type="submit" value="SUBMIT" class="button1">
+                    {% else %}
+                        <div class="tooltip-wrapper">
+                            <input type="submit" value="SUBMIT" class="button1 disabled-btn" disabled>
+                            <span class="tooltip-text">Please add an address first</span>
+                        </div>
+                    {% endif %}
                     
                 </div>
             </form>
-            <!-- ✅ Form Ends Here -->
         </div>
     </div>
 
@@ -282,7 +315,59 @@
             }
           });
         });
-      </script>
+
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById("addressModal");
+    const btn = document.getElementById("changeAddressBtn");
+    const span = document.querySelector(".close-btn");
+    const addressList = document.getElementById("addressList");
+    const defaultAddressDiv = document.querySelector(".default-address");
+
+    // Open modal
+btn.onclick = function() {
+    fetch("/get_seller_addresses")
+        .then(response => response.json())
+        .then(addresses => {  
+            addressList.innerHTML = "";
+                addresses.forEach(addr => {
+                    const div = document.createElement("div");
+                    div.className = "address-item";
+                    div.innerHTML = `<strong>${addr.Full_Name}</strong><br>${addr.Phone_Number}<br>${addr.Street}, ${addr.Municipality}, ${addr.Province}, ${addr.Region}, ${addr.Zip_Code}`;
+                    div.onclick = function() {
+                        defaultAddressDiv.innerHTML = `
+                            <p><strong>${addr.Full_Name}</strong></p>
+                            <p>${addr.Phone_Number}</p>
+                            <p>${addr.Street}, ${addr.Municipality}, ${addr.Province}, ${addr.Region}, ${addr.Zip_Code}</p>
+                            <button type="button" class="change-address-btn" id="changeAddressBtn">Change Address</button>
+                        `;
+             
+                        document.getElementById("selectedAddressID").value = addr.AddressID;
+
+                        modal.style.display = "none";
+                    };
+                    addressList.appendChild(div);
+                });
+            modal.style.display = "block";
+        });
+};
+
+
+    // Close modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    };
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
+});
+
+document.getElementById("addAddressBtn").onclick = function() {
+    window.location.href = "{{ url_for('seller_address.seller_address') }}";
+};
+
+</script>
    
 </body>
 </html>
