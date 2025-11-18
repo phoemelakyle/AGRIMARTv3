@@ -33,7 +33,7 @@ def get_unpaid_orders_data(user_id, sort='recent'):
                 order_by = 'DESC'
 
             query_orders = f"""
-            SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Shipping_Address, Order_Date
+            SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Order_Date, AddressID
             FROM seller_order
             WHERE Order_Status = 'waiting for payment' AND SellerID = %s
             ORDER BY Order_Date {order_by}
@@ -45,6 +45,8 @@ def get_unpaid_orders_data(user_id, sort='recent'):
                 product_id = order['ProductID']
                 variation_id = order['VariationID']
                 order_date = order['Order_Date']
+                address_id = order.get('AddressID')
+                payment_optionsid = order.get('Payment_OptionsID')
 
                 query_product = """
                 SELECT Product_Name, ImageFileName, Shipping_Fee
@@ -62,6 +64,28 @@ def get_unpaid_orders_data(user_id, sort='recent'):
                 cursor.execute(query_variation, (variation_id,))
                 variation_info = cursor.fetchone()
 
+                buyer_address = ""
+                if address_id:
+                    cursor.execute("""
+                    SELECT Full_Name, Phone_Number, Street, Municipality, Province, Zip_Code
+                    FROM buyer_addresses
+                    WHERE AddressID = %s
+                    """, (address_id,))
+                    addr = cursor.fetchone()
+                    if addr:
+                        buyer_address = f"{addr['Full_Name']}, {addr['Phone_Number']}, {addr['Street']}, {addr['Municipality']}, {addr['Province']} {addr['Zip_Code']}"
+                
+                payment_opt = ""
+                if payment_optionsid:
+                    cursor.execute("""
+                    SELECT Payment_Method, Account_Number
+                    FROM buyer_payment_options
+                    WHERE Payment_OptionsID = %s
+                    """, (payment_optionsid,))
+                    payment = cursor.fetchone()
+                    if payment:
+                        payment_opt = f"{payment['Payment_Method']}, {payment['Account_Number']}"
+
                 order_detail = {
                     'ImageFileName': product_info['ImageFileName'],
                     'Product_Name': product_info['Product_Name'],
@@ -71,8 +95,9 @@ def get_unpaid_orders_data(user_id, sort='recent'):
                     'OrderID': order['OrderID'],
                     'Price': variation_info['Price'],
                     'Total_Amount': order['Total_Amount'],
-                    'Shipping_Address': order['Shipping_Address'],
                     'Order_Date': order['Order_Date'],
+                    'Buyer_Address': buyer_address,
+                    'Payment_Option': payment_opt
                 }
                 order_details.append(order_detail)
 
@@ -107,7 +132,7 @@ def get_to_ship_orders_data(user_id, sort='recent'):
                 order_by = 'DESC'
 
             query_orders = f"""
-            SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Shipping_Address, Order_Date
+            SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Order_Date, AddressID
             FROM seller_order
             WHERE Order_Status = 'pending' AND SellerID = %s
             ORDER BY Order_Date {order_by}
@@ -119,6 +144,8 @@ def get_to_ship_orders_data(user_id, sort='recent'):
                 product_id = order['ProductID']
                 variation_id = order['VariationID']
                 order_date = order['Order_Date']
+                address_id = order.get('AddressID')
+                payment_optionsid = order.get('Payment_OptionsID')
 
                 query_product = """
                 SELECT Product_Name, ImageFileName, Shipping_Fee
@@ -136,6 +163,28 @@ def get_to_ship_orders_data(user_id, sort='recent'):
                 cursor.execute(query_variation, (variation_id,))
                 variation_info = cursor.fetchone()
 
+                buyer_address = ""
+                if address_id:
+                    cursor.execute("""
+                    SELECT Full_Name, Phone_Number, Street, Municipality, Province, Zip_Code
+                    FROM buyer_addresses
+                    WHERE AddressID = %s
+                    """, (address_id,))
+                    addr = cursor.fetchone()
+                    if addr:
+                        buyer_address = f"{addr['Full_Name']}, {addr['Phone_Number']}, {addr['Street']}, {addr['Municipality']}, {addr['Province']} {addr['Zip_Code']}"
+
+                payment_opt = ""
+                if payment_optionsid:
+                    cursor.execute("""
+                    SELECT Payment_Method, Account_Number
+                    FROM buyer_payment_options
+                    WHERE Payment_OptionsID = %s
+                    """, (payment_optionsid,))
+                    payment = cursor.fetchone()
+                    if payment:
+                        payment_opt = f"{payment['Payment_Method']}, {payment['Account_Number']}"
+
                 order_detail = {
                     'ImageFileName': product_info['ImageFileName'],
                     'Product_Name': product_info['Product_Name'],
@@ -145,8 +194,9 @@ def get_to_ship_orders_data(user_id, sort='recent'):
                     'OrderID': order['OrderID'],
                     'Price': variation_info['Price'],
                     'Total_Amount': order['Total_Amount'],
-                    'Shipping_Address': order['Shipping_Address'],
                     'Order_Date': order['Order_Date'],
+                    'Buyer_Address': buyer_address,
+                    'Payment_Option': payment_opt
                 }
                 order_details.append(order_detail)
 
@@ -177,7 +227,7 @@ def shipping_orders():
             order_by = 'ASC' if sort == 'old' else 'DESC'
 
             query_orders = f"""
-            SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Shipping_Address, Shipping_Date, Order_Date
+            SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Shipping_Date, Order_Date, AddressID
             FROM seller_order
             WHERE Order_Status = 'shipping' AND SellerID = %s
             ORDER BY Order_Date {order_by}
@@ -189,6 +239,8 @@ def shipping_orders():
                 product_id = order['ProductID']
                 variation_id = order['VariationID']
                 order_date = order['Order_Date']
+                address_id = order.get('AddressID')
+                payment_optionsid = order.get('Payment_OptionsID')
 
                 query_product = """
                 SELECT Product_Name, ImageFileName, Shipping_Fee
@@ -206,6 +258,28 @@ def shipping_orders():
                 cursor.execute(query_variation, (variation_id,))
                 variation_info = cursor.fetchone()
 
+                buyer_address = ""
+                if address_id:
+                    cursor.execute("""
+                    SELECT Full_Name, Phone_Number, Street, Municipality, Province, Zip_Code
+                    FROM buyer_addresses
+                    WHERE AddressID = %s
+                    """, (address_id,))
+                    addr = cursor.fetchone()
+                    if addr:
+                        buyer_address = f"{addr['Full_Name']}, {addr['Phone_Number']}, {addr['Street']}, {addr['Municipality']}, {addr['Province']} {addr['Zip_Code']}"
+
+                payment_opt = ""
+                if payment_optionsid:
+                    cursor.execute("""
+                    SELECT Payment_Method, Account_Number
+                    FROM buyer_payment_options
+                    WHERE Payment_OptionsID = %s
+                    """, (payment_optionsid,))
+                    payment = cursor.fetchone()
+                    if payment:
+                        payment_opt = f"{payment['Payment_Method']}, {payment['Account_Number']}"
+
                 order_detail = {
                     'ImageFileName': product_info['ImageFileName'],
                     'Product_Name': product_info['Product_Name'],
@@ -215,9 +289,10 @@ def shipping_orders():
                     'OrderID': order['OrderID'],
                     'Price': variation_info['Price'],
                     'Total_Amount': order['Total_Amount'],
-                    'Shipping_Address': order['Shipping_Address'],
                     'Shipping_Date': order['Shipping_Date'],
                     'Order_Date': order['Order_Date'],
+                    'Buyer_Address': buyer_address,
+                    'Payment_Option': payment_opt
                 }
                 order_details.append(order_detail)
 
@@ -240,7 +315,7 @@ def delivered_orders():
             order_by = 'ASC' if sort == 'old' else 'DESC'
 
             query_orders = f"""
-            SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Shipping_Address, Shipping_Date, Order_Date
+            SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Shipping_Date, Order_Date, AddressID
             FROM seller_order
             WHERE Order_Status = 'delivered' AND SellerID = %s
             ORDER BY Order_Date {order_by}
@@ -252,6 +327,8 @@ def delivered_orders():
                 product_id = order['ProductID']
                 variation_id = order['VariationID']
                 order_date = order['Order_Date']
+                address_id = order.get('AddressID')
+                payment_optionsid = order.get('Payment_OptionsID')
 
                 query_product = """
                 SELECT Product_Name, ImageFileName, Shipping_Fee
@@ -269,6 +346,28 @@ def delivered_orders():
                 cursor.execute(query_variation, (variation_id,))
                 variation_info = cursor.fetchone()
 
+                buyer_address = ""
+                if address_id:
+                    cursor.execute("""
+                    SELECT Full_Name, Phone_Number, Street, Municipality, Province, Zip_Code
+                    FROM buyer_addresses
+                    WHERE AddressID = %s
+                    """, (address_id,))
+                    addr = cursor.fetchone()
+                    if addr:
+                        buyer_address = f"{addr['Full_Name']}, {addr['Phone_Number']}, {addr['Street']}, {addr['Municipality']}, {addr['Province']} {addr['Zip_Code']}"
+
+                payment_opt = ""
+                if payment_optionsid:
+                    cursor.execute("""
+                    SELECT Payment_Method, Account_Number
+                    FROM buyer_payment_options
+                    WHERE Payment_OptionsID = %s
+                    """, (payment_optionsid,))
+                    payment = cursor.fetchone()
+                    if payment:
+                        payment_opt = f"{payment['Payment_Method']}, {payment['Account_Number']}"
+
                 order_detail = {
                     'ImageFileName': product_info['ImageFileName'],
                     'Product_Name': product_info['Product_Name'],
@@ -278,9 +377,10 @@ def delivered_orders():
                     'OrderID': order['OrderID'],
                     'Price': variation_info['Price'],
                     'Total_Amount': order['Total_Amount'],
-                    'Shipping_Address': order['Shipping_Address'],
                     'Shipping_Date': order['Shipping_Date'],
                     'Order_Date': order['Order_Date'],
+                    'Buyer_Address': buyer_address,
+                    'Payment_Option': payment_opt
                 }
                 order_details.append(order_detail)
 
@@ -303,7 +403,7 @@ def cancelled_orders():
             order_by = 'ASC' if sort == 'old' else 'DESC'
 
             query_orders = f"""
-            SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Shipping_Address, Order_Date
+            SELECT OrderID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Payment_OptionsID, Order_Date, AddressID
             FROM seller_order
             WHERE Order_Status = 'cancelled' AND SellerID = %s
             ORDER BY Order_Date {order_by}
@@ -315,6 +415,8 @@ def cancelled_orders():
                 product_id = order['ProductID']
                 variation_id = order['VariationID']
                 order_date = order['Order_Date']
+                address_id = order.get('AddressID')
+                payment_optionsid = order.get('Payment_OptionsID')
 
                 query_product = """
                 SELECT Product_Name, ImageFileName, Shipping_Fee
@@ -332,6 +434,28 @@ def cancelled_orders():
                 cursor.execute(query_variation, (variation_id,))
                 variation_info = cursor.fetchone()
 
+                buyer_address = ""
+                if address_id:
+                    cursor.execute("""
+                    SELECT Full_Name, Phone_Number, Street, Municipality, Province, Zip_Code
+                    FROM buyer_addresses
+                    WHERE AddressID = %s
+                    """, (address_id,))
+                    addr = cursor.fetchone()
+                    if addr:
+                        buyer_address = f"{addr['Full_Name']}, {addr['Phone_Number']}, {addr['Street']}, {addr['Municipality']}, {addr['Province']} {addr['Zip_Code']}"
+
+                payment_opt = ""
+                if payment_optionsid:
+                    cursor.execute("""
+                    SELECT Payment_Method, Account_Number
+                    FROM buyer_payment_options
+                    WHERE Payment_OptionsID = %s
+                    """, (payment_optionsid,))
+                    payment = cursor.fetchone()
+                    if payment:
+                        payment_opt = f"{payment['Payment_Method']}, {payment['Account_Number']}"
+
                 order_detail = {
                     'ImageFileName': product_info['ImageFileName'],
                     'Product_Name': product_info['Product_Name'],
@@ -341,8 +465,9 @@ def cancelled_orders():
                     'OrderID': order['OrderID'],
                     'Price': variation_info['Price'],
                     'Total_Amount': order['Total_Amount'],
-                    'Shipping_Address': order['Shipping_Address'],
                     'Order_Date': order['Order_Date'],
+                    'Buyer_Address': buyer_address,
+                    'Payment_Option': payment_opt
                 }
                 order_details.append(order_detail)
 

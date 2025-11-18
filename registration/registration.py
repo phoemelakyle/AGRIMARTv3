@@ -34,10 +34,9 @@ def is_username_unique(table_name, username):
     return existing_username is None
 
 class User:
-    def __init__(self, name, email, address, phone_number, username, password):
+    def __init__(self, name, email, phone_number, username, password):
         self.name = name
         self.email = email
-        self.address = address
         self.phone_number = phone_number
         self.username = username
         self.password = self.hash_password(password)
@@ -67,8 +66,8 @@ class User:
 
         user_id = f"{custom_prefix}{new_numeric_part}"
 
-        sql_query = f"INSERT INTO {table_name} ({table_name}ID, Name, Email, Address, Phone_Number, Username, Password) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        values = (user_id, self.name, self.email, self.address, self.phone_number, self.username, self.password)
+        sql_query = f"INSERT INTO {table_name} ({table_name}ID, Name, Email, Phone_Number, Username, Password) VALUES (%s, %s, %s, %s, %s, %s)"
+        values = (user_id, self.name, self.email, self.phone_number, self.username, self.password)
 
         try:
             cursor.execute(sql_query, values)
@@ -108,7 +107,6 @@ def register_buyer():
     if request.method == 'POST':
         name = request.form['Name']
         email = request.form['Email']
-        # address = request.form['Address']
         phone_number = request.form['Phone_Number']
         username = request.form['Username']
         password = request.form['Password']
@@ -117,7 +115,7 @@ def register_buyer():
         if not is_username_unique("buyer", username) or not is_username_unique("seller", username):
             error = "Username already exists. Please choose a different username."
         else:
-            user = Buyer(name, email, address, phone_number, username, password)
+            user = Buyer(name, email, phone_number, username, password)
             result = user.insert_into_database()
 
             if isinstance(result, str):
@@ -136,7 +134,6 @@ def register_seller():
     if request.method == 'POST':
         name = request.form['Name']
         email = request.form['Email']
-        # address = request.form['Address']
         phone_number = request.form['Phone_Number']
         username = request.form['Username']
         password = request.form['Password']
@@ -145,7 +142,7 @@ def register_seller():
         if not is_username_unique("buyer", username) or not is_username_unique("seller", username):
             error = "Username already exists. Please choose a different username."
         else:
-            user = Seller(name, email, address, phone_number, username, password)
+            user = Seller(name, email, phone_number, username, password)
             result = user.insert_into_database()
 
             if isinstance(result, str):

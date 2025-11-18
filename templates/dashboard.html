@@ -7,6 +7,7 @@
     <title>Agrimart - Homepage Seller</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_buyer.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <body>
  
     <!-- Header -->
@@ -41,7 +42,7 @@
     <div class="user-dropdown" id="userDropdown">
       <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
       <div class="user-menu" id="userMenu">
-     <a href="{{ url_for('homepage_seller.seller_account') }}" class="account-btn">My Account</a>
+     <a href="{{ url_for('seller_account.seller_account') }}" class="account-btn">My Account</a>
         <form action="{{ url_for('homepage_seller.logout') }}" method="post">
           <button class="logout-btn" type="submit">Logout</button>
         </form>
@@ -70,11 +71,9 @@
         </form>
       </li>
       <li>
-        <form action="/add_product" method="get">
-          <button type="submit" class="status-item">
-            <i class="fas fa-plus-circle"></i> Add Product
-          </button>
-        </form>
+        <button type="button" class="status-item" id="addProductBtn">
+                            <i class="fas fa-plus-circle"></i> Add Product
+        </button>
       </li>
       <li>
         <form action="/dashboard" method="get">
@@ -183,6 +182,27 @@
           }
         });
       });
+
+            document.getElementById("addProductBtn").addEventListener("click", function () {
+    fetch("/check_payment_options")
+        .then(response => response.json())
+        .then(data => {
+            if (data.hasPayment) {
+                window.location.href = "/add_product";
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Set Payment Options First',
+                    text: 'Before adding a product, please set your payment options.',
+                    confirmButtonText: 'Go to Payment Options'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/payment_options"; 
+                    }
+                });
+            }
+        });
+});
     </script>
  
    

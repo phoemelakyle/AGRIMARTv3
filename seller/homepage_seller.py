@@ -248,10 +248,6 @@ def logout():
     session.pop('user_id', None)
     return redirect('/login')
 
-@homepage_seller_app.route('/seller_account')
-def seller_account():
-    return render_template('seller_account.html')
-
 @homepage_seller_app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html')
@@ -274,3 +270,19 @@ def update_product_address(product_id, address_id):
     conn.close()
 
     return jsonify({"success": True})
+
+@homepage_seller_app.route('/check_payment_options')
+def check_payment_options():
+    seller_id = session.get('user_id')
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM payment_options WHERE SellerID = %s", (seller_id,))
+    result = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    if len(result) > 0:
+        return jsonify({"hasPayment": True})
+    else:
+        return jsonify({"hasPayment": False})

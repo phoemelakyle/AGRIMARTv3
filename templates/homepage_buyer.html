@@ -48,7 +48,7 @@
         <div class="user-dropdown" id="userDropdown">
             <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
             <div class="user-menu" id="userMenu">
-              <a href="{{ url_for('homepage_buyer.account') }}" class="account-btn">My Account</a>
+              <a href="{{ url_for('buyer_account.buyer_account') }}" class="account-btn">My Account</a>
               <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
                 <button class="logout-btn" type="submit">Logout</button>
               </form>
@@ -107,8 +107,17 @@
         <div class="column column-right">
             <h4>PRODUCTS</h4>
              <div class="search-filter-container">
-        <input type="text" class="product-search" placeholder="Search products...">
+            <input type="text" class="product-search" placeholder="Search products...">
+        </div>
+
+      <div class="buyer-default-address">
+        {% if default_address %}
+          <p><strong>Your default address:</strong> {{ default_address.Municipality }}, {{ default_address.Province }}</p>
+        {% else %}
+          <p><strong>Your default address:</strong> Not set</p>
+        {% endif %}
       </div>
+
             <div class="product-container">
             {% if product_data %}
                 {% for product in product_data %}

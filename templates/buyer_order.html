@@ -134,9 +134,10 @@
                     <th>Qty</th>
                     <th>Variation</th>
                     <th>Price</th>
-                    <th>Shipping</th>
+                    <th>Shipping Fee</th>
+                    <th>Buyer Address</th>
+                    <th>Payment Method</th>
                     <th>Total</th>
-                    <th>Address</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
@@ -154,8 +155,9 @@
                     <td>{{ order_detail['Unit'] }}</td>
                     <td>P{{ order_detail['Price'] }}</td>
                     <td>P{{ order_detail['Shipping_Fee'] }}</td>
+                    <td>{{ order_detail['Buyer_Address'] }}</td>
+                    <td>{{ order_detail['Payment_Option'] }}</td>
                     <td>P{{ order_detail['Total_Amount'] }}</td>
-                    <td>{{ order_detail['Shipping_Address'] }}</td>
                     
                     <td>
                       {% if order_type == 'to_pay' %}

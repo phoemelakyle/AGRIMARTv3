@@ -123,8 +123,8 @@ class Product:
 def add_product():
     from app import app
     user_id = session.get('user_id')
-    if 'user_id' not in session:
-        session['user_id'] = user_id
+    if not user_id:
+        return redirect('/login') 
     if request.method == 'POST':
         productname = request.form['Product_Name']
         weight = request.form['Weight']
@@ -152,7 +152,23 @@ def add_product():
                 quantity = int(quantity) if quantity else None
                 product.add_variation(price, quantity, unit)
 
-            address_id = request.form.get('AddressID') 
+            # Get selected address
+            address_id = request.form.get('AddressID')
+
+            # If the user did NOT change the address, AddressID will be empty → use default
+            if not address_id or address_id == "":
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT AddressID FROM seller_addresses
+                    WHERE SellerID = %s AND isDefault = 1
+                """, (session['user_id'],))
+                default = cursor.fetchone()
+                cursor.close()
+                conn.close()
+
+                if default:
+                    address_id = default[0]   # use default AddressID
             success = product.insert_into_database(session['user_id'], address_id)
 
             if success:

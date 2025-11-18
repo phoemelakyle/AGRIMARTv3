@@ -59,31 +59,46 @@ def fetch_selected_items_details(selected_items):
         product_total = (item[5] * item[7]) + (item[4] * item[5]) + 10
         total_payment += product_total
 
-    payment_options = fetch_payment_options(selected_items_details)
+    buyer_id = session.get('user_id') 
+    payment_options = fetch_payment_options(selected_items_details, buyer_id)
 
     cursor.close()
     conn.close()
 
     return selected_items_details, payment_options, total_payment
 
-def fetch_payment_options(selected_items_details):
+def fetch_payment_options(selected_items_details, buyer_id):
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)  # easier to work with column names
 
+    # Get unique seller IDs from selected items
+    seller_ids = list(set(item[-1] for item in selected_items_details))
+
+    # Fetch seller payment options
     payment_query = """
         SELECT po.sellerid, po.payment_optionsid, p.product_name, pv.variationid, po.payment_method, po.account_number, pv.unit
         FROM payment_options po
         JOIN product p ON po.sellerid = p.SellerID
         JOIN product_variation pv ON p.ProductID = pv.ProductID
         WHERE po.sellerid IN ({})
-    """.format(', '.join(['%s'] * len(set(item[-1] for item in selected_items_details))))
+    """.format(', '.join(['%s'] * len(seller_ids)))
 
-    cursor.execute(payment_query, tuple(set(item[-1] for item in selected_items_details)))
+    cursor.execute(payment_query, tuple(seller_ids))
     payment_options = cursor.fetchall()
+
+    # Fetch buyer payment methods
+    buyer_query = """
+        SELECT payment_method
+        FROM buyer_payment_options
+        WHERE BuyerID = %s
+    """
+    cursor.execute(buyer_query, (buyer_id,))
+    buyer_methods = {row['payment_method'] for row in cursor.fetchall()}
 
     cursor.close()
     conn.close()
 
+    # Combine options only if seller's method matches buyer's method
     combined_options = {}
     for item in selected_items_details:
         variation_id = item[1]
@@ -91,21 +106,40 @@ def fetch_payment_options(selected_items_details):
         if variation_id not in combined_options:
             combined_options[variation_id] = {'product_names': set(), 'options': []}
 
-        if item[2] not in combined_options[variation_id]['product_names']:
-            combined_options[variation_id]['product_names'].add(item[2])
+        combined_options[variation_id]['product_names'].add(item[2])
 
         for option in payment_options:
-            if option[0] == item[-1] and option[3] == variation_id:  
-                combined_options[variation_id]['options'].append({
-                    'payment_optionsid': option[1],  
-                    'product_name': option[2],
-                    'variation_id': option[3],
-                    'unit': option[6],
-                    'payment_method': option[4],
-                    'account_number': option[5]
-                })
+            if option['sellerid'] == item[-1] and option['variationid'] == variation_id:
+                if option['payment_method'] in buyer_methods: 
+                    combined_options[variation_id]['options'].append({
+                        'payment_optionsid': option['payment_optionsid'],
+                        'product_name': option['product_name'],
+                        'variation_id': option['variationid'],
+                        'unit': option['unit'],
+                        'payment_method': option['payment_method'],
+                        'account_number': option['account_number']
+                    })
 
     return combined_options
+
+def fetch_default_address(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    query = """
+        SELECT AddressID, Full_Name, Phone_Number, Street, Municipality, Province, Region, Zip_Code
+        FROM buyer_addresses
+        WHERE BuyerID = %s AND isDefault = 1
+        LIMIT 1;
+    """
+    cursor.execute(query, (user_id,))
+    default_address = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return default_address
+
 
 def generate_order_id_for_buyer():
     conn = get_db_connection()
@@ -150,13 +184,13 @@ def generate_order_date():
 
     return order_date
 
-def insert_into_buyer_order(user_id, item_id, shipping_address, product_total, payment_optionsid):
+def insert_into_buyer_order(user_id, item_id, product_total, payment_optionsid, address_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
     order_query = """
         INSERT INTO buyer_order
-        (OrderID, BuyerID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Order_Status, Shipping_Address, Shipping_Date, Payment_OptionsID)
+        (OrderID, BuyerID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Order_Status, Shipping_Date, Payment_OptionsID, AddressID)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
@@ -169,7 +203,7 @@ def insert_into_buyer_order(user_id, item_id, shipping_address, product_total, p
 
     quantity_value = quantity[0]
 
-    order_values = (order_id, user_id, product_id, variation_id, quantity_value, product_total, order_date, 'waiting for payment', shipping_address, 'waiting for payment', payment_optionsid)
+    order_values = (order_id, user_id, product_id, variation_id, quantity_value, product_total, order_date, 'waiting for payment', 'waiting for payment', payment_optionsid, address_id)
 
     cursor.execute(order_query, order_values)
     conn.commit()
@@ -177,13 +211,13 @@ def insert_into_buyer_order(user_id, item_id, shipping_address, product_total, p
     cursor.close()
     conn.close()
 
-def insert_into_seller_order(seller_id, user_id, item_id, shipping_address, product_total, payment_optionsid):
+def insert_into_seller_order(seller_id, user_id, item_id, product_total, payment_optionsid, address_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
     order_query = """
         INSERT INTO seller_order
-        (OrderID, SellerID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Order_Status, Shipping_Address, Shipping_Date, Payment_OptionsID)
+        (OrderID, SellerID, ProductID, VariationID, Quantity, Total_Amount, Order_Date, Order_Status, Shipping_Date, Payment_OptionsID, AddressID)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
@@ -196,7 +230,7 @@ def insert_into_seller_order(seller_id, user_id, item_id, shipping_address, prod
 
     quantity_value = quantity[0]
 
-    order_values = (order_id, seller_id, product_id, variation_id, quantity_value, product_total, order_date, 'waiting for payment', shipping_address, 'waiting for payment', payment_optionsid)
+    order_values = (order_id, seller_id, product_id, variation_id, quantity_value, product_total, order_date, 'waiting for payment', 'waiting for payment', payment_optionsid, address_id)
 
     cursor.execute(order_query, order_values)
     conn.commit()
@@ -216,6 +250,51 @@ def get_quantity_from_cart(user_id, product_id, variation_id):
     conn.close()
 
     return quantity
+
+@cart_app.route('/get_addresses')
+def get_addresses():
+    user_id = session.get("user_id")
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    query = """
+        SELECT AddressID, Full_Name, Phone_Number, Street, Municipality,
+               Province, Region, Zip_Code
+        FROM buyer_addresses
+        WHERE BuyerID = %s
+    """
+    cursor.execute(query, (user_id,))
+    addresses = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify(addresses)
+
+@cart_app.route('/select_address/<address_id>')
+def select_address(address_id):
+    user_id = session.get("user_id")
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Clear old default
+    cursor.execute("""UPDATE buyer_addresses
+                      SET isDefault = 0
+                      WHERE BuyerID = %s""", (user_id,))
+
+    # Set new default
+    cursor.execute("""UPDATE buyer_addresses
+                      SET isDefault = 1
+                      WHERE AddressID = %s""", (address_id,))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({"success": True})
+
 
 @cart_app.route('/cart', methods=['GET', 'POST'])
 def cart():
@@ -272,21 +351,33 @@ def checkout():
 
     if selected_items:
         selected_items_details, payment_options, total_payment = fetch_selected_items_details(selected_items)
-        return render_template('checkout.html', selected_items_details=selected_items_details, payment_options=payment_options, total_payment=total_payment)
 
-    else:
-        message = "Please select items first."
-        return render_template('checkout.html', message=message)
+        user_id = session.get('user_id')
+        default_address = fetch_default_address(user_id)
+
+    return render_template(
+        'checkout.html',
+        selected_items_details=selected_items_details,
+        payment_options=payment_options,
+        total_payment=total_payment,
+        default_address=default_address
+    )
+
 
 @cart_app.route('/process_checkout', methods=['POST'])
 def process_checkout():
     try:
         user_id = session.get('user_id')
-        shipping_address = request.form.get('shipping_address')
         selected_items = request.form.getlist('selected_items')
         product_totals = request.form.getlist('product_total[]')
         payment_options_json = request.form.get('payment_option_id')
         payment_options = json.loads(payment_options_json)
+
+        default_address = fetch_default_address(user_id)
+        address_id = default_address["AddressID"] if default_address else None
+
+        if not address_id:
+            return render_template('checkout.html', message="Please select an address before checking out.")
 
         if selected_items and product_totals and payment_options:
             for item_id, product_total in zip(selected_items, product_totals):
@@ -295,9 +386,9 @@ def process_checkout():
                 cart_quantity = eval(item_id)[5]
                 payment_option_id = payment_options.get(variation_id, '')
 
-                insert_into_buyer_order(user_id, item_id, shipping_address, product_total, payment_option_id)
+                insert_into_buyer_order(user_id, item_id, product_total, payment_option_id, address_id)
 
-                insert_into_seller_order(seller_id, user_id, item_id, shipping_address, product_total, payment_option_id)
+                insert_into_seller_order(seller_id, user_id, item_id, product_total, payment_option_id, address_id)
 
                 delete_item_from_cart(user_id, item_id)
                 decrease_quantity(variation_id, cart_quantity)

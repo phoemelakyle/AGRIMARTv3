@@ -61,9 +61,6 @@
   </div>
 </nav>
 
-
-
-
 <div class="container">
   <!-- Sidebar -->
   <aside class="sidebar">
@@ -151,10 +148,35 @@
 
 
                     <div class="shipping-section">
-                        <label for="shipping-address">Shipping Address:</label>
-                        <input type="text" id="shipping-address" name="shipping_address" required>
+                        <h3>Shipping Address</h3>
+
+                        {% if default_address %}
+                            <div class="address-box">
+                                <p><strong>{{ default_address.Full_Name }}</strong></p>
+                                <p>{{ default_address.Phone_Number }}</p>
+                                <p>{{ default_address.Street }}, {{ default_address.Municipality }}</p>
+                                <p>{{ default_address.Province }}, {{ default_address.Region }}</p>
+                                <p>{{ default_address.Zip_Code }}</p>
+                            </div>
+                        {% else %}
+                            <p>No default address found. Please add one in your profile.</p>
+                        {% endif %}
+                        <button type="button" class="change-address-btn" onclick="openAddressPopup()">
+                            Change Address
+                        </button>
                     </div>
 
+                    <div id="addressPopup" class="popup-overlay">
+                        <div class="popup-box">
+                            <h3>Select Address</h3>
+
+                            <div id="addressList">
+                                <!-- Ajax-loaded addresses appear here -->
+                            </div>
+
+                            <button class="close-btn" onclick="closeAddressPopup()">Close</button>
+                        </div>
+                    </div>
 
                     <div class="total-payment-container">
                         <h3>Total Payment: ₱{{ total_payment }}</h3>
@@ -181,6 +203,43 @@
             selectedPaymentOptions[variationId] = paymentOptionsId;
    
             document.getElementById('payment_option_id').value = JSON.stringify(selectedPaymentOptions);
+        }
+
+        function openAddressPopup() {
+        fetch("/get_addresses")
+            .then(response => response.json())
+            .then(addresses => {
+                let html = "";
+
+                addresses.forEach(addr => {
+                    html += `
+                        <div class="address-choice" onclick="selectAddress('${addr.AddressID}')">
+                            <p><strong>${addr.Full_Name}</strong></p>
+                            <p>${addr.Phone_Number}</p>
+                            <p>${addr.Street}, ${addr.Municipality}</p>
+                            <p>${addr.Province}, ${addr.Region}</p>
+                            <p>${addr.Zip_Code}</p>
+                        </div>
+                    `;
+                });
+
+                document.getElementById("addressList").innerHTML = html;
+                document.getElementById("addressPopup").style.display = "flex";
+            });
+        }
+
+        function closeAddressPopup() {
+            document.getElementById("addressPopup").style.display = "none";
+        }
+
+        function selectAddress(addressID) {
+            fetch("/select_address/" + addressID)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
         }
     </script>    
 </body>

@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="../static/css/seller_orders.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_buyer.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
@@ -66,9 +67,9 @@
           </form>
         </li>
         <li>
-          <form action="/add_product" method="get">
-            <button type="submit" class="status-item"><i class="fas fa-plus-circle"></i> Add Product</button>
-          </form>
+          <button type="button" class="status-item" id="addProductBtn">
+              <i class="fas fa-plus-circle"></i> Add Product
+          </button>
         </li>
         <li>
         <form action="/dashboard" method="get">
@@ -143,9 +144,10 @@
                 <th>Qty</th>
                 <th>Variation</th>
                 <th>Price</th>
-                <th>Shipping</th>
+                <th>Shipping Fee</th>
+                <th>Buyer Address</th>
+                <th>Payment Method</th>
                 <th>Total</th>
-                <th>Address</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
@@ -161,13 +163,16 @@
                 <td>{{ order_detail['Unit'] }}</td>
                 <td>P{{ order_detail['Price'] }}</td>
                 <td>P{{ order_detail['Shipping_Fee'] }}</td>
+                <td>{{ order_detail['Buyer_Address'] }}</td>
+                <td>{{ order_detail['Payment_Option'] }}</td>
                 <td>P{{ order_detail['Total_Amount'] }}</td>
-                <td>{{ order_detail['Shipping_Address'] }}</td>
                 <td>
                   {% if order_type == 'unpaid' %}
                     <span class="status unpaid">Unpaid</span>
                   {% elif order_type == 'to_ship' %}
                     <span class="status to-ship">To Ship</span>
+                  {% elif order_type == 'shipping' %}
+                    <span class="status shipping">Shipping</span>
                   {% elif order_type == 'delivered' %}
                     <span class="status completed">Completed</span>
                   {% elif order_type == 'cancelled' %}
@@ -299,6 +304,49 @@
       sessionStorage.removeItem('hasReloaded');
     }
   });
+
+  
+            document.getElementById("addProductBtn").addEventListener("click", function () {
+    fetch("/check_payment_options")
+        .then(response => response.json())
+        .then(data => {
+            if (data.hasPayment) {
+                window.location.href = "/add_product";
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Set Payment Options First',
+                    text: 'Before adding a product, please set your payment options.',
+                    confirmButtonText: 'Go to Payment Options'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/payment_options"; 
+                    }
+                });
+            }
+        });
+});
+
+      document.getElementById("addProductBtn").addEventListener("click", function () {
+    fetch("/check_payment_options")
+        .then(response => response.json())
+        .then(data => {
+            if (data.hasPayment) {
+                window.location.href = "/add_product";
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Set Payment Options First',
+                    text: 'Before adding a product, please set your payment options.',
+                    confirmButtonText: 'Go to Payment Options'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/payment_options"; 
+                    }
+                });
+            }
+        });
+});
 </script>
 
 

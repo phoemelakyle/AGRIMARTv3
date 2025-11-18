@@ -7,6 +7,7 @@
     <title>Agrimart - Add Product</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_buyer.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
   
@@ -71,11 +72,9 @@
                         </form>
                     </li>
                     <li>
-                        <form action="/add_product" method="get">
-                            <button type="submit" class="status-item">
-                                <i class="fas fa-plus-circle"></i> Add Product
-                            </button>
-                        </form>
+                        <button type="button" class="status-item" id="addProductBtn">
+                            <i class="fas fa-plus-circle"></i> Add Product
+                        </button>
                     </li>
                    <li>
         <form action="/dashboard" method="get">
@@ -366,6 +365,27 @@ btn.onclick = function() {
 document.getElementById("addAddressBtn").onclick = function() {
     window.location.href = "{{ url_for('seller_address.seller_address') }}";
 };
+
+      document.getElementById("addProductBtn").addEventListener("click", function () {
+    fetch("/check_payment_options")
+        .then(response => response.json())
+        .then(data => {
+            if (data.hasPayment) {
+                window.location.href = "/add_product";
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Set Payment Options First',
+                    text: 'Before adding a product, please set your payment options.',
+                    confirmButtonText: 'Go to Payment Options'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/payment_options"; 
+                    }
+                });
+            }
+        });
+});
 
 </script>
    
