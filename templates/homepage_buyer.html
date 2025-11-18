@@ -33,9 +33,15 @@
     <ul class="breadcrumb">
       <li><a href="/homepage_buyer"> <i class="fas fa-home"></i></a></li>
       <li>›</li>
-      <li>
-        <a href="/homepage_buyer" class="button">All Products</a>
-      </li>
+       <li>
+            <a href="/homepage_buyer" id="category-link" class="button">
+    {% if selected_category == 'all' or not selected_category %}
+        All Products
+    {% else %}
+        {{ selected_category|capitalize }}
+    {% endif %}
+</a>
+        </li>
      
     </ul>
    
@@ -285,6 +291,17 @@
         output.value = this.value;
     });
 });
+
+// Update breadcrumb link only when filter form is submitted
+    const filterForm = document.getElementById('filterForm');
+    const categoryLink = document.getElementById('category-link');
+
+    filterForm.addEventListener('submit', function () {
+        const category = selectedInput.value || 'all';
+        categoryLink.textContent = category === 'all' ? 'All Products' : category;
+        categoryLink.href = `/homepage_buyer?category=${encodeURIComponent(category)}`;
+    });
+
 </script>
 
 </body>
