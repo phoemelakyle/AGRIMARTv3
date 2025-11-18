@@ -19,6 +19,7 @@ from seller.seller_address import seller_address_app
 from buyer.buyer_address import buyer_address_app
 from seller.seller_account import seller_account_app
 from buyer.buyer_account import buyer_account_app
+from buyer.buyer_payment_options import buyer_payment_options_app
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -69,6 +70,7 @@ app.register_blueprint(seller_address_app)
 app.register_blueprint(buyer_address_app)
 app.register_blueprint(seller_account_app)
 app.register_blueprint(buyer_account_app)
+app.register_blueprint(buyer_payment_options_app)
 
 from reset_password.routes import reset_app
 app.register_blueprint(reset_app)

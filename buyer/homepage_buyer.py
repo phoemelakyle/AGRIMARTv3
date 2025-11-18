@@ -115,9 +115,6 @@ def logout():
     session.pop('user_id', None)
     return redirect('/login')
 
-@homepage_buyer_app.route('/buyer_payment')
-def buyer_payment():
-    return render_template('buyer_payment.html')
 
 @homepage_buyer_app.route('/filter', methods=['GET'])
 def filter_products():
