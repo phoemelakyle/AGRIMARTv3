@@ -196,7 +196,9 @@ def add_product():
 
 @add_product_app.route('/get_seller_addresses', methods=['GET'])
 def get_seller_addresses():
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""

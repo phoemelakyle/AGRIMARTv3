@@ -91,14 +91,14 @@
             <h1>ADD PRODUCT</h1>
 
             <!-- Form Starts Here -->
-            <form action="/add_product" method="POST" enctype="multipart/form-data">
+            <form id="addProductForm" action="/add_product" method="POST" enctype="multipart/form-data">
                 <div class="variation-table">
                     <table>
                         <thead>
                             <tr>
                                 <th>Image</th>
                                 <th>Product</th>
-                                <th>Weight (per piece)</th>
+                                <th>Packaging Weight (kg)</th>
                                 <th>Packaging Length (cm)</th>
                                 <th>Packaging Width (cm)</th>
                                 <th>Packaging Height (cm)</th>
@@ -177,78 +177,7 @@
             </form>
         </div>
     </div>
-
-    <!-- Scripts -->
-    <script>
-        function previewImage(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById("imagePreview");
-            const previewContainer = document.getElementById("previewContainer");
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function () {
-                    preview.src = reader.result;
-                    preview.style.display = "block";
-                    previewContainer.style.display = "block";
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function addVariation() {
-            var container = document.getElementById("variations-container");
-            var newVariation = document.createElement("div");
-            newVariation.innerHTML = `
-            <div class="variations-container">
-                <div class="row">
-                    <div class="col1">
-                        <label for="Unit">Unit:</label>
-                    </div>
-                    <div class="col2">
-                        <input type="text" name="Unit">
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col1">
-                        <label for="Price">Price:</label>
-                    </div>
-                    <div class="col2">
-                        <input type="text" name="Price">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col1">
-                        <label for="Quantity">Quantity:</label>
-                    </div>
-                    <div class="col2">
-                        <input type="text" name="Quantity">
-                    </div>
-                </div>
-            </div>
-            `;
-            container.appendChild(newVariation);
-        }
-
-        function calculateShippingFee() {
-            var weight = parseFloat(document.getElementsByName("Weight")[0].value) || 0;
-            var length = parseFloat(document.getElementsByName("Packaging_Length")[0].value) || 0;
-            var width = parseFloat(document.getElementsByName("Packaging_Width")[0].value) || 0;
-            var height = parseFloat(document.getElementsByName("Packaging_Height")[0].value) || 0;
-
-            var volumetricWeight = (length * width * height) / 5000;
-            var shippingFee = Math.max(weight, volumetricWeight) * 50;
-            document.getElementById("shipping-fee").value = shippingFee.toFixed(2);
-        }
-
-        document.querySelectorAll("input[name='Weight'], input[name='Packaging_Length'], input[name='Packaging_Width'], input[name='Packaging_Height']")
-            .forEach(input => input.addEventListener("input", calculateShippingFee));
-
-        window.onload = calculateShippingFee;
-    </script>
-
-    <!-- Footer -->
+        <!-- Footer -->
     <footer class="main-footer">
         <div class="footer-content">
             <div class="footer-about">
@@ -297,7 +226,76 @@
             </div>
         </div>
     </footer>
+
+    <!-- Scripts -->
     <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById("imagePreview");
+            const previewContainer = document.getElementById("previewContainer");
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function () {
+                    preview.src = reader.result;
+                    preview.style.display = "block";
+                    previewContainer.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addVariation() {
+            var container = document.getElementById("variations-container");
+            var newVariation = document.createElement("div");
+            newVariation.innerHTML = `
+            <div class="variations-container">
+                <div class="row">
+                    <div class="col1">
+                        <label for="Unit">Unit: (PLEASE INCLUDE IF KG OR G)</label>
+                    </div>
+                    <div class="col2">
+                        <input type="text" name="Unit" required>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col1">
+                        <label for="Price">Price:</label>
+                    </div>
+                    <div class="col2">
+                        <input type="text" name="Price" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col1">
+                        <label for="Quantity">Quantity:</label>
+                    </div>
+                    <div class="col2">
+                        <input type="text" name="Quantity" required>
+                    </div>
+                </div>
+            </div>
+            `;
+            container.appendChild(newVariation);
+        }
+
+        function calculateShippingFee() {
+            var weight = parseFloat(document.getElementsByName("Weight")[0].value) || 0;
+            var length = parseFloat(document.getElementsByName("Packaging_Length")[0].value) || 0;
+            var width = parseFloat(document.getElementsByName("Packaging_Width")[0].value) || 0;
+            var height = parseFloat(document.getElementsByName("Packaging_Height")[0].value) || 0;
+
+            var volumetricWeight = (length * width * height) / 5000;
+            var shippingFee = Math.max(weight, volumetricWeight) * 20;
+            document.getElementById("shipping-fee").value = shippingFee.toFixed(2);
+        }
+
+        document.querySelectorAll("input[name='Weight'], input[name='Packaging_Length'], input[name='Packaging_Width'], input[name='Packaging_Height']")
+            .forEach(input => input.addEventListener("input", calculateShippingFee));
+
+        window.onload = calculateShippingFee;
+
         document.addEventListener('DOMContentLoaded', function () {
           const userIcon = document.getElementById('userIcon');
           const userMenu = document.getElementById('userMenu');
@@ -385,6 +383,20 @@ document.getElementById("addAddressBtn").onclick = function() {
                 });
             }
         });
+});
+
+document.getElementById("addProductForm").addEventListener("submit", function(e) {
+    var variationsContainer = document.getElementById("variations-container");
+    var variations = variationsContainer.getElementsByClassName("variations-container");
+
+    if (variations.length === 0) {
+        e.preventDefault(); 
+        Swal.fire({
+            icon: 'warning',
+            title: 'No variations added',
+            text: 'Please add at least one product variation before submitting.'
+        });
+    }
 });
 
 </script>

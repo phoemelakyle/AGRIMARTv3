@@ -254,6 +254,8 @@ def get_quantity_from_cart(user_id, product_id, variation_id):
 @cart_app.route('/get_addresses')
 def get_addresses():
     user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -275,6 +277,8 @@ def get_addresses():
 @cart_app.route('/select_address/<address_id>')
 def select_address(address_id):
     user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -308,6 +312,9 @@ def cart():
 # CART QUANTITY
 @cart_app.route('/update_quantity', methods=['POST'])
 def update_quantity():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     try:
         item_id = request.json.get('item_id')
         new_quantity = int(request.json.get('new_quantity'))
@@ -328,6 +335,9 @@ def update_quantity():
    
 @cart_app.route('/remove_item', methods=['POST'])
 def remove_item():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     try:
         item_id = request.json.get('item_id')
 
@@ -347,6 +357,9 @@ def remove_item():
 
 @cart_app.route('/checkout', methods=['POST'])
 def checkout():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     selected_items = request.form.getlist('selected_items')
 
     if selected_items:
@@ -366,6 +379,9 @@ def checkout():
 
 @cart_app.route('/process_checkout', methods=['POST'])
 def process_checkout():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     try:
         user_id = session.get('user_id')
         selected_items = request.form.getlist('selected_items')

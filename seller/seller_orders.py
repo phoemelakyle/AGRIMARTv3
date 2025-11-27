@@ -113,6 +113,8 @@ def get_unpaid_orders_data(user_id, sort='recent'):
 @seller_orders_app.route('/unpaid_orders', methods=['POST','GET'])
 def unpaid_orders():
     user_id = session.get('user_id')
+    if not user_id:
+        return redirect('/login') 
     sort = request.args.get('sort', 'recent')
     order_details = get_unpaid_orders_data(user_id, sort)
 
@@ -121,6 +123,7 @@ def unpaid_orders():
 
 def get_to_ship_orders_data(user_id, sort='recent'):
     order_details = []
+    
 
     try:
         with get_db_connection() as connection:
@@ -207,7 +210,9 @@ def get_to_ship_orders_data(user_id, sort='recent'):
 
 @seller_orders_app.route('/to_ship_orders', methods=['POST','GET'])
 def to_ship_orders():
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     sort = request.args.get('sort', 'recent')
     order_details = get_to_ship_orders_data(user_id, sort)
 
@@ -216,7 +221,9 @@ def to_ship_orders():
 
 @seller_orders_app.route('/shipping_orders', methods=['POST','GET'])
 def shipping_orders():
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     order_details = []  
     sort = request.args.get('sort', 'recent')
 
@@ -304,7 +311,9 @@ def shipping_orders():
 
 @seller_orders_app.route('/delivered_orders', methods=['POST','GET'])
 def delivered_orders():
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     order_details = []  
     sort = request.args.get('sort', 'recent')
 
@@ -392,7 +401,9 @@ def delivered_orders():
 
 @seller_orders_app.route('/cancelled_orders', methods=['POST','GET'])
 def cancelled_orders():
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     order_details = []  
     sort = request.args.get('sort', 'recent')
 
@@ -479,7 +490,9 @@ def cancelled_orders():
 
 @seller_orders_app.route('/ship_now/<order_id>', methods=['POST', 'GET'])
 def ship_now(order_id):
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
    
     order_details = get_to_ship_orders_data(user_id)
 
@@ -515,7 +528,9 @@ def ship_now(order_id):
 
 @seller_orders_app.route('/cancel_unpaid_order/<order_id>', methods=['POST', 'GET'])
 def cancel_unpaid_order(order_id):
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
    
     order_details = get_unpaid_orders_data(user_id)
 
@@ -569,7 +584,9 @@ def cancel_unpaid_order(order_id):
 
 @seller_orders_app.route('/cancel_to_ship_order/<order_id>', methods=['POST', 'GET'])
 def cancel_to_ship_order(order_id):
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
    
     order_details = get_to_ship_orders_data(user_id)
 

@@ -181,9 +181,4 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error:', error);
         });
     });
-
-    document.addEventListener('click', function (e) {
-        if (e.target && e.target.id === 'quantity-minus') adjustQuantity(-1);
-        if (e.target && e.target.id === 'quantity-plus') adjustQuantity(1);
-    });
 });

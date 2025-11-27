@@ -154,6 +154,9 @@ def fetch_address_by_id(address_id):
 
 @homepage_seller_app.route('/delete_product/<string:product_id>', methods=['POST'])
 def delete_product(product_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -179,15 +182,18 @@ def delete_product(product_id):
 
 @homepage_seller_app.route('/homepage_seller')
 def homepage_seller():    
-    user_id = session.get('user_id')
-    if 'user_id' not in session:
-        session['user_id'] = user_id
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     print(user_id)
     products = fetch_products_for_seller(user_id)
     return render_template('homepage_seller.html', products=products)
 
 @homepage_seller_app.route('/edit_product/<string:product_id>', methods=['GET', 'POST'])
 def edit_product(product_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     from app import app
     product = fetch_product_details(product_id)
     variations = fetch_variations_for_product(product_id)
@@ -250,15 +256,24 @@ def logout():
 
 @homepage_seller_app.route('/dashboard')
 def dashboard():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     return render_template('dashboard.html')
 
 @homepage_seller_app.route('/edit_product/<string:product_id>')
 def variations(product_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     variations = fetch_variations_for_product(product_id)
     return render_template('edit_product.html', variations=variations, product_id=product_id)
 
 @homepage_seller_app.route('/update_product_address/<string:product_id>/<string:address_id>', methods=['POST'])
 def update_product_address(product_id, address_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -274,6 +289,8 @@ def update_product_address(product_id, address_id):
 @homepage_seller_app.route('/check_payment_options')
 def check_payment_options():
     seller_id = session.get('user_id')
+    if not seller_id:
+        return redirect('/login') 
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)

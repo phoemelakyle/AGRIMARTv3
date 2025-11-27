@@ -37,6 +37,9 @@ def haversine(lat1, lon1, lat2, lon2):
 
 @homepage_buyer_app.route('/homepage_buyer', methods=['GET', 'POST'])
 def homepage_buyer():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     product_data = []
     categories = []
     default_range_km = 25  # default slider value
@@ -118,6 +121,9 @@ def logout():
 
 @homepage_buyer_app.route('/filter', methods=['GET'])
 def filter_products():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     product_data = []
     selected_km = int(request.args.get("range_km", 25))
     selected_category = request.args.get("category", "all")
@@ -290,7 +296,9 @@ def get_to_pay_orders_data(user_id, sort='recent'):
 
 @homepage_buyer_app.route('/to-pay-orders', methods=['POST','GET'])
 def to_pay_orders():
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     sort = request.args.get('sort', 'recent')
     order_details, categories = get_to_pay_orders_data(user_id, sort)
 
@@ -299,7 +307,9 @@ def to_pay_orders():
 
 @homepage_buyer_app.route('/pay-now/<order_id>', methods=['POST'])
 def pay_now(order_id):
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
 
     order_details, categories = get_to_pay_orders_data(user_id)
    
@@ -333,7 +343,9 @@ def pay_now(order_id):
 
 @homepage_buyer_app.route('/to-ship-orders', methods=['POST','GET'])
 def to_ship_orders():
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     order_details = []  
 
     sort = request.args.get('sort', 'recent')
@@ -514,7 +526,9 @@ def get_shipping_orders_data(user_id, sort='recent'):
 
 @homepage_buyer_app.route('/shipping-orders', methods=['POST','GET'])
 def shipping_orders():
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     sort = request.args.get('sort', 'recent')
     order_details, categories = get_shipping_orders_data(user_id, sort)
 
@@ -523,7 +537,9 @@ def shipping_orders():
 
 @homepage_buyer_app.route('/order-received/<order_id>', methods=['POST', 'GET'])
 def order_received(order_id):
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
    
     order_details, categories = get_shipping_orders_data(user_id)
     try:
@@ -553,7 +569,9 @@ def order_received(order_id):
 
 @homepage_buyer_app.route('/delivered-orders', methods=['POST','GET'])
 def delivered_orders():
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     order_details = []  
     sort = request.args.get('sort', 'recent')
    
@@ -734,7 +752,9 @@ def get_cancelled_orders_data(user_id, sort='recent'):
 
 @homepage_buyer_app.route('/cancelled-orders', methods=['POST','GET'])
 def cancelled_orders():
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     sort = request.args.get('sort', 'recent')
     order_details, categories = get_cancelled_orders_data(user_id, sort)
 
@@ -835,7 +855,9 @@ def get_to_ship_orders_data(user_id, sort='recent'):
 
 @homepage_buyer_app.route('/cancel-order/<order_id>', methods=['POST', 'GET'])
 def cancel_to_pay(order_id):
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
  
     order_details, categories = get_to_pay_orders_data(user_id)
 
@@ -889,7 +911,9 @@ def cancel_to_pay(order_id):
 
 @homepage_buyer_app.route('/cancel-order-2/<order_id>', methods=['POST', 'GET'])
 def cancel_to_ship(order_id):
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
    
     order_details, categories = get_to_ship_orders_data(user_id)
     try:

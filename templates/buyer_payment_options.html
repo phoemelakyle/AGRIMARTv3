@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" type="text/css" href="../static/css/payment_options.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agrimart - Buyer Payment Options</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_buyer.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/payment_options.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -13,7 +13,7 @@
     <!-- Header -->
     <header class="top-bar">
         <div class="logo">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Agrimart Logo" class="logo-icon">
+            <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
             Agrimart
         </div>          
         <div class="tagline">Connecting you to Local Farmers</div>
@@ -25,12 +25,12 @@
           <li><a href="{{ url_for('homepage_buyer.homepage_buyer') }}">Home</a></li>
           <li><a href="#contacts">Contacts</a></li>
         </ul>
-    </nav>
+      </nav>
    
     <!-- Breadcrumb Navigation -->
     <nav class="main-nav">
         <ul class="breadcrumb">
-          <li><a href="{{ url_for('homepage_buyer.homepage_buyer') }}"><i class="fas fa-home"></i></a></li>
+        <li><a href="{{ url_for('homepage_buyer.homepage_buyer') }}"><i class="fas fa-home"></i></a></li>
           <li>›</li>
           <li>
             <a href="{{ url_for('buyer_payment_options.buyer_payment_options') }}" class="button">Payment Options</a>
@@ -52,22 +52,20 @@
     </nav>
    
     <div class="container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="status">
-                <h3>ACCOUNT</h3>
-                <ul class="status-list">
-                    <li><a href="{{ url_for('buyer_account.buyer_account') }}" class="account-btn">My Account</a></li>
-                    <li><a href="{{ url_for('buyer_payment_options.buyer_payment_options') }}" class="account-btn">Banks & Cards</a></li>
-                    <li><a href="{{ url_for('buyer_address.buyer_address') }}" class="account-btn">Addresses</a></li>
-                    <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
-                        <button class="logout-btn" type="submit">Logout</button>
-                    </form>
-                </ul>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="status">
+      <h3>ACCOUNT</h3>
+      <ul class="status-list">
+        <li><a href="{{ url_for('buyer_account.buyer_account') }}" class="account-btn">My Account</a></li>
+        <li><a href="{{ url_for('buyer_payment_options.buyer_payment_options') }}" class="account-btn">Banks & Cards</a></li>
+        <li><a href="{{ url_for('buyer_address.buyer_address') }}" class="account-btn">Addresses</a></li>
+        <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
+            <button class="logout-btn" type="submit">Logout</button>
+        </form>
+      </ul>
+    </div>
+  </aside>
         <main class="main-container">
             <section class="payment-options-box">
                 <h2>Select Your Payment Methods</h2>
@@ -76,17 +74,22 @@
                         {% for method in payment_methods %}
                         <div class="payment-option">
                             <label>
-                                <input class="custom-checkbox" type="checkbox" name="selected_payment_methods[]" value="{{ method[1] }}"
-                                    {% if method[1] in selected_options_from_form %} checked {% endif %}
+                                <input class="custom-checkbox"
+                                    type="checkbox"
+                                    name="selected_payment_methods[]"
+                                    value="{{ method[1] }}"
+                                    {% if selected_options_from_form.get(method[1]) %} checked {% endif %}
                                     onclick="toggleAccountNumber(this)">
+
                                 <strong>{{ method[1] }}</strong>
                             </label>
-
+       
                             {% if method[1] in ['GCash', 'Paymaya', 'BDO', 'BPI'] %}
                             <div class="payment-info">
                                 <img src="{{ url_for('static', filename='images/' + method[1] + '.png') }}" alt="{{ method[1] }}" class="payment-logo">
                             </div>
-                            <div class="account-number" id="account_number_{{ method[1] }}">
+                            <div class="account-number" id="account_number_{{ method[1] }}"
+                                style="display: {% if selected_options_from_form.get(method[1]) %}block{% else %}none{% endif %};">
                                 <label for="account_number_input_{{ method[1] }}">Account Number:</label>
                                 <input type="text" name="account_numbers[]-{{ method[1] }}"
                                     id="account_number_input_{{ method[1] }}"
@@ -100,13 +103,14 @@
                 </form>
             </section>
         </main>
-    </div>
-
+       
     <script>
         function toggleAccountNumber(checkbox) {
             var methodName = checkbox.value;
             var accountNumberDiv = document.getElementById('account_number_' + methodName);
-
+            console.log("Toggle function triggered");
+            console.log("Method Name:", methodName);
+            console.log("Checkbox Checked:", checkbox.checked);
             if (methodName !== 'Cash on Delivery' && checkbox.checked) {
                 accountNumberDiv.style.display = 'block';
             } else {
@@ -114,5 +118,16 @@
             }
         }
     </script>
+    {% if empty_account_alert %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            icon: 'warning',
+            title: 'Account Number Required',
+            text: 'Please enter an account number for {{ empty_account_alert }} before saving.',
+            confirmButtonText: 'OK'
+        });
+    </script>
+{% endif %}
 </body>
 </html>

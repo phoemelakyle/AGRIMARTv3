@@ -27,6 +27,9 @@ def get_db_connection():
 
 @viewproduct_app.route('/viewproduct/<string:product_id>')
 def viewproduct(product_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     with get_db_connection() as connection:
         cursor = connection.cursor(dictionary=True)
 
@@ -101,6 +104,9 @@ def viewproduct(product_id):
 
 @viewproduct_app.route('/api/view-product-variation', methods=['POST'])
 def viewprovar():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     data = request.json
     selected_unit = data.get('unit')
     product_id = data.get('product_id')
@@ -127,9 +133,9 @@ def viewprovar():
 
 @viewproduct_app.route('/add-to-cart-quan', methods=['GET', 'POST'])
 def add_to_cart_quan():
-    user_id = session.get('user_id')
-    if 'user_id' not in session:
-        session['user_id'] = user_id
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
 
     data = request.get_json()
     product_id = data.get('productID')
@@ -176,6 +182,9 @@ def add_to_cart_quan():
 
 @viewproduct_app.route('/api/pro-var-unit', methods=['GET','POST'])
 def view_product_variation():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     data = request.get_json()
     unit_var = data.get('unit')
     product_id = data.get('product_id')
@@ -216,6 +225,9 @@ def view_product_variation():
 
 @viewproduct_app.route('/generate_cart_id')
 def generate_cart_id():
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(f"SELECT MAX(CartID) FROM cart")
@@ -236,7 +248,9 @@ def generate_cart_id():
 @viewproduct_app.route('/api/insert-into-cart', methods=['POST'])
 def insert_into_cart():
     data = request.get_json()
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect('/login') 
     product_id = data.get('productID')
     cart_quantity = data.get('newQuantity')
     variation_id = data.get('variationID')

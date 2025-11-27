@@ -20,6 +20,8 @@ def get_db_connection():
 @buyer_address_app.route('/buyer_address')
 def buyer_address():
     buyer_id = session.get('BuyerID')
+    if not buyer_id:
+        return redirect('/login') 
     key = os.getenv("GOOGLE_MAPS_API_KEY").strip()
 
     addresses = []
@@ -42,8 +44,7 @@ def save_buyer_address():
     # Get buyer ID from session 
     buyer_id = session.get('BuyerID')
     if not buyer_id:
-        flash("You must be logged in.")
-        return redirect(url_for('buyer_address.buyer_address'))
+        return redirect('/login') 
 
     address_id = request.form.get('address_id')
     full_name = request.form['full_name']
@@ -113,8 +114,7 @@ def save_buyer_address():
 def delete_buyer_address(address_id):
     buyer_id = session.get('BuyerID')
     if not buyer_id:
-        flash("You must be logged in.")
-        return redirect(url_for('buyer_address.buyer_address'))
+            return redirect('/login') 
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -133,7 +133,7 @@ def delete_buyer_address(address_id):
 def set_default_address():
     buyer_id = session.get('BuyerID')
     if not buyer_id:
-        return {"success": False, "error": "Not logged in"}, 401
+            return redirect('/login') 
 
     data = request.get_json()
     address_id = data.get("address_id")
