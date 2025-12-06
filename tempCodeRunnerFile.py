@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
 home_directory = os.path.expanduser("~")
-relative_path = 'Desktop/AGRIMART/static/images/products'
+relative_path = 'Desktop/ANGKATANI/static/images/products'
 upload_folder = os.path.join(home_directory, relative_path)
 app.config['UPLOAD_FOLDER'] = upload_folder
 

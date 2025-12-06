@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, jsonify
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from werkzeug.security import generate_password_hash
 from flask_mail import Message
@@ -46,10 +46,10 @@ def forgot_password():
             <html>
                 <body>
                     <div style="text-align: center; font-family: Arial, sans-serif;">
-                        <h1 style="color: green;">AgriMart</h1>
+                        <h1 style="color: green;">AngkatAni</h1>
                         <p><strong>Connecting you to Local Farmers</strong></p>
                         <p>Hey, {user[1]}</p>
-                        <p>Your AgriMart password can be reset by clicking the link below. If you did not request a new password, please ignore this email.</p>
+                        <p>Your AngkatAni password can be reset by clicking the link below. If you did not request a new password, please ignore this email.</p>
                         <p><a href="{reset_url}" style="text-decoration: none; font-size: 16px; font-weight: bold; color: #007BFF;">Click this to reset your password</a></p>
                     </div>
                 </body>
@@ -74,41 +74,53 @@ def forgot_password():
     return render_template('login.html')
 
 # Route: Reset Password via Token
-@reset_app.route('/reset-password/<token>', methods=['GET', 'POST'])
+@reset_app.route('/api/reset-password/<token>', methods=['PATCH'])
+def api_reset_password(token):
+    try:
+        email = _load_email_from_token(token)
+    except SignatureExpired:
+        return jsonify({'ok': False, 'message': 'Reset link expired.'}), 400
+    except Exception:
+        return jsonify({'ok': False, 'message': 'Invalid reset link.'}), 400
+
+    data = request.get_json() or {}
+    new_password = data.get('new_password')
+    if not new_password:
+        return jsonify({'ok': False, 'message': 'Password is required.'}), 400
+
+    hashed_password = generate_password_hash(new_password)
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT * FROM buyer WHERE email = %s", (email,))
+    user = cursor.fetchone()
+
+    if not user:
+        cursor.execute("SELECT * FROM seller WHERE email = %s", (email,))
+        user = cursor.fetchone()
+
+    if not user:
+        return jsonify({'ok': False, 'message': 'Account not found.'}), 404
+
+    if user[0].startswith('B'):
+        cursor.execute("UPDATE buyer SET password = %s, reset_token = NULL WHERE email = %s", (hashed_password, email))
+    else:
+        cursor.execute("UPDATE seller SET password = %s, reset_token = NULL WHERE email = %s", (hashed_password, email))
+    db.commit()
+
+    return jsonify({'ok': True, 'message': 'Password reset successfully.'})
+
+
+@reset_app.route('/reset-password/<token>', methods=['GET'])
 def reset_password(token):
     try:
-        s = URLSafeTimedSerializer(current_app.secret_key)
-        email = s.loads(token, salt='password-reset', max_age=3600)
+        _load_email_from_token(token)
     except SignatureExpired:
         flash('The reset link has expired.', 'danger')
         return redirect(url_for('login.login'))
     except Exception:
         flash('The reset link is invalid or has expired.', 'danger')
         return redirect(url_for('login.login'))
-
-    if request.method == 'POST':
-        new_password = request.form['new_password']
-        hashed_password = generate_password_hash(new_password)
-
-        db = get_db_connection()
-        cursor = db.cursor()
-
-        cursor.execute("SELECT * FROM buyer WHERE email = %s", (email,))
-        user = cursor.fetchone()
-
-        if not user:
-            cursor.execute("SELECT * FROM seller WHERE email = %s", (email,))
-            user = cursor.fetchone()
-
-        if user:
-            if user[0].startswith('B'):
-                cursor.execute("UPDATE buyer SET password = %s, reset_token = NULL WHERE email = %s", (hashed_password, email))
-            else:
-                cursor.execute("UPDATE seller SET password = %s, reset_token = NULL WHERE email = %s", (hashed_password, email))
-            db.commit()
-
-            flash('Your password has been reset successfully.', 'success')
-            return redirect(url_for('login.login'))
 
     return render_template('reset_password.html', token=token)
 
@@ -122,3 +134,8 @@ def get_db_connection():
         database=os.getenv("AIVEN_DATABASE"),
         use_pure=True
     )
+
+
+def _load_email_from_token(token):
+    serializer = URLSafeTimedSerializer(current_app.secret_key)
+    return serializer.loads(token, salt='password-reset', max_age=3600)

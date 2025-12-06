@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, flash, session, url_for
+from flask import Blueprint, render_template, request, redirect, flash, session, url_for, jsonify
 import mysql.connector
-from datetime import datetime
 import os
 
 seller_account_app = Blueprint('seller_account', __name__)
@@ -17,6 +16,37 @@ db_config = {
 def get_db_connection():
     return mysql.connector.connect(**db_config)
 
+def fetch_seller_profile(seller_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(
+        """
+        SELECT SellerID, Name, Email, Phone_Number, Username
+        FROM seller
+        WHERE SellerID = %s
+        """,
+        (seller_id,),
+    )
+    seller = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return seller
+
+def update_seller_profile(seller_id, username, name, email, phone):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        UPDATE seller
+        SET Username=%s, Name=%s, Email=%s, Phone_Number=%s
+        WHERE SellerID=%s
+        """,
+        (username, name, email, phone, seller_id),
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 @seller_account_app.route('/seller_account', methods=['GET', 'POST'])
 def seller_account():
     seller_id = session.get('SellerID')
@@ -24,35 +54,42 @@ def seller_account():
     if not seller_id:
         return redirect('/login')  
 
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-
     if request.method == 'POST':
-        # Get form data
         username = request.form.get('username')
         name = request.form.get('name')
         email = request.form.get('email')
         phone = request.form.get('phone')
-
-        # Update seller table
-        update_query = """
-            UPDATE seller
-            SET Username=%s, Name=%s, Email=%s, Phone_Number=%s
-            WHERE SellerID=%s
-        """
-        cursor.execute(update_query, (username, name, email, phone, seller_id))
-        conn.commit()
+        update_seller_profile(seller_id, username, name, email, phone)
         flash('Profile updated successfully!', 'success')
 
-    # Fetch current seller info
-    cursor.execute("""
-        SELECT SellerID, Name, Email, Phone_Number, Username
-        FROM seller
-        WHERE SellerID = %s
-    """, (seller_id,))
-    seller = cursor.fetchone()
-
-    cursor.close()
-    conn.close()
-
+    seller = fetch_seller_profile(seller_id)
     return render_template('seller_account.html', seller=seller)
+
+
+@seller_account_app.route('/api/seller_account', methods=['GET'])
+def get_seller_account():
+    seller_id = session.get('SellerID')
+    if not seller_id:
+        return jsonify({'ok': False, 'message': 'Authentication required'}), 401
+    seller = fetch_seller_profile(seller_id)
+    if not seller:
+        return jsonify({'ok': False, 'message': 'Seller not found'}), 404
+    return jsonify({'ok': True, 'seller': seller})
+
+
+@seller_account_app.route('/api/seller_account', methods=['PATCH'])
+def patch_seller_account():
+    seller_id = session.get('SellerID')
+    if not seller_id:
+        return jsonify({'ok': False, 'message': 'Authentication required'}), 401
+    seller = fetch_seller_profile(seller_id)
+    if not seller:
+        return jsonify({'ok': False, 'message': 'Seller not found'}), 404
+    data = request.get_json() or {}
+    username = data.get('username', seller['Username'])
+    name = data.get('name', seller['Name'])
+    email = data.get('email', seller['Email'])
+    phone = data.get('phone', seller['Phone_Number'])
+    update_seller_profile(seller_id, username, name, email, phone)
+    updated = fetch_seller_profile(seller_id)
+    return jsonify({'ok': True, 'seller': updated})

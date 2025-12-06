@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
+from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 load_dotenv()
@@ -20,9 +21,24 @@ from buyer.buyer_address import buyer_address_app
 from seller.seller_account import seller_account_app
 from buyer.buyer_account import buyer_account_app
 from buyer.buyer_payment_options import buyer_payment_options_app
+from api.api_routes import api_bp, api_products, api_product_detail
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
+
+# Enable CORS for React frontend
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "http://localhost:3000",
+            "http://localhost:5000",
+            "http://localhost:5173",
+            "http://localhost:5174",
+        ],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+    }
+}, supports_credentials=True)
 
 # URL serializer for generating reset tokens
 s = URLSafeTimedSerializer(app.secret_key)
@@ -52,7 +68,7 @@ mail = Mail(app)
 
 # File upload path
 home_directory = os.path.expanduser("~")
-relative_path = 'Desktop/AGRIMARTv3/static/images/products'
+relative_path = 'Desktop/ANGKATANIv3/static/images/products'
 upload_folder = os.path.join(home_directory, relative_path)
 app.config['UPLOAD_FOLDER'] = upload_folder
 
@@ -72,13 +88,25 @@ app.register_blueprint(seller_account_app)
 app.register_blueprint(buyer_account_app)
 app.register_blueprint(buyer_payment_options_app)
 
+from api.api_routes import api_bp
 from reset_password.routes import reset_app
+app.register_blueprint(api_bp)
 app.register_blueprint(reset_app)
 
 # Main route
 @app.route('/')
 def index():
     return render_template('index.html')    
+
+
+@app.route('/products')
+def products_root():
+    return api_products()
+
+
+@app.route('/products/<string:product_id>')
+def products_detail(product_id):
+    return api_product_detail(product_id)
 
 if __name__ == '__main__':
     app.run(debug=True)

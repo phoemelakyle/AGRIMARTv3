@@ -1,0 +1,216 @@
+.product-info {
+  margin-top: 40px;
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  padding: 2rem;
+  box-shadow: 0 15px 30px rgba(15, 23, 42, 0.08);
+}
+
+.product-info h1 {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.product-info h2 {
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-grid label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1f2937;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-grid input {
+  border: 1px solid #cbd5f5;
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.shipping-preview {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #065f46;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+.address-panel {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 14px;
+  border: 1px dashed #d1d5db;
+  background: #f8fafc;
+}
+
+.address-panel h3 {
+  margin-bottom: 0.4rem;
+}
+
+.address-panel p {
+  margin: 0;
+  color: #4b5563;
+}
+
+.address-panel .text-muted {
+  color: #6b7280;
+}
+
+.variation-card {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.variation-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.variation-fields label {
+  font-size: 0.85rem;
+  color: #111827;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.variation-fields input {
+  border-radius: 10px;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #cbd5f5;
+  font-size: 0.9rem;
+}
+
+.variation-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.variation-card.draft {
+  background: #fff;
+}
+
+.flex-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.info-message {
+  margin-bottom: 1rem;
+  color: #0f9d58;
+  font-weight: 600;
+}
+
+.error-message {
+  margin-bottom: 1rem;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 1rem;
+}
+
+.modal-card {
+  background: #fff;
+  border-radius: 20px;
+  width: min(520px, 100%);
+  padding: 1.5rem;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.35);
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.close-btn {
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #374151;
+}
+
+.address-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.address-option {
+  text-align: left;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  border: 1px solid #cbd5f5;
+  background: #f8fafc;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.9rem;
+  color: #111827;
+  transition: border 0.2s ease, background 0.2s ease;
+}
+
+.address-option:hover {
+  border-color: #16a34a;
+  background: #ecfdf5;
+}
+
+@media (max-width: 768px) {
+  .variation-card {
+    flex-direction: column;
+  }
+
+  .form-actions {
+    justify-content: flex-start;
+  }
+}

@@ -3,11 +3,11 @@
             padding: 15px; 
             border-radius: 15px; 
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
-  <img src="readme_assets/agrimart_top.png" alt="Agrimart" width="1800" style="border-radius: 10px;"/>
+  <img src="readme_assets/agrimart_top.png" alt="AngkatAni" width="1800" style="border-radius: 10px;"/>
 </div>
 
 <div style="text-align: center;">
-  <h1 style="margin: 0;">Agrimart</h1>  
+  <h1 style="margin: 0;">AngkatAni</h1>  
   <p style="margin: 0; font-style: italic;">Connecting You to Local Farmers.</p>
 </div>
 
@@ -32,7 +32,7 @@
 >### <h2 id="introduction">🚀 Introduction</h2>
 
   <p style="text-align: justify; text-indent: 2em;">
-  <strong>Agrimart</strong> is a digital platform designed to connect farmers, agri-product sellers, and buyers in a streamlined online marketplace. It aims to enhance agricultural productivity and profitability by simplifying the supply chain and promoting direct trade. It offers a digital marketplace with dynamic homepages, product listings, shopping cart systems, and order tracking for efficient transactions. 
+  <strong>AngkatAni</strong> is a digital platform designed to connect farmers, agri-product sellers, and buyers in a streamlined online marketplace. It aims to enhance agricultural productivity and profitability by simplifying the supply chain and promoting direct trade. It offers a digital marketplace with dynamic homepages, product listings, shopping cart systems, and order tracking for efficient transactions. 
 
 
 </p>
@@ -41,10 +41,10 @@
 
 <div id="app-preview" align="center">
   <h2>📱 System Preview</h2>
-  <p>Take a look at Agrimart in action:</p>
+  <p>Take a look at AngkatAni in action:</p>
 
   <!-- Landing Page -->
-  <h4>🌾 Agrimart Landing Page</h4>
+  <h4>🌾 AngkatAni Landing Page</h4>
   <img src="./readme_assets/landing_page.jpeg" alt="Landing Page" style="max-width:100%; margin:10px 0;">
 
   <!-- Role Selection -->
@@ -165,7 +165,7 @@
 
 <h4 id="google-chrome" style="margin-left: 20px;">1. Google Chrome</h4>
 <ul style="margin-left: 40px;">
-  <li>The primary web browser used to access and test the Agrimart interface.</li>
+  <li>The primary web browser used to access and test the AngkatAni interface.</li>
 </ul>
 
 <h4 id="flask" style="margin-left: 20px;">2. Flask</h4>
@@ -214,10 +214,10 @@
 
 >### <h2 id="setup--installation">🔧 Setup & Installation
 
-After cloning or downloading the repository, move the `AGRIMART` folder to your Desktop.
+After cloning or downloading the repository, move the `ANGKATANI` folder to your Desktop.
 
 1. Open your terminal: `Terminal > New Terminal`
-2. You should see something like this: PS C:\Users\User\Desktop\AGRIMART>
+2. You should see something like this: PS C:\Users\User\Desktop\ANGKATANI>
 3. Type these commands **one at a time**: 
 ```
 python -m venv venv
@@ -225,7 +225,7 @@ python -m venv venv
 ```
 4. Set up your Python interpreter:
 - Go to: `View > Command Palette > Python: Select Interpreter`
-- Browse to your `AGRIMART/venv/Scripts` folder
+- Browse to your `ANGKATANI/venv/Scripts` folder
 - Select the `python` executable (black icon)
 
 5. Then continue in terminal:
@@ -245,7 +245,7 @@ python app.py
 
 >### <h2 id="database-schema">🗃️ Database Schema
 
-Below is the MySQL schema for setting up the `AGRIMART` database. You can execute these in MySQL Workbench or phpMyAdmin.
+Below is the MySQL schema for setting up the `ANGKATANI` database. You can execute these in MySQL Workbench or phpMyAdmin.
 
 ```sql
 CREATE TABLE Seller(
@@ -396,7 +396,7 @@ ALTER TABLE Buyer ADD COLUMN reset_token VARCHAR(255);
                            border-radius: 10px; 
                            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); 
                            transition: transform 0.3s ease, box-shadow 0.3s ease; text-align: center;">
-    🛡️Agrimart Developers
+    🛡️AngkatAni Developers
 </h2>
 
 
@@ -413,11 +413,11 @@ ALTER TABLE Buyer ADD COLUMN reset_token VARCHAR(255);
 <h2 id= "acknowledgments" style="text-align: center;margin-top: 0px;">🙏 Acknowledgments</h2>
   <p style="text-align: justify;">We would like to extend our gratitude to the following individuals for their invaluable support and guidance:</p>
   <ul style="text-align: justify;">
-    <li><strong>Ms. Fatima Marie P. Agdon, MSCS</strong> – for her invaluable guidance, unwavering support, and constant encouragement throughout the course of this project. Her profound expertise, critical insights, and thoughtful direction have played a pivotal role in shaping the development of Agrimart, ensuring its success and the effective execution of this project.
+    <li><strong>Ms. Fatima Marie P. Agdon, MSCS</strong> – for her invaluable guidance, unwavering support, and constant encouragement throughout the course of this project. Her profound expertise, critical insights, and thoughtful direction have played a pivotal role in shaping the development of AngkatAni, ensuring its success and the effective execution of this project.
 </li>
     <li><strong>Peers and Colleagues</strong> – The developers also wish to express their deep appreciation to their peers and colleagues for their helpful feedback, insightful discussions, and shared knowledge throughout this project. Their contributions have been essential in refining and improving the quality of this project.</li>
     <li><strong>Families and Friends</strong> – The developers are deeply grateful to their families and friends, whose unconditional support, understanding, and encouragement have been a source of strength throughout the research process. Their belief in the project’s potential and their constant emotional backing have been invaluable.</li>
-    <li><strong>Research Contributors</strong> – The developers would like to acknowledge the contributions of various researchers, organizations, and data sources that provided essential information on digital marketplaces, agricultural commerce, and technology-driven solutions. These contributions have served as the foundation for this project, providing critical insights into the development of Agrimart.
+    <li><strong>Research Contributors</strong> – The developers would like to acknowledge the contributions of various researchers, organizations, and data sources that provided essential information on digital marketplaces, agricultural commerce, and technology-driven solutions. These contributions have served as the foundation for this project, providing critical insights into the development of AngkatAni.
 </li>
   </ul>
   <p style="text-align: justify;">With sincere gratitude, the developers acknowledge everyone who has supported and contributed to the success of this project.
