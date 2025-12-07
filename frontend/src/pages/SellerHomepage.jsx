@@ -113,7 +113,7 @@ const SellerHomepage = () => {
           </li>
           <li>›</li>
           <li>
-            <span className="button">Seller dashboard</span>
+            <span className="button">Seller homepage</span>
           </li>
         </ul>
         <div className="icons">

@@ -81,7 +81,7 @@
 
 .logout-btn {
   border: none;
-  background: #047857;
+  background: #28a745;
   color: #fff;
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
@@ -97,8 +97,8 @@
 }
 
 .icons .logout-btn {
-  border: 1px solid #03693a;
-  background: #047857;
+  border: 1px solid #28a745;
+  background: #28a745;
   box-shadow: 0 4px 10px rgba(4, 120, 87, 0.35);
 }
 
@@ -144,5 +144,5 @@
 }
 
 .status-item:hover {
-  background: #e0e0e0;
+  background: #065f46;
 }
