@@ -14,7 +14,7 @@ const formatCurrency = (value) => {
 const pendingStatusConfig = [
   { label: 'Pending Orders', status: 'unpaid', helper: 'Awaiting payment confirmation' },
   { label: 'To ship', status: 'to_ship', helper: 'Ready for dispatch' },
-  { label: 'To pack', status: 'shipping', helper: 'Currently shipping to buyer' },
+  { label: 'Shipping', status: 'shipping', helper: 'Currently in transit to buyer' },
 ]
 
 const createEmptySeries = (days) => Array.from({ length: days }, () => 0)
@@ -310,9 +310,6 @@ const Dashboard = () => {
           <section className="product-info">
             <div className="flex-head">
               <h2>Top performing products</h2>
-              <Link className="button1" to={products[0] ? `/edit_product/${products[0].productId}` : '/homepage_seller'}>
-                Open catalog
-              </Link>
             </div>
             {loading ? (
               <p className="info-message">Loading catalog details…</p>

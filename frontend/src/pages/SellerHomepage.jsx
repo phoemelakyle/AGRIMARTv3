@@ -2,11 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navigation from '../components/Navigation'
 import { useAuth } from '../context/AuthContext'
+import Swal from 'sweetalert2'
 import { deleteSellerProduct, fetchSellerProducts, updateSellerProduct } from '../api/agrimartApi'
 import './SellerHomepage.css'
 
 const SellerHomepage = () => {
   const { user, logout } = useAuth()
+  console.log("User data:", user)
   const sellerLabel = user?.username || 'AngkatAni Seller'
   const navigate = useNavigate()
   const [userMenuOpen, setUserMenuOpen] = useState(false)
@@ -55,35 +57,33 @@ const SellerHomepage = () => {
   }, [])
 
   const handleDelete = async (productId) => {
-    if (!window.confirm('Remove this product from your catalog?')) {
-      return
-    }
+  const result = await Swal.fire({
+    title: 'Delete product?',
+    text: 'Are you sure you want to remove this product from your catalog?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it',
+  })
+
+    if (!result.isConfirmed) return
+
     const response = await deleteSellerProduct(productId)
     if (!response.ok) {
-      setProductsError(response.body?.message || 'Unable to delete the product right now.')
+      Swal.fire('Error', response.body?.message || 'Unable to delete the product right now.', 'error')
       return
     }
+
     setSellerProducts((prev) => prev.filter((product) => product.productId !== productId))
+
+    Swal.fire('Deleted!', 'Product has been removed.', 'success')
   }
 
-  const handleEdit = async (product) => {
-    const updatedName = window.prompt('Update product name', product.productName)
-    if (!updatedName) {
-      return
-    }
-    const trimmedName = updatedName.trim()
-    if (!trimmedName || trimmedName === product.productName) {
-      return
-    }
-    const response = await updateSellerProduct(product.productId, { name: trimmedName })
-    if (!response.ok) {
-      setProductsError(response.body?.message || 'Unable to update product name.')
-      return
-    }
-    setSellerProducts((prev) =>
-      prev.map((item) => (item.productId === product.productId ? { ...item, productName: trimmedName } : item)),
-    )
+  const handleEdit = (productId) => {
+  navigate(`/edit_product/${productId}`)
   }
+
 
   const handleLogout = async () => {
     await logout()
@@ -227,14 +227,13 @@ const SellerHomepage = () => {
                         <img src={product.image} alt={product.productName} className="h-full w-full object-cover" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-slate-600">{product.productId}</p>
                         <h3 className="text-lg font-semibold text-slate-900">{product.productName}</h3>
                         <p className="text-sm text-slate-500">₱{product.revenue?.toLocaleString()} revenue</p>
                         <p className="text-xs uppercase tracking-widest text-slate-500">Stock: {product.stock ?? 0}</p>
                       </div>
                     </div>
                     <div className="flex gap-3 text-sm">
-                      <button onClick={() => handleEdit(product)} className="rounded-full border border-slate-200 px-4 py-1 text-emerald-600">Edit</button>
+                      <button onClick={() => handleEdit(product.productId)} className="rounded-full border border-slate-200 px-4 py-1 text-emerald-600">Edit</button>
                       <button onClick={() => handleDelete(product.productId)} className="rounded-full border border-red-200 px-4 py-1 text-red-600">Delete</button>
                     </div>
                   </article>

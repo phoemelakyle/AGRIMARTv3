@@ -155,6 +155,7 @@ def fetch_address_by_id(address_id):
 @homepage_seller_app.route('/delete_product/<string:product_id>', methods=['POST'])
 def delete_product(product_id):
     user_id = session.get("user_id")
+    session.get('username')
     if not user_id:
         return redirect('/login') 
     conn = get_db_connection()
