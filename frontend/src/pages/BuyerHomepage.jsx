@@ -124,9 +124,6 @@ const BuyerHomepage = () => {
               </p>
             </div>
             <div className="flex gap-3">
-              <Link className="shop-btn text-sm px-5 py-2" to="/cart">
-                View cart
-              </Link>
               <button
                 type="button"
                 onClick={handleLogout}
@@ -206,6 +203,12 @@ const BuyerHomepage = () => {
                   <Link to="/checkout" className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-emerald-400 hover:text-emerald-600">
                     Fresh checkout
                   </Link>
+                  <Link to="/buyer_orders" className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-emerald-400 hover:text-emerald-600">
+                    Orders
+                  </Link>
+                  <Link to="/buyer_account" className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-emerald-400 hover:text-emerald-600">
+                    Settings
+                  </Link>
                 </div>
               </div>
             </div>
@@ -265,12 +268,6 @@ const BuyerHomepage = () => {
                           className="text-sm font-semibold text-emerald-600"
                         >
                           View product
-                        </Link>
-                        <Link
-                          to="/cart"
-                          className="text-sm font-semibold text-emerald-600"
-                        >
-                          Add to cart
                         </Link>
                         <span className="text-sm text-slate-500">Ready for same-day packing</span>
                       </div>

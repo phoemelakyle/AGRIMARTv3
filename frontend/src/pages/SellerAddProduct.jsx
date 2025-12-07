@@ -258,6 +258,11 @@ const SellerAddProduct = () => {
                   <i className="fas fa-tachometer-alt" /> Dashboard
                 </Link>
               </li>
+              <li>
+                <Link to="/seller_account" className="status-item">
+                  <i className="fas fa-cog"/> Settings
+                </Link>
+              </li>
             </ul>
           </div>
         </aside>
