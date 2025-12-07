@@ -160,7 +160,7 @@ const SellerHomepage = () => {
             </article>
             <article className="rounded-2xl border border-slate-100 bg-white p-4">
               <p className="text-xs uppercase tracking-widest text-slate-500">Pending orders</p>
-              <p className="mt-2 text-3xl font-semibold text-slate-900">{sellerProducts.length || 4}</p>
+              <p className="mt-2 text-3xl font-semibold text-slate-900">{sellerProducts.length || 0}</p>
               <p className="text-sm text-slate-500">Awaiting confirmation</p>
             </article>
           </div>

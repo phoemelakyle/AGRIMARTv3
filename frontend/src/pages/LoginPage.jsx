@@ -96,7 +96,7 @@ const LoginPage = () => {
             </div>
             {error && <p className="error_message">{error}</p>}
             <button type="submit" className="signup-btn">
-              Continue to dashboard
+              login
             </button>
             <div className="button-container">
               <Link to="/reset-password" className="forgot-pass">
