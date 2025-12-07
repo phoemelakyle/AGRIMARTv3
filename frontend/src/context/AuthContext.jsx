@@ -3,7 +3,7 @@ import { fetchSession, loginUser, logoutUser } from '../api/agrimartApi'
 
 const AuthContext = createContext({ user: null, login: async () => {}, logout: async () => {} })
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [initializing, setInitializing] = useState(true)
 
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
     return response
   }
 
-  const logout = async () => {
+  async function logout() {
     const response = await logoutUser()
     if (response.ok) {
       setUser(null)
@@ -54,5 +54,6 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   )
 }
-
-export const useAuth = () => useContext(AuthContext)
+export function useAuth() {
+  return useContext(AuthContext)
+}

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for, jsonify
 import mysql.connector
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from dotenv import load_dotenv
 import os
 
@@ -189,6 +189,58 @@ def cancel_order(order_id):
         print(f"Error cancelling order: {err}")
         return False
 
+def get_sales_summary(user_id, days):
+    days = max(1, min(days, 90))
+    start_date = date.today() - timedelta(days=days - 1)
+    end_date = date.today() + timedelta(days=1)
+    totals = {}
+    try:
+        with get_db_connection() as connection:
+            cursor = connection.cursor(dictionary=True)
+            cursor.execute(
+                """
+                SELECT DATE(Order_Date) AS order_date,
+                       COALESCE(SUM(Total_Amount), 0) AS total_amount
+                FROM seller_order
+                WHERE SellerID = %s
+                  AND Order_Status != 'cancelled'
+                  AND Order_Date >= %s
+                  AND Order_Date < %s
+                GROUP BY DATE(Order_Date)
+                ORDER BY DATE(Order_Date) ASC
+                """,
+                (user_id, start_date, end_date),
+            )
+            rows = cursor.fetchall()
+            for row in rows:
+                order_date = row['order_date']
+                if isinstance(order_date, datetime):
+                    order_date = order_date.date()
+                totals[order_date.isoformat()] = float(row['total_amount'] or 0)
+    except mysql.connector.Error as err:
+        print(f"Error fetching sales summary: {err}")
+        return None
+    result = []
+    current_date = start_date
+    for _ in range(days):
+        iso_date = current_date.isoformat()
+        result.append({'date': iso_date, 'total': totals.get(iso_date, 0)})
+        current_date += timedelta(days=1)
+    return result
+
+
+def sample_sales_by_days(days):
+    weekly_values = [5, 12, 7, 14, 19, 16, 28]
+    monthly_values = [5, 12, 7, 14, 19, 16, 28, 24, 20, 15, 12, 14, 19, 21, 18, 17, 20, 22, 25, 26, 23, 19, 18, 16, 12, 15, 14, 13, 15, 18]
+    reference = weekly_values if days <= 7 else monthly_values
+    result = []
+    today = date.today()
+    for idx in range(days):
+        value = reference[idx % len(reference)] if idx < len(reference) else reference[-1]
+        target_date = today - timedelta(days=days - 1 - idx)
+        result.append({'date': target_date.isoformat(), 'total': float(value)})
+    return result
+
 @seller_orders_app.route('/unpaid_orders', methods=['POST','GET'])
 def unpaid_orders():
     user_id = session.get('user_id')
@@ -300,3 +352,33 @@ def api_cancel_order(order_id):
     if success:
         return jsonify({'success': True})
     return jsonify({'success': False, 'message': 'Unable to cancel order.'}), 500
+
+
+@seller_orders_app.route('/api/seller_sales', methods=['GET'])
+def api_seller_sales():
+    user_id = session.get('user_id')
+    user_type = session.get('user_type')
+    days_param = request.args.get('days', '7')
+    try:
+        requested_days = int(days_param)
+    except ValueError:
+        requested_days = 7
+    days = max(1, min(requested_days, 90))
+
+    force_sample = user_type == 'seller'
+    data = None
+    sample_used = force_sample
+    if not force_sample and user_id:
+        data = get_sales_summary(user_id, days)
+        if data is None:
+            sample_used = True
+        elif not any(entry['total'] > 0 for entry in data):
+            sample_used = True
+
+    if sample_used:
+        data = sample_sales_by_days(days)
+
+    if data is None:
+        return jsonify({'success': False, 'message': 'Unable to load sales data.'}), 500
+
+    return jsonify({'success': True, 'days': days, 'data': data, 'sample': sample_used})
