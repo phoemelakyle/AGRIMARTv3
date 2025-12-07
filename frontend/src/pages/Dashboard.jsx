@@ -2,13 +2,29 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navigation from '../components/Navigation'
 import { useAuth } from '../context/AuthContext'
-import { fetchSellerProducts } from '../api/agrimartApi'
+import { fetchSellerOrders, fetchSellerProducts, fetchSellerSales } from '../api/agrimartApi'
 
 const formatCurrency = (value) => {
   if (value == null) {
     return '₱0.00'
   }
   return `₱${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
+
+const pendingStatusConfig = [
+  { label: 'Pending Orders', status: 'unpaid', helper: 'Awaiting payment confirmation' },
+  { label: 'To ship', status: 'to_ship', helper: 'Ready for dispatch' },
+  { label: 'To pack', status: 'shipping', helper: 'Currently shipping to buyer' },
+]
+
+const createEmptySeries = (days) => Array.from({ length: days }, () => 0)
+const initialSalesSeries = () => ({
+  weekly: createEmptySeries(7),
+  monthly: createEmptySeries(30),
+})
+const sampleSalesSeries = {
+  weekly: [5, 12, 7, 14, 19, 16, 23],
+  monthly: [8, 10, 9, 14, 18, 16, 22, 24, 20, 15, 12, 14, 19, 21, 18, 17, 20, 22, 25, 26, 23, 19, 18, 16, 12, 15, 14, 13, 11, 10],
 }
 
 const Dashboard = () => {
@@ -18,20 +34,93 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [userMenuOpen, setUserMenuOpen] = useState(false)
-
-  const pendingStats = [
-    { label: 'Pending Orders', value: 0 },
-    { label: 'To ship', value: 0 },
-    { label: 'To pack', value: 0 },
-  ]
-
-  const weeklySales = [12, 18, 15, 22, 28, 19, 24]
-  const monthlySales = [14, 16, 10, 22, 24, 28, 26, 20, 18, 15]
-  const maxSalesValue = Math.max(...weeklySales, ...monthlySales)
+  const [pendingStats, setPendingStats] = useState(
+    pendingStatusConfig.map((config) => ({ ...config, value: 0 })),
+  )
+  const [statsError, setStatsError] = useState('')
+  const [salesSeries, setSalesSeries] = useState(initialSalesSeries)
+  const [salesError, setSalesError] = useState('')
+  const [salesUsingSample, setSalesUsingSample] = useState(false)
+  const chartConfigs = useMemo(() => {
+    const weeklyMax = Math.max(1, ...salesSeries.weekly)
+    const monthlyMax = Math.max(1, ...salesSeries.monthly)
+    return [
+      { title: 'Sales over last 7 days', dataset: salesSeries.weekly, max: weeklyMax },
+      { title: 'Sales over last 30 days', dataset: salesSeries.monthly, max: monthlyMax },
+    ]
+  }, [salesSeries])
 
   useEffect(() => {
     let mounted = true
-    const load = async () => {
+    const loadStats = async () => {
+      setStatsError('')
+      const responses = await Promise.all(
+        pendingStatusConfig.map((statConfig) => fetchSellerOrders({ status: statConfig.status })),
+      )
+      if (!mounted) return
+      setPendingStats(
+        pendingStatusConfig.map((statConfig, index) => ({
+          ...statConfig,
+          value: responses[index].ok ? responses[index].body?.orders?.length || 0 : 0,
+        })),
+      )
+      const failedResponse = responses.find((response) => !response.ok)
+      if (failedResponse) {
+        setStatsError(failedResponse.body?.message || 'Unable to load pending order counts.')
+      } else {
+        setStatsError('')
+      }
+    }
+    loadStats()
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  useEffect(() => {
+    let mounted = true
+    const loadSales = async () => {
+      const [weeklyResponse, monthlyResponse] = await Promise.all([
+        fetchSellerSales(7),
+        fetchSellerSales(30),
+      ])
+      if (!mounted) return
+      const weeklyTotals = weeklyResponse.ok
+        ? weeklyResponse.body?.data?.map((entry) => Number(entry.total) || 0) ?? createEmptySeries(7)
+        : createEmptySeries(7)
+      const monthlyTotals = monthlyResponse.ok
+        ? monthlyResponse.body?.data?.map((entry) => Number(entry.total) || 0) ?? createEmptySeries(30)
+        : createEmptySeries(30)
+      const hasWeeklyData = weeklyTotals.some((value) => value > 0)
+      const hasMonthlyData = monthlyTotals.some((value) => value > 0)
+      const finalWeekly = hasWeeklyData ? weeklyTotals : sampleSalesSeries.weekly
+      const finalMonthly = hasMonthlyData ? monthlyTotals : sampleSalesSeries.monthly
+      setSalesSeries({
+        weekly: finalWeekly,
+        monthly: finalMonthly,
+      })
+      if (!weeklyResponse.ok || !monthlyResponse.ok) {
+        const weeklyError = !weeklyResponse.ok
+          ? weeklyResponse.body?.message || 'Unable to load weekly sales.'
+          : ''
+        const monthlyError = !monthlyResponse.ok
+          ? monthlyResponse.body?.message || 'Unable to load 30-day sales.'
+          : ''
+        setSalesError(weeklyError || monthlyError)
+      } else {
+        setSalesError('')
+      }
+      setSalesUsingSample(!hasWeeklyData || !hasMonthlyData)
+    }
+    loadSales()
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  useEffect(() => {
+    let mounted = true
+    const loadProducts = async () => {
       setLoading(true)
       setError('')
       const response = await fetchSellerProducts()
@@ -43,7 +132,7 @@ const Dashboard = () => {
       }
       setLoading(false)
     }
-    load()
+    loadProducts()
     return () => {
       mounted = false
     }
@@ -172,32 +261,44 @@ const Dashboard = () => {
                 <article key={stat.label} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
                   <p className="text-xs uppercase tracking-widest text-slate-500">{stat.label}</p>
                   <p className="mt-2 text-3xl font-semibold text-slate-900">{stat.value}</p>
-                  <p className="text-sm text-slate-500">No actions pending</p>
+                  <p className="text-sm text-slate-500">{stat.helper}</p>
                 </article>
               ))}
             </div>
+            {statsError && <p className="error-message">{statsError}</p>}
+            {salesError && <p className="error-message">{salesError}</p>}
+            {salesUsingSample && (
+              <p className="info-message">
+                No recent orders for one or more windows, so placeholder values are shown so the charts stay visible.
+              </p>
+            )}
             <div className="mt-6 space-y-4">
-              {[{ title: 'Sales over last 7 days', dataset: weeklySales }, { title: 'Sales over last 30 days', dataset: monthlySales }].map(
-                (chart) => (
-                  <article key={chart.title} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-slate-900">{chart.title}</h3>
-                      <span className="text-xs text-slate-500">Peak {Math.max(...chart.dataset)}</span>
-                    </div>
-                    <div className="mt-4 flex items-end gap-2 h-32">
-                      {chart.dataset.map((value, index) => (
-                        <div key={`${chart.title}-${index}`} className="flex-1">
-                          <div
-                            className="mx-auto w-3 rounded-full bg-emerald-500"
-                            style={{ height: `${(value / maxSalesValue) * 100}%` }}
-                          />
-                          <p className="text-[10px] text-center uppercase text-slate-400 mt-1">{index + 1}</p>
+              {chartConfigs.map((chart) => (
+                <article key={chart.title} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-slate-900">{chart.title}</h3>
+                    <span className="text-xs text-slate-500">Peak {chart.max}</span>
+                  </div>
+                  <div className="mt-4 flex items-end gap-3 h-44 px-2">
+                    {chart.dataset.map((value, index) => {
+                      const barHeight = Math.max((value / chart.max) * 100, 4)
+                      return (
+                        <div key={`${chart.title}-${index}`} className="flex-1 text-center">
+                          <div className="relative mx-auto mb-1 h-full min-h-[120px] w-6">
+                            <div className="absolute inset-x-0 bottom-0 h-1 rounded-full bg-slate-200" />
+                            <div
+                              className="absolute inset-x-0 bottom-0 w-6 rounded-full bg-gradient-to-t from-emerald-600 to-emerald-400 transition-all duration-500"
+                              style={{ height: `${barHeight}%` }}
+                            />
+                          </div>
+                          <p className="text-[10px] text-slate-400 uppercase">{index + 1}</p>
+                          <p className="text-[10px] font-semibold text-slate-500">{value}</p>
                         </div>
-                      ))}
-                    </div>
-                  </article>
-                ),
-              )}
+                      )
+                    })}
+                  </div>
+                </article>
+              ))}
             </div>
           </section>
 

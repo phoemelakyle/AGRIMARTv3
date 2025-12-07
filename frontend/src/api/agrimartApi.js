@@ -336,6 +336,13 @@ export async function fetchSellerOrders({ status = 'unpaid', sort = 'recent' } =
   return handleResponse(response)
 }
 
+export async function fetchSellerSales(days = 7) {
+  const response = await fetch(`${API_URL}/api/seller_sales?days=${days}`, {
+    credentials: 'include',
+  })
+  return handleResponse(response)
+}
+
 export async function shipSellerOrder(orderId) {
   const response = await fetch(`${API_URL}/api/seller_orders/${orderId}/ship`, {
     method: 'POST',
