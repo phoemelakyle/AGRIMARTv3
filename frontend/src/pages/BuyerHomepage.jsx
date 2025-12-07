@@ -131,7 +131,7 @@ const BuyerHomepage = () => {
                 type="button"
                 onClick={handleLogout}
                 className="shop-btn bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
-                style={{ color: '#12864f' }}
+                style={{ color: '#ffffff' }}
               >
                 Logout
               </button>
