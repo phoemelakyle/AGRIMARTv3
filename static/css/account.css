@@ -52,39 +52,6 @@ body {
   vertical-align: top;
 }
 
-/* Navigation Menu */
-.nav-menu {
-  background-color: #f8f8f8;
-  padding: 1px 1px;
-  border-bottom: 1px solid #ddd;
-  position: sticky;
-  top: 60px; /* Height of .top-bar */
-  z-index: 999;
-}
-
-.nav-menu ul {
-  list-style: none;
-  display: flex;
-  gap: 15px; /* Reduced gap between items */
-  justify-content: center;
-}
-
-.nav-menu ul li {
-  position: relative;
-}
-
-.nav-menu ul li a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 400; /* Slightly lighter font */
-  font-size: 0.85rem; /* Reduced font size */
-  transition: color 0.3s ease;
-}
-
-.nav-menu ul li a:hover {
-  color: #27ae60;
-}
-
 
 .icons {
   display: flex;
@@ -130,7 +97,7 @@ body {
   border-bottom: 1px solid #ddd;
   color: white;
   position: sticky;
-  top: 110px; /* Height of .top-bar + .nav-menu */
+  top: 60px; /* Height of .top-bar + .nav-menu */
   z-index: 998;
   display: flex;
   justify-content: space-between;
@@ -232,13 +199,18 @@ body {
     padding: 20px;
   }
   
-  /* Sidebar */
-  .sidebar {
-    width: 250px;
+ .sidebar {
+    width: 320px;                 /* same width */
     background-color: #fff;
     padding: 20px;
     position: sticky;
-  }
+    top: 0;
+    box-sizing: border-box;
+
+    /* Slight zoom-in */
+    transform: scale(0.92);       /* previously 0.85 — now a bit bigger */
+    transform-origin: top left;   /* keeps width visually the same */
+}
 
   .category-filter {
     margin-top: 30px;
@@ -303,59 +275,75 @@ body {
   }
 
   
- /* Redesigned Status Buttons */
- .status {
+ /* Sidebar Status (Buyer Menu) */
+.status {
     margin-top: 30px;
-    background-color: #f9f9f9; /* Optional: adds slight background for visibility */
-    padding: 15px;             /* Optional: gives spacing inside the container */
-    border-radius: 12px;       /* Rounded corners */
-    border: 1px solid #ddd;    /* Optional: subtle border */
-  }
-  
-  .status h3 {
+    background-color: #f9f9f9;     /* container background */
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.status h3 {
     font-size: 18px;
     margin-bottom: 15px;
     color: #3C2A21;
-    text-align: center;  /* Center the text */
-  }
-  .status-list {
+    text-align: center;
+}
+
+.status-list {
     list-style: none;
     padding: 0;
     margin: 0;
-  }
-  
-  .status-item {
-    width: 100%;
+}
+
+/* Make status buttons look like category buttons */
+.status-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    margin-bottom: 10px;
-    font-size: 15px;
-    font-weight: 500;
-    border: none;
-    background-color: #f5f5f5;
-    color: #333;
-    border-radius: 8px;
+    justify-content: center;        /* center text and icon */
+    gap: 6px;
+    background: #ffffff;            /* default white */
+    border: 1px solid #1c9f56;     
+    padding: 8px 18px;              /* oblong horizontal padding */
+    border-radius: 24px;            /* oblong rounding */
+    font-size: 14px;               
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-  }
-  
-  .status-item i {
-    color: #4caf50;
-    font-size: 16px;
-    width: 20px;
-  }
-  
-  .status-item:hover {
-    background-color: #e0f2e9;
-    transform: translateX(3px);
-  }
+    width: 100%;                    
+    box-sizing: border-box;
+    color: #1c9f56;                 /* green text by default */
+    transition: all 0.2s ease;
+     margin-bottom: 10px; 
+}
 
-  .status-item.clicked {
-    background-color: #007BFF; /* Example: blue background */
-    color: white;
-  }
+.status-item i {
+    color: #1c9f56;                 /* icon green by default */
+    width: 14px;
+    text-align: center;
+}
+
+/* Hover state */
+.status-item:hover {
+    background: #1c9f56;            /* solid green on hover */
+    color: #ffffff;
+    border-color: #1c9f56;
+}
+
+.status-item:hover i {
+    color: #ffffff;
+}
+
+/* Active / clicked state */
+.status-item.active {
+    background: #1c9f56;            /* solid green */
+    color: #ffffff;
+    border-color: #1c9f56;
+}
+
+.status-item.active i {
+    color: #ffffff;
+}
+
+ 
   
   
   .column-right { 
@@ -370,71 +358,7 @@ body {
     color: #2c2c2c;
   }
   
-  /* Product Grid */
-  .product-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 24px;
-  }
-  
-  /* Product Box Styling */
-  .product-box {
-    background-color: #fff;
-    border-radius: 12px;
-    padding: 16px;
-    text-align: left; /* changed from center to left */
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e0e0e0;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.3s ease;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  
-  /* Product Box Hover Effect */
-  .product-box:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-    border-color: #388e3c;
-  }
-  
-  /* Product Image */
-  .product-box img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 12px;
-  }
-  
-  /* Product Details */
-  .product-details {
-    padding: 0 4px; /* optional: slight internal padding */
-  }
-  
-  /* Product Name */
-  .product-name {
-    font-size: 16px;
-    font-weight: 600;
-    color: #212121;
-    margin: 0 0 8px 0;
-    line-height: 1.3;
-  }
-  
-  /* Product Price */
-  .product-price {
-    font-size: 15px;
-    color: #388e3c;
-    font-weight: 700;
-  }
-  
-  /* Optional: Add hover zoom for image */
-  .product-box img:hover {
-    transform: scale(1.02);
-    transition: transform 0.3s ease;
-  }
-  
+ 
   /* Newsletter - Smaller Version */
 .newsletter {
   background: whitesmoke;
@@ -591,4 +515,92 @@ body {
   color: #555;
   margin: 0;
 }
+
+/* Profile Content – Inherit Sidebar Design */
+/* Profile Content – Inherit Sidebar Design */
+.profile-content {
+    flex: 1;
+    background-color: #f9f9f9;        /* same bg as sidebar container */
+    padding: 25px;
+    border-radius: 12px;              /* same smooth radius */
+    border: 1px solid #ddd;         
+    margin-left: 20px;
+
+    /* 🔽 MORE ZOOM OUT */
+    transform: scale(0.85);           /* 85% size */
+    transform-origin: top left;       /* keeps alignment */
+}
+
+
+.profile-content h2 {
+    font-size: 25px;
+    font-weight: 600;
+    color: #3C2A21;                   /* same header color */
+    margin-bottom: 5px;
+}
+
+.profile-content .subtitle {
+    color: #555;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.profile-content .form-group {
+    background: #ffffff;              /* white panel like sidebar buttons */
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid #1c9f56;        /* green border like status items */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.profile-content .form-group label {
+    width: 150px;
+    font-weight: 400;
+    color: #1c9f56;                   /* green label */
+}
+
+.profile-content .form-group span {
+    flex: 1;
+}
+
+.profile-content .editable {
+    flex: 1;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.edit-btn {
+    background: #ffffff;
+    border: 1px solid #1c9f56 !important;
+    padding: 6px 12px;
+    border-radius: 20px;
+    color: #1c9f56;
+    transition: .2s;
+}
+
+.edit-btn:hover {
+    background: #1c9f56;
+    color: white !important;
+}
+
+.save-btn {
+    background: #1c9f56;
+    border: none;
+    padding: 12px 18px;
+    margin-top: 10px;
+    color: white;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: .2s;
+    font-size: 15px;
+}
+
+.save-btn:hover {
+    background: #168842;
+}
+
 

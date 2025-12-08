@@ -52,38 +52,6 @@ body {
   vertical-align: top;
 }
 
-/* Navigation Menu */
-.nav-menu {
-  background-color: #f8f8f8;
-  padding: 1px 1px;
-  border-bottom: 1px solid #ddd;
-  position: sticky;
-  top: 60px; /* Height of .top-bar */
-  z-index: 999;
-}
-
-.nav-menu ul {
-  list-style: none;
-  display: flex;
-  gap: 15px; /* Reduced gap between items */
-  justify-content: center;
-}
-
-.nav-menu ul li {
-  position: relative;
-}
-
-.nav-menu ul li a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 400; /* Slightly lighter font */
-  font-size: 0.85rem; /* Reduced font size */
-  transition: color 0.3s ease;
-}
-
-.nav-menu ul li a:hover {
-  color: #27ae60;
-}
 
 
 .icons {
@@ -130,7 +98,7 @@ body {
   border-bottom: 1px solid #ddd;
   color: white;
   position: sticky;
-  top: 110px; /* Height of .top-bar + .nav-menu */
+  top: 60px; /* Height of .top-bar + .nav-menu */
   z-index: 998;
   display: flex;
   justify-content: space-between;
@@ -225,54 +193,76 @@ body {
 }
 
 
+ /* Sidebar Status (Buyer Menu) */
 .status {
-  margin-top: 30px;
-  background-color: #f9f9f9;
-  padding: 15px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-}
-.status h3 {
-  font-size: 18px;
-  margin-bottom: 15px;
-  color: #3C2A21;
-  text-align: center;
-}
-.status-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.status-item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
-  font-size: 15px;
-  font-weight: 500;
-  border: none;
-  background-color: #f5f5f5;
-  color: #333;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-}
-.status-item i {
-  color: #4caf50;
-  font-size: 16px;
-  width: 20px;
-}
-.status-item:hover {
-  background-color: #e0f2e9;
-  transform: translateX(3px);
-}
-.status-item.clicked {
-  background-color: #007BFF;
-  color: white;
+    margin-top: 30px;
+    background-color: #f9f9f9;     /* container background */
+    padding: 15px;
+    border-radius: 12px;
 }
 
+.status h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #3C2A21;
+    text-align: center;
+}
+
+.status-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Make status buttons look like category buttons */
+.status-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;        /* center text and icon */
+    gap: 6px;
+    background: #ffffff;            /* default white */
+    border: 1px solid #1c9f56;     
+    padding: 8px 18px;              /* oblong horizontal padding */
+    border-radius: 24px;            /* oblong rounding */
+    font-size: 14px;               
+    cursor: pointer;
+    width: 100%;                    
+    box-sizing: border-box;
+    color: #1c9f56;                 /* green text by default */
+    transition: all 0.2s ease;
+     margin-bottom: 10px; 
+}
+
+.status-item i {
+    color: #1c9f56;                 /* icon green by default */
+    width: 14px;
+    text-align: center;
+}
+
+/* Hover state */
+.status-item:hover {
+    background: #1c9f56;            /* solid green on hover */
+    color: #ffffff;
+    border-color: #1c9f56;
+}
+
+.status-item:hover i {
+    color: #ffffff;
+}
+
+/* Active / clicked state */
+.status-item.active {
+    background: #1c9f56;            /* solid green */
+    color: #ffffff;
+    border-color: #1c9f56;
+}
+
+.status-item.active i {
+    color: #ffffff;
+}
+
+ 
+  
 
 /* Base container layout */
 .container {
@@ -284,100 +274,109 @@ body {
 }
 
 
-/* Sidebar styling */
 .sidebar {
-  width: 250px;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  padding: 20px;
+    width: 320px;                 /* same width */
+    background-color: #fff;
+    padding: 20px;
+    position: sticky;
+    top: 0;
+    box-sizing: border-box;
 
-
+    /* Slight zoom-in */
+    transform: scale(0.92);       /* previously 0.85 — now a bit bigger */
+    transform-origin: top left;   /* keeps width visually the same */
 }
 
 
-/* Main content */
+/* Main container – inherit profile content design */
 .main-container {
-  flex: 1;
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    flex: 1;
+    background-color: #f9f9f9;       /* match profile background */
+    padding: 25px;
+    border-radius: 12px;             /* smooth corners like profile panel */
+    border: 1px solid #ddd;
+    margin-left: 20px;
+    
+    /* Optional zoom out to match profile content */
+    transform: scale(0.85);
+    transform-origin: top left;
+    width: 100%;
+    overflow: hidden;
 }
 
-
-/* Payment options box */
-.payment-options-box {
-  max-width: 100%;
+/* Section header */
+.payment-options-box h2 {
+    font-size: 18px;                 /* match profile h2 scaling */
+    font-weight: 600;
+    color: #3C2A21;
+    margin-bottom: 15px;
 }
 
-
+/* Payment options layout – grid style like categories */
 .payment-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 25px;
-  margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;                       /* slightly smaller gap for zoomed out */
 }
 
-
+/* Individual payment option panel */
 .payment-option {
-  flex: 1 1 calc(33.333% - 20px);
-  min-width: 280px;
-  background: #f4f4f4;
-  border-radius: 10px;
-  padding: 15px;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    flex: 1 1 calc(33.333% - 15px);
+    min-width: 250px;
+    background: #ffffff;              /* white panel like form-group */
+    border-radius: 10px;              /* match profile panel */
+    padding: 12px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1);  /* subtle shadow */
+    border: 1px solid #1c9f56;       /* green border like profile fields */
+    font-size: 13px;                  /* scale down font to match zoom */
 }
 
-
+/* Label inside each payment option */
 .payment-option label {
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-  gap: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #1c9f56;                  /* green like profile labels */
 }
 
-
-/* Payment logo */
+/* Payment logos */
 .payment-logo {
-  height: 40px;
-  margin: 10px 0;
+    height: 35px;
+    margin: 8px 0;
 }
 
-
-/* Account number input */
+/* Account number input container */
 .account-number {
-  margin-top: 10px;
-  display: none;
+    margin-top: 10px;
+    display: none;
 }
-
 
 .account-number input {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+    width: 100%;
+    padding: 6px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 13px;
 }
 
-
-/* Save button */
+/* Save button – inherit profile save button style */
 .save {
-  margin: 30px auto 0 auto; /* top: 30px, horizontal auto, bottom: 0 */
-  display: block;
-  padding: 12px 25px;
-  background-color: #27ae60;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  text-align: center;
+    margin: 20px auto 0 auto;
+    display: block;
+    padding: 10px 20px;
+    background-color: #1c9f56;
+    color: white;
+    border: none;
+    border-radius: 22px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: 0.2s;
 }
-
 
 .save:hover {
-  background-color: #219150;
+    background-color: #168842;
 }
-
-
-

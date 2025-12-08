@@ -1,101 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" type="text/css" href="../static/css/account.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/buyer_address.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agrimart - Address</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- POPUP STYLES -->
-    <style>
-        .add-btn {
-            background-color: #28a745;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            display: inline-block;
-            transition: 0.2s ease;
-        }
-
-        .add-btn:hover {
-            background-color: #218838;
-            transform: scale(1.03);
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-        }
-
-        .modal-content {
-            background: #fff;
-            width: 400px;
-            margin: 10% auto;
-            padding: 20px;
-            border-radius: 10px;
-            animation: fadeIn 0.3s ease;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-
-        #map {
-            width: 100%;
-            height: 250px;
-            margin-top: 10px;
-            border-radius: 8px;
-        }
-
-
-        .save-btn {
-            width: 100%;
-            padding: 10px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .close {
-            float: right;
-            cursor: pointer;
-            font-size: 22px;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .custom-map-control-button {
-            background-color: #fff;
-            border: none;
-            outline: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            cursor: pointer;
-            margin: 10px;
-            font-size: 18px;
-        }
-    </style>
+   
 
 </head>
 <body>
@@ -109,12 +22,6 @@
       <div class="tagline">Connecting you to Local Farmers</div>
     </header>
   
-    <nav class="nav-menu">
-      <ul>
-        <li><a href="/homepage_buyer">Home</a></li>
-        <li><a href="#contacts">Contacts</a></li>
-      </ul>
-    </nav>
     
   <nav class="main-nav">
     <ul class="breadcrumb">
@@ -130,43 +37,78 @@
 
   </nav>
   
-<div class="container">
-  <!-- Sidebar -->
-   <aside class="sidebar">
-    <div class="status">
-      <h3>ACCOUNT</h3>
-      <ul class="status-list">
-        <li>
-          <a href="{{ url_for('buyer_account.buyer_account') }}" class="account-btn">My Account</a>
-        </li>
-        <li><a href="{{ url_for('buyer_payment_options.buyer_payment_options') }}" class="account-btn">Banks & Cards</a></li>
-</li>
-        <li><a href="{{ url_for('buyer_address.buyer_address') }}" class="account-btn">Addresses</a></li>
-        <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
-          <button class="logout-btn" type="submit">Logout</button>
-        </form>
-      </ul>
-    </div>
-  </aside>
+<div class="container"> 
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="status">
+            <h3>ACCOUNT</h3>
+            <ul class="status-list">
+                <li>
+                    <a href="{{ url_for('buyer_account.buyer_account') }}" class="status-item {% if active_page == 'account' %}active{% endif %}">
+                        <i class="fas fa-user"></i> My Account
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('buyer_payment_options.buyer_payment_options') }}" class="status-item {% if active_page == 'payments' %}active{% endif %}">
+                        <i class="fas fa-credit-card"></i> Banks & Cards
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('buyer_address.buyer_address') }}" class="status-item active">
+                        <i class="fas fa-map-marker-alt"></i> Addresses
+                    </a>
+                </li>
+                <li>
+                    <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
+                        <button class="status-item logout-btn" type="submit">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </aside>
 
-        <!-- RIGHT CONTENT PANEL -->
-       <section class="profile-content">
-        <div class="profile-header">
-            <h2>My Addresses</h2>
-            <div class="saved-addresses">
-                {% if addresses %}
-                    <ul>
-                    {% for addr in addresses %}
-                        <li>
-                            <!-- Radio button to select default address -->
-                              <input type="radio" name="default_address" value="{{ addr.AddressID }}" id="addr_{{ addr.AddressID }}"
-                                {% if addr.IsDefaultInt == 1 %} checked {% endif %}
-                                onchange="setDefaultAddress('{{ addr.AddressID }}')">
-                              <label for="addr_{{ addr.AddressID }}"></label>
+       <!-- RIGHT CONTENT PANEL -->
+<section class="profile-content">
+    <div class="profile-header">
+        <h2>My Addresses</h2>
+        <div class="saved-addresses">
+            {% if addresses %}
+                <ul>
+                {% for addr in addresses %}
+                    <li>
+                        <!-- Default Radio --> 
+                        <div class="radio-inline">
+    <input type="radio" name="default_address" value="{{ addr.AddressID }}" id="addr_{{ addr.AddressID }}"
+        {% if addr.IsDefaultInt == 1 %} checked {% endif %}
+        onchange="setDefaultAddress('{{ addr.AddressID }}')">
+    <label for="addr_{{ addr.AddressID }}">Default</label>
+</div>
 
-                              <strong>{{ addr.Full_Name }}</strong> - {{ addr.Phone_Number }}<br>
-                            {{ addr.Street }}, {{ addr.Municipality }}, {{ addr.Province }}, {{ addr.Region }} {{ addr.Zip_Code }}
-                        <button class="edit-btn"
+
+
+                        <!-- Full Name -->
+                        <div class="address-field">
+                            <label>Full Name:</label>
+                            <span>{{ addr.Full_Name }}</span>
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="address-field">
+                            <label>Phone Number:</label>
+                            <span>{{ addr.Phone_Number }}</span>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="address-field">
+                            <label>Address:</label>
+                            <span>{{ addr.Street }}, {{ addr.Municipality }}, {{ addr.Province }}, {{ addr.Region }} {{ addr.Zip_Code }}</span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="address-actions">
+                            <button class="edit-btn"
                                 onclick="openEditAddress(
                                     '{{ addr.AddressID }}',
                                     '{{ addr.Full_Name }}',
@@ -179,24 +121,27 @@
                                     '{{ addr.Latitude }}',
                                     '{{ addr.Longitude }}'
                                 )">
-                                Edit
+                                <i class="fas fa-edit"></i> Edit
                             </button>
-                            <button class="delete-btn" onclick="confirmDelete('{{ addr.AddressID }}')">Delete</button>
-                        </li>
-                    {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No saved addresses yet.</p>
-                {% endif %}
-            </div>
-            <span class="add-btn" onclick="openAddAddress()">+ Add New Address</span>
-        </div>
-    </section>
 
+                            <button class="delete-btn" onclick="confirmDelete('{{ addr.AddressID }}')">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                        </div>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No saved addresses yet.</p>
+            {% endif %}
+        </div>
+        <span class="add-btn" onclick="openAddAddress()">+ Add New Address</span>
     </div>
+</section>
+</div>
 
     <!-- ADDRESS POPUP -->
-<div id="addAddressModal" class="modal">
+<div id="addAddressModal" class="modal" style="display: none;">
     <div class="modal-content">
         <span class="close" onclick="closeAddAddress()">&times;</span>
          <h3 id="modalTitle">Add New Address</h3>
@@ -212,7 +157,7 @@
             <input type="hidden" name="latitude" id="lat" value="0.0">
             <input type="hidden" name="longitude" id="lng" value="0.0">
 
-            <label><b>Pin Your Location:</b></label>
+           <label id="pinLocationLabel"><b>Pin Your Location:</b></label>
             <div id="map"></div>
 
             <button type="submit" class="save-btn">Save</button>

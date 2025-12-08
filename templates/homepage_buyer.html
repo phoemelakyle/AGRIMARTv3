@@ -20,14 +20,7 @@
       <div class="tagline">Connecting you to Local Farmers</div>
     </header>
  
-    <!-- Navigation Menu -->
-    <nav class="nav-menu">
-      <ul>
-        <li><a href="/homepage_buyer">Home</a></li>
-        <li><a href="#contacts">Contacts</a></li>
-      </ul>
-    </nav>
-   
+  
     <!-- Breadcrumb Navigation -->
   <nav class="main-nav">
     <ul class="breadcrumb">
@@ -69,27 +62,50 @@
     <!-- Redesigned CATEGORY Section -->
     <div class="category-filter">
     <form id="filterForm" action="{{ url_for('homepage_buyer.filter_products') }}" method="get">
-      <button type="submit" class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
-        <!-- Price Range -->
-        <div class="location-range" style="margin-bottom:20px;">
-            <label for="locationRange">Location Range (km): </label>
-            <input type="range" id="locationRange" name="range_km" min="0" max="50" step="1" value="{{ selected_km }}" oninput="this.nextElementSibling.value = this.value">
-            <output>{{ selected_km }}</output>
-        </div>
+      <div class="location-range">
+  <label for="locationRange">Location Range (km):</label>
+  <div class="range-wrapper">
+    <input type="range" id="locationRange" name="range_km" min="0" max="50" step="1" value="{{ selected_km }}" oninput="this.nextElementSibling.value = this.value">
+    <output>{{ selected_km }}</output>
+    <button type="submit" class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
+  </div>
+</div>
+
 
         <!-- Categories -->
-        <h3>CATEGORIES</h3>
-        <div class="category-buttons">
-            <button type="button" class="category-item {% if selected_category == 'all' %}active{% endif %}" data-category="all">All Products</button>
-            {% for category in categories %}
-            <button type="button" class="category-item {% if selected_category == category.Category_Name|lower %}active{% endif %}" data-category="{{ category.Category_Name }}">{{ category.Category_Name }}</button>
-            {% endfor %}
-        </div>
-
-        <!-- Hidden input to store selected category -->
-        <input type="hidden" name="category" id="selectedCategory" value="{{ selected_category or 'all' }}">
-    </form>
+       <h3>CATEGORIES</h3>
+<!-- 2-column category grid -->
+<div class="category-buttons two-column">
+    <!-- All Products (fixed) -->
+  <button type="button"
+    class="category-item {% if not selected_category or selected_category == 'all' %}active{% endif %}"
+    data-category="all">
+    <i class="fas fa-th-large"></i> All
+</button>
+    {% set icon_map = {
+        'Vegetables': 'fas fa-leaf',
+        'Fruits': 'fas fa-apple-whole',
+        'Dairy': 'fas fa-cheese',
+        'Grains': 'fas fa-wheat-awn',
+        'Spices': 'fas fa-pepper-hot',
+        'Fertilizers': 'fas fa-seedling',
+        'Pesticides': 'fas fa-spray-can',
+        'Seeds': 'fas fa-clipboard-check'
+    } %}
+    <!-- Database-driven categories -->
+    {% for category in categories %}
+    <button type="button"
+        class="category-item {% if selected_category == category.Category_Name|lower %}active{% endif %}"
+        data-category="{{ category.Category_Name }}">
+        <i class="{{ icon_map.get(category.Category_Name, 'fas fa-tag') }}"></i>
+        {{ category.Category_Name }}
+    </button>
+    {% endfor %}
 </div>
+<!-- Hidden field -->
+<input type="hidden" name="category" id="selectedCategory" value="{{ selected_category or 'all' }}">
+
+
 
 
     <!-- Buyer Menu -->
@@ -97,10 +113,12 @@
       <h3>BUYER MENU</h3>
       <ul class="status-list">
         <li>
-          <form action="/homepage_buyer" method="get">
-            <button type="submit" class="status-item"><i class="fas fa-home"></i> Homepage</button>
-          </form>
-        </li>
+  <form action="/homepage_buyer" method="get">
+    <button type="submit" class="status-item active">
+      <i class="fas fa-home"></i> Homepage
+    </button>
+  </form>
+</li>
         <li>
           <form action="{{ url_for('homepage_buyer.to_pay_orders') }}" method="get">
             <button type="submit" class="status-item"><i class="fas fa-receipt"></i> Orders</button>
@@ -110,10 +128,12 @@
     </div>
   </aside>
 
+
         <div class="column column-right">
             <h4>PRODUCTS</h4>
              <div class="search-filter-container">
         </div>
+
 
       <div class="buyer-default-address">
         {% if default_address %}
@@ -122,6 +142,7 @@
           <p><strong>Your default address:</strong> Not set</p>
         {% endif %}
       </div>
+
 
             <div class="product-container">
             {% if product_data %}
@@ -148,6 +169,7 @@
     </div>
     </div>
 
+
     <!-- Newsletter -->
  <section id="contacts" class="newsletter">
   <div class="newsletter-content">
@@ -166,6 +188,7 @@
     </div>
   </div>
 </section>
+
 
 <!-- Footer -->
 <footer class="main-footer">
@@ -217,8 +240,10 @@
   </div>
 </footer>
 
+
  <!-- JavaScript -->
  <script>
+
 
 {% if show_address_alert %}
     Swal.fire({
@@ -228,25 +253,28 @@
         confirmButtonText: 'Add Address'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = "{{ url_for('buyer_address.buyer_address') }}"; 
+            window.location.href = "{{ url_for('buyer_address.buyer_address') }}";
         }
     });
     {% endif %}
-    
+   
   document.querySelectorAll('.category-option input[type="radio"]').forEach(radio => {
     radio.addEventListener('change', function () {
       this.closest('form').submit();
     });
   });
 
+
   document.addEventListener('DOMContentLoaded', function () {
     const userIcon = document.getElementById('userIcon');
     const userMenu = document.getElementById('userMenu');
 
+
     userIcon.addEventListener('click', function (event) {
       userMenu.classList.toggle('show');
-      event.stopPropagation(); 
+      event.stopPropagation();
     });
+
 
     // Close the dropdown if clicked outside
     document.addEventListener('click', function (event) {
@@ -256,9 +284,11 @@
     });
   });
 
+
  const slider = document.getElementById('locationRange');
   const outputs = document.querySelectorAll('output');
   const forms = document.querySelectorAll('.category-form');
+
 
   slider.addEventListener('input', function() {
       outputs.forEach(o => o.value = this.value);
@@ -268,20 +298,26 @@
       });
   });
 
+
   document.addEventListener('DOMContentLoaded', function () {
     const categoryButtons = document.querySelectorAll('.category-item');
     const selectedInput = document.getElementById('selectedCategory');
 
+
     categoryButtons.forEach(btn => {
         btn.addEventListener('click', function () {
 
+
             categoryButtons.forEach(b => b.classList.remove('active'));
 
+
             this.classList.add('active');
+
 
             selectedInput.value = this.getAttribute('data-category');
         });
     });
+
 
     // Slider live output
     const slider = document.getElementById('locationRange');
@@ -291,9 +327,11 @@
     });
 });
 
+
 // Update breadcrumb link only when filter form is submitted
     const filterForm = document.getElementById('filterForm');
     const categoryLink = document.getElementById('category-link');
+
 
     filterForm.addEventListener('submit', function () {
         const category = selectedInput.value || 'all';
@@ -301,7 +339,10 @@
         categoryLink.href = `/homepage_buyer?category=${encodeURIComponent(category)}`;
     });
 
+
 </script>
+
 
 </body>
 </html>
+

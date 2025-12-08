@@ -20,14 +20,7 @@
     <div class="tagline">Connecting you to Local Farmers</div>
   </header>
 
-  <!-- Navigation Menu -->
-  <nav class="nav-menu">
-    <ul>
-      <li><a href="/homepage_buyer">Home</a></li>
-      <li><a href="#contacts">Contacts</a></li>
-    </ul>
-  </nav>
- 
+  
   
   <!-- Breadcrumb Navigation -->
 <nav class="main-nav">
@@ -35,7 +28,7 @@
     <li><a href="/homepage_buyer"><i class="fas fa-home"></i></a></li>
     <li>›</li>
     <li>
-      <a href="/homepage_buyer" class="button">All Products</a>
+      <a href="/homepage_buyer" class="button">View Product</a>
     </li>
     
       
@@ -60,43 +53,69 @@
 </nav>
 
 
- <!-- Main Container -->
+  <!-- Main Container -->
 <div class="container">
   <aside class="sidebar">
     <!-- Redesigned CATEGORY Section -->
     <div class="category-filter">
-      <h3>CATEGORIES</h3>
-      <ul class="category-list">
-        <li>
-          <form action="{{ url_for('homepage_buyer.filter_products', category_name='all') }}" method="get">
-            <button type="submit" class="category-item {% if selected_category == 'all' %}active{% endif %}">
-              All Products
-            </button>
-          </form>
-          
-        </li>
-        {% for category in categories %}
-        <li>
-          <form action="{{ url_for('homepage_buyer.filter_products', category_name=category.Category_Name) }}" method="get">
-            <button type="submit" class="category-item {% if selected_category == category.CategoryID %}active{% endif %}">
-              {{ category.Category_Name }}
-            </button>
-          </form>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
+    <form id="filterForm" action="{{ url_for('homepage_buyer.filter_products') }}" method="get">
+      <div class="location-range">
+  <label for="locationRange">Location Range (km):</label>
+  <div class="range-wrapper">
+    <input type="range" id="locationRange" name="range_km" min="0" max="50" step="1" value="{{ selected_km }}" oninput="this.nextElementSibling.value = this.value">
+    <output>{{ selected_km }}</output>
+    <button type="submit" class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
+  </div>
+</div>
 
-  
 
+        <!-- Categories -->
+       <h3>CATEGORIES</h3>
+<!-- 2-column category grid -->
+<div class="category-buttons two-column">
+    <!-- All Products (fixed) -->
+  <button type="button"
+    class="category-item {% if not selected_category or selected_category == 'all' %}active{% endif %}"
+    data-category="all">
+    <i class="fas fa-th-large"></i> All
+</button>
+    {% set icon_map = {
+        'Vegetables': 'fas fa-leaf',
+        'Fruits': 'fas fa-apple-whole',
+        'Dairy': 'fas fa-cheese',
+        'Grains': 'fas fa-wheat-awn',
+        'Spices': 'fas fa-pepper-hot',
+        'Fertilizers': 'fas fa-seedling',
+        'Pesticides': 'fas fa-spray-can',
+        'Seeds': 'fas fa-clipboard-check'
+    } %}
+    <!-- Database-driven categories -->
+    {% for category in categories %}
+    <button type="button"
+        class="category-item {% if selected_category == category.Category_Name|lower %}active{% endif %}"
+        data-category="{{ category.Category_Name }}">
+        <i class="{{ icon_map.get(category.Category_Name, 'fas fa-tag') }}"></i>
+        {{ category.Category_Name }}
+    </button>
+    {% endfor %}
+</div>
+<!-- Hidden field -->
+<input type="hidden" name="category" id="selectedCategory" value="{{ selected_category or 'all' }}">
+
+
+
+
+    <!-- Buyer Menu -->
     <div class="status">
       <h3>BUYER MENU</h3>
       <ul class="status-list">
         <li>
-          <form action="/homepage_buyer" method="get">
-            <button type="submit" class="status-item"><i class="fas fa-home"></i> Homepage</button>
-          </form>
-        </li>
+  <form action="/homepage_buyer" method="get">
+    <button type="submit" class="status-item active">
+      <i class="fas fa-home"></i> Homepage
+    </button>
+  </form>
+</li>
         <li>
           <form action="{{ url_for('homepage_buyer.to_pay_orders') }}" method="get">
             <button type="submit" class="status-item"><i class="fas fa-receipt"></i> Orders</button>
@@ -105,42 +124,60 @@
       </ul>
     </div>
   </aside>
+  
 
-        <div class="column column-right">
-            {% for product in product_data %}
-  <div class="product-view-wrapper" data-product-id="{{ product['ProductID'] }}">
-    <div class="product-container">
-      <h3 class="name">{{ category_name.Category_Name }} / {{ product['Product_Name'] }}</h3>
-      <div class="image-container">
-        <img class="product-img" src="{{ url_for('static', filename='images/products/' + product['ImageFileName']) }}" alt="Product Image" width="200" height="200">
-      </div>
+        <div class="column column-right"> 
+    {% for product in product_data %}
+    <h4>VIEW PRODUCTS</h4>
 
-      <div id="product-var">            
+    <div class="product-view-wrapper" data-product-id="{{ product['ProductID'] }}">
+        
+        <!-- LEFT SIDE -->
+        <div class="product-container">
+            <h3 class="name">{{ category_name.Category_Name }} / {{ product['Product_Name'] }}</h3>
+
+            <div class="image-container">
+                <img class="product-img" 
+                     src="{{ url_for('static', filename='images/products/' + product['ImageFileName']) }}" 
+                     alt="Product Image">
+            </div>
+
+            <!-- REMOVED: product-var and Add to Cart button from here -->
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="viewproduct-container">
+
+            <p class="product-name">{{ product['Product_Name'] }}</p>    
+
+            <p class="variation">Units:</p>
+            {% for unit in product['Units'] %}
+                <button class="unit-button" data-unit="{{ unit }}">{{ unit }}</button>
+            {% endfor %}
+
+            <p class="variation">Prices:</p>
+            {% for price in product['Prices'] %}
+                <button class="price-button unclickable" data-price="{{ price }}">{{ price }}</button>
+            {% endfor %}
+
+           <div class="product-action-wrapper">
+    <!-- Quantity + Plus/Minus -->
+    <div id="product-var">            
         <div id="quan-disp"></div>
         <div id="plusminuscart"></div>
-      </div>
-
-      <div>
-        <button class="btn-addtocart" data-product-id="{{ product['ProductID'] }}">ADD TO CART</button>
-      </div>
     </div>
 
-    <div class="viewproduct-container">
-      <p class="product-name">{{ product['Product_Name'] }}</p>    
-      <p class="variation">Units:</p>
-      {% for unit in product['Units'] %}
-        <button class="unit-button" data-unit="{{ unit }}">{{ unit }}</button>
-      {% endfor %}
+    <!-- Add to Cart Button -->
+    <button class="btn-addtocart" data-product-id="{{ product['ProductID'] }}">
+        ADD TO CART
+    </button>
 
-      <p class="variation">Prices:</p>
-      {% for price in product['Prices'] %}
-        <button class="price-button unclickable" data-price="{{ price }}">{{ price }}</button>
-      {% endfor %}
+        </div>
+
     </div>
-  </div>
-{% endfor %}
+    {% endfor %}
+</div>
 
-            </div>
             
         </div>
     </div>

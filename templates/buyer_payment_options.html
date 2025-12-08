@@ -19,14 +19,6 @@
         <div class="tagline">Connecting you to Local Farmers</div>
     </header>
  
-    <!-- Navigation Menu -->
-    <nav class="nav-menu">
-        <ul>
-          <li><a href="{{ url_for('homepage_buyer.homepage_buyer') }}">Home</a></li>
-          <li><a href="#contacts">Contacts</a></li>
-        </ul>
-      </nav>
-   
     <!-- Breadcrumb Navigation -->
     <nav class="main-nav">
         <ul class="breadcrumb">
@@ -51,21 +43,37 @@
         </div>
     </nav>
    
-    <div class="container">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="status">
-      <h3>ACCOUNT</h3>
-      <ul class="status-list">
-        <li><a href="{{ url_for('buyer_account.buyer_account') }}" class="account-btn">My Account</a></li>
-        <li><a href="{{ url_for('buyer_payment_options.buyer_payment_options') }}" class="account-btn">Banks & Cards</a></li>
-        <li><a href="{{ url_for('buyer_address.buyer_address') }}" class="account-btn">Addresses</a></li>
-        <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
-            <button class="logout-btn" type="submit">Logout</button>
-        </form>
-      </ul>
-    </div>
-  </aside>
+    <div class="container"> 
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="status">
+            <h3>ACCOUNT</h3>
+            <ul class="status-list">
+                <li>
+                    <a href="{{ url_for('buyer_account.buyer_account') }}" class="status-item {% if active_page == 'account' %}active{% endif %}">
+                        <i class="fas fa-user"></i> My Account
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('buyer_payment_options.buyer_payment_options') }}" class="status-item active">
+                        <i class="fas fa-credit-card"></i> Banks & Cards
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('buyer_address.buyer_address') }}" class="status-item {% if active_page == 'addresses' %}active{% endif %}">
+                        <i class="fas fa-map-marker-alt"></i> Addresses
+                    </a>
+                </li>
+                <li>
+                    <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
+                        <button class="status-item logout-btn" type="submit">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </aside>
         <main class="main-container">
             <section class="payment-options-box">
                 <h2>Select Your Payment Methods</h2>
