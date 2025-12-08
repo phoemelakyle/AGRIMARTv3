@@ -536,70 +536,68 @@ body {
     margin: 0;
   }
 
-.top-content-container {
-  max-width: 1400px;
-  margin: 20px auto;
+.container {
+  display: flex;
+  gap: 20px;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #f9f9f9;
   padding: 20px;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  border-radius: 10px;
 }
 
-.stat-box.low-stock {
-    background-color: #f4f136; /* yellow */
-    color: white;
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.stat-box.in-stock {
-    background-color: #4CAF50; /* green */
-    color: black;
+.container-box {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-.stat-box.restock {
-    background-color: #F44336; /* red */
-    color: black;
+.business-snapshot .snapshot-stats {
+  display: flex;
+  gap: 20px; 
+  margin-top: 15px;
 }
 
-/* Optional styling for better appearance */
-.stat-box {
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    flex: 1;
-    margin: 5px;
-}
-.stats-container {
-    display: flex;
-    gap: 10px;
+.tracking-orders .track-orders {
+  display: flex;
+  gap: 20px; 
+  margin-top: 15px;
 }
 
-.variation-container {
-    margin-top: 5px;
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
+.stat-item, .track-item {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  flex: 1; 
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* added shadow */
+  transition: box-shadow 0.3s ease, transform 0.2s ease; /* smooth hover effect */
 }
 
-.variation-unit {
-    display: inline-block;
-    padding: 5px 12px;
-    border-radius: 15px;
-    color: white;
-    text-align: center;
-    font-size: 14px;
-    font-weight: bold;
+.top-performing-products .top-products {
+  display: flex;
+  flex-direction: column; /* stack cards vertically */
+  gap: 20px; 
+  margin-top: 15px;
 }
 
-/* Status-specific colors */
-.variation-unit.in-stock {
-    background-color: #4CAF50; 
-}
-
-.variation-unit.restock {
-    background-color: #F44336; 
-}
-
-.variation-unit.low-stock {
-    background-color: #f4f136; 
+.product-card {
+  display: flex; /* keeps image and info side by side */
+  gap: 15px;
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: left;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* added shadow */
+  transition: box-shadow 0.3s ease, transform 0.2s ease; /* smooth hover effect */
 }

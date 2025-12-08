@@ -159,14 +159,14 @@ def fetch_address_by_id(address_id):
     conn.close()
     return address
 
-def count_live_variations(seller_id):
+def count_in_stock_variations(seller_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     query = """
         SELECT COUNT(*)
         FROM product_variation pv
         JOIN product p ON pv.ProductID = p.ProductID
-        WHERE pv.Status = 'live' AND p.SellerID = %s
+        WHERE pv.Status = 'in-stock' AND p.SellerID = %s
     """
     cursor.execute(query, (seller_id,))
     count = cursor.fetchone()[0]
@@ -181,7 +181,7 @@ def count_restock_variations(seller_id):
         SELECT COUNT(*)
         FROM product_variation pv
         JOIN product p ON pv.ProductID = p.ProductID
-        WHERE pv.Quantity = 0 AND p.SellerID = %s
+        WHERE pv.Status = 'restock' AND p.SellerID = %s
     """
     cursor.execute(query, (seller_id,))
     count = cursor.fetchone()[0]
@@ -189,26 +189,34 @@ def count_restock_variations(seller_id):
     conn.close()
     return count
 
-def calculate_total_revenue(seller_id):
+def count_low_stock_variations(seller_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-
     query = """
-        SELECT so.Quantity, pv.Price
-        FROM seller_order so
-        JOIN product_variation pv ON so.VariationID = pv.VariationID
+        SELECT COUNT(*)
+        FROM product_variation pv
         JOIN product p ON pv.ProductID = p.ProductID
-        WHERE so.SellerID = %s AND so.Order_Status = 'delivered'
+        WHERE pv.Status = 'low-stock' AND p.SellerID = %s
     """
     cursor.execute(query, (seller_id,))
-    rows = cursor.fetchall()
-
-    total_revenue = sum(quantity * float(price) for quantity, price in rows)
-
+    count = cursor.fetchone()[0]
     cursor.close()
     conn.close()
-    return total_revenue
+    return count
 
+def count_total_products(seller_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = """
+        SELECT COUNT(*)
+        FROM product
+        WHERE SellerID = %s
+    """
+    cursor.execute(query, (seller_id,))
+    count = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    return count
 
 @homepage_seller_app.route('/delete_product/<string:product_id>', methods=['POST'])
 def delete_product(product_id):
@@ -251,17 +259,19 @@ def homepage_seller():
     for product in products:
         product['variations'] = fetch_variations_for_product(product['ProductID'])
     
-    live_listings_count = count_live_variations(user_id)
+    in_stock_count = count_in_stock_variations(user_id)
     restock_count = count_restock_variations(user_id)
-    total_revenue = calculate_total_revenue(user_id) 
+    low_stock_count = count_restock_variations(user_id)
+    total_products = count_total_products(user_id)
 
     return render_template(
         'homepage_seller.html', 
         products=products, 
         username=username,
-        live_listings_count=live_listings_count,
+        in_stock_count=in_stock_count,
         restock_count=restock_count,
-        total_revenue=total_revenue 
+        low_stock_count=low_stock_count,
+        total_products=total_products
     )
 
 
@@ -329,13 +339,6 @@ def edit_product(product_id):
 def logout():
     session.pop('user_id', None)
     return redirect('/login')
-
-@homepage_seller_app.route('/dashboard')
-def dashboard():
-    user_id = session.get("user_id")
-    if not user_id:
-        return redirect('/login') 
-    return render_template('dashboard.html')
 
 @homepage_seller_app.route('/edit_product/<string:product_id>')
 def variations(product_id):

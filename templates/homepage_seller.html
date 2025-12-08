@@ -52,22 +52,22 @@
 
   <div class="top-content-container">
     <h2>Welcome, {{ username }}!</h2>
-    <p>Manage listings, monitor revenue, and keep your AngkatAni storefront fresh.</p>
+    <p>You have {{ total_products }} products. Monitor the stock of each product variation here.</p>
 
     <div class="stats-container">
-      <div class="stat-box">
-          <h4>TOTAL REVENUE</h4>
-          <h2>₱{{ total_revenue }}</h2>
-          <p>From all sold products</p>
+      <div class="stat-box low-stock">
+          <h4>LOW STOCK</h4>
+          <h2>{{ low_stock_count }}</h2>
+          <p>Products running low</p>
       </div>
 
-      <div class="stat-box">
-        <h4>LIVE LISTINGS</h4>
-        <h2>{{ live_listings_count }}</h2>
+      <div class="stat-box in-stock">
+        <h4>IN STOCK</h4>
+        <h2>{{ in_stock_count }}</h2>
         <p>Products ready for buyers</p>
       </div>
 
-      <div class="stat-box">
+      <div class="stat-box restock">
           <h4>RESTOCK</h4>
           <h2>{{ restock_count }}</h2>
           <p>Products out of stock</p>
@@ -125,9 +125,12 @@
           </div>
           <div class="variation-container">
               {% for variation in product['variations'] %}
-                  <span class="variation-unit {{ 'live' if variation['Status'] == 'live' else 'restock' }}">
-                      {{ variation['Unit'] }}
-                  </span>
+                <span class="variation-unit 
+                  {% if variation['Status'] == 'in-stock' %}in-stock
+                  {% elif variation['Status'] == 'low-stock' %}low-stock
+                  {% else %}restock{% endif %}">
+                  {{ variation['Unit'] }}
+                </span>
               {% endfor %}
           </div>
           <div class="button-container">
@@ -238,26 +241,26 @@
       });
     });
 
-    document.getElementById("addProductBtn").addEventListener("click", function () {
-      fetch("/check_payment_options")
-          .then(response => response.json())
-          .then(data => {
-              if (data.hasPayment) {
-                  window.location.href = "/add_product";
-              } else {
-                  Swal.fire({
-                      icon: 'warning',
-                      title: 'Set Payment Options First',
-                      text: 'Before adding a product, please set your payment options.',
-                      confirmButtonText: 'Go to Payment Options'
-                  }).then((result) => {
-                      if (result.isConfirmed) {
-                          window.location.href = "/payment_options"; 
-                      }
-                  });
-              }
-          });
-    });
+     document.getElementById("addProductBtn").addEventListener("click", function () {
+    fetch("/check_payment_options")
+        .then(response => response.json())
+        .then(data => {
+            if (data.hasPayment) {
+                window.location.href = "/add_product";
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Set Payment Options First',
+                    text: 'Before adding a product, please set your payment options.',
+                    confirmButtonText: 'Go to Payment Options'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/payment_options"; 
+                    }
+                });
+            }
+        });
+});
     </script>
   </body>
 </html>

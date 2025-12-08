@@ -458,10 +458,16 @@ def decrease_quantity(variation_id, cart_quantity):
         update_query = "UPDATE product_variation SET Quantity = %s WHERE VariationID = %s"
         cursor.execute(update_query, (new_quantity, variation_id))
 
-        # If quantity is now 0, set status to 'restock'
+        # Update status based on new quantity
         if new_quantity == 0:
-            status_query = "UPDATE product_variation SET Status = 'restock' WHERE VariationID = %s"
-            cursor.execute(status_query, (variation_id,))
+            status = 'restock'
+        elif 0 < new_quantity < 10:
+            status = 'low-stock'
+        else:
+            status = 'in-stock'
+
+        status_query = "UPDATE product_variation SET Status = %s WHERE VariationID = %s"
+        cursor.execute(status_query, (status, variation_id))
 
         conn.commit()
 

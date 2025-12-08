@@ -1,161 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" type="text/css" href="../static/css/homepage_seller.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/dashboard.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agrimart - Homepage Seller</title>
+    <title>AngkatAni - Seller Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_buyer.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <body>
  
-    <!-- Header -->
-    <header class="top-bar">
-      <div class="logo">
+      <!-- Header -->
+      <header class="top-bar">
+        <div class="logo">
           <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-          Agrimart
-      </div>          
-      <div class="tagline">Connecting you to Local Farmers</div>
-    </header>
- 
-    <!-- Navigation Menu -->
-    <nav class="nav-menu">
-      <ul>
-        <li><a href="/homepage_seller">Home</a></li>
-        <li><a href="#contacts">Contacts</a></li>
+          AngkatAni
+        </div>          
+        <div class="tagline">Connecting you to Local Farmers</div>
+      </header>
+  
+      <!-- Navigation Menu -->
+      <nav class="nav-menu">
+        <ul>
+          <li><a href="/homepage_seller">Home</a></li>
+          <li><a href="#contacts">Contacts</a></li>
+        </ul>
+      </nav>
+    
+      <!-- Breadcrumb Navigation -->
+    <nav class="main-nav">
+      <ul class="breadcrumb">
+        <li><a href="/homepage_seller"> <i class="fas fa-home"></i></a></li>
+        <li>›</li>
+        <li>
+          <a href="/homepage_seller" class="button">Homepage Seller</a>
+        </li> 
       </ul>
+   
+      <div class="user-dropdown" id="userDropdown">
+        <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
+        <div class="user-menu" id="userMenu">
+          <a href="{{ url_for('seller_account.seller_account') }}" class="account-btn">My Account</a>
+          <form action="{{ url_for('homepage_seller.logout') }}" method="post">
+            <button class="logout-btn" type="submit">Logout</button>
+          </form>
+        </div>
+      </div>
     </nav>
-   
-    <!-- Breadcrumb Navigation -->
-  <nav class="main-nav">
-    <ul class="breadcrumb">
-      <li><a href="/homepage_seller"> <i class="fas fa-home"></i></a></li>
-      <li>›</li>
-      <li>
-        <a href="/homepage_seller" class="button">Homepage Seller</a>
-      </li>
-     
-       
-    </ul>
-   
-    <div class="user-dropdown" id="userDropdown">
-      <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
-      <div class="user-menu" id="userMenu">
-     <a href="{{ url_for('seller_account.seller_account') }}" class="account-btn">My Account</a>
-        <form action="{{ url_for('homepage_seller.logout') }}" method="post">
-          <button class="logout-btn" type="submit">Logout</button>
-        </form>
-      </div>
-    </div>
-  </div>
-  </nav>
  
-<div class="container">
-  <aside class="sidebar">
-  <div class="status">
-    <h3>SELLER MENU</h3>
-    <ul class="status-list">
-      <li>
-        <form action="/homepage_seller" method="get">
-          <button type="submit" class="status-item">
-            <i class="fas fa-home"></i> Homepage
-          </button>
-        </form>
-      </li>
-      <li>
-        <form action="{{ url_for('seller_orders.unpaid_orders') }}" method="get">
-          <button type="submit" class="status-item">
-            <i class="fas fa-receipt"></i> Orders
-          </button>
-        </form>
-      </li>
-      <li>
-        <button type="button" class="status-item" id="addProductBtn">
-                            <i class="fas fa-plus-circle"></i> Add Product
-        </button>
-      </li>
-      <li>
-        <form action="/dashboard" method="get">
-          <button type="submit" class="status-item">
-            <i class="fas fa-tachometer-alt"></i> Dashboard
-          </button>
-        </form>
-      </li>
-    </ul>
-  </div>
-  </aside>
- 
+    <div class="container">
+      <aside class="sidebar">
+        <div class="status">
+          <h3>SELLER MENU</h3>
+          <ul class="status-list">
+            <li>
+              <form action="/homepage_seller" method="get">
+                <button type="submit" class="status-item">
+                  <i class="fas fa-home"></i> Homepage
+                </button>
+              </form>
+            </li>
+            <li>
+              <form action="{{ url_for('seller_orders.unpaid_orders') }}" method="get">
+                <button type="submit" class="status-item">
+                  <i class="fas fa-receipt"></i> Orders
+                </button>
+              </form>
+            </li>
+            <li>
+              <button type="button" class="status-item" id="addProductBtn">
+                <i class="fas fa-plus-circle"></i> Add Product
+              </button>
+            </li>
+            <li>
+              <form action="/dashboard" method="get">
+                <button type="submit" class="status-item">
+                  <i class="fas fa-tachometer-alt"></i> Dashboard
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </aside>
 
-</div>
+      <!-- Right-side main content -->
+      <div class="main-content">
+        <!-- 1. Business Snapshot -->
+        <section class="business-snapshot container-box">
+          <h2>Hey {{ username }}!</h2>
+          <p>Check out your dashboard and see how your farm business is growing.</p>
+          <h3>Business Snapshot</h3>
+          <div class="snapshot-stats">
+
+            <div class="stat-item">
+              <h4>TOTAL REVENUE</h4>
+              <h2>₱{{ total_revenue }}</h2>
+              <p>From all sold products</p>
+            </div>
+
+            <div class="stat-item">
+              <h4>TOTAL SOLD</h4>
+              <h2>{{ total_sold_variations }}</h2>
+              <p>Unique products sold</p>
+            </div>
+
+            <div class="stat-item">
+              <h4>DELIVERED ORDERS</h4>
+              <h2>{{ total_delivered_orders }}</h2>
+              <p>Orders successfully delivered</p>
+            </div>
+
+            <div class="stat-item">
+              <h4>AVERAGE ORDER VALUE</h4>
+              <h2>₱{{ average_order_value }}</h2>
+              <p>Average amount spent per order</p>
+            </div>
+          </div>
+        </section>  
+
+        <!-- 2. Statistics -->
+        <section class="statistics container-box">
+          <h3>Statistics</h3>
+          <h4>Sales in the Last 7 Days</h4>
+          <canvas id="salesBarChart7" width="400" height="200"></canvas>
+
+          <h4>Sales in the Last 30 Days</h4>
+          <canvas id="salesBarChart30" width="400" height="200"></canvas>
+        </section>
+
+        <!-- 3. Tracking Orders -->
+        <section class="tracking-orders container-box">
+          <h3>Tracking Orders</h3>
+          <div class="track-orders">
+
+            <div class="track-item">
+              <h4>UNPAID</h4>
+              <h2>{{ pending_payments }}</h2>
+              <p>Orders waiting for payment</p>
+            </div>
+
+            <div class="track-item">
+              <h4>TO SHIP</h4>
+              <h2>{{ to_ship }}</h2>
+              <p>Orders ready for shipment</p>
+            </div>
+
+            <div class="track-item">
+              <h4>SHIPPING</h4>
+              <h2>{{ shipping }}</h2>
+              <p>Orders currently in transit</p>
+            </div>
+
+            <div class="track-item">
+              <h4>CANCELLED</h4>
+              <h2>{{ cancelled }}</h2>
+              <p>Orders canceled by buyer</p>
+            </div>
+
+          </div>
+        </section>
+
+        <section class="top-performing-products container-box">
+          <h3>Top Performing Products</h3>
+          <div class="top-products">
+            {% for product in top_products %}
+              <div class="product-card">
+                <!-- Product Image -->
+                <img class="product-img" 
+                    src="{{ url_for('static', filename='images/products/' + product['ImageFilename']) }}" 
+                    alt="{{ product.Product_Name }}" 
+                    width="100" 
+                    height="100">
+
+                <!-- Product Info -->
+                <div class="product-info">
+                  <h4 style="margin: 0;">{{ product.Product_Name }}</h4>
+                  <p>{{ product.Unit }}</p>
+                  <p>Sold: {{ product.total_sold }}</p>
+                  <p>Revenue: ₱{{ "%.2f"|format(product.revenue) }}</p>
+                </div>
+              </div>
+            {% else %}
+              <p>No products sold yet.</p>
+            {% endfor %}
+          </div>
+        </section>
+      </div>
+    </div>
+
     <!-- Newsletter -->
- <section id="contacts" class="newsletter">
-    <div class="newsletter-content">
-      <div class="newsletter-text">
-        <h3><i class="fas fa-envelope"></i> Subscribe to our Newsletter</h3>
-        <p>Stay connected with the latest updates and local farm offers.</p>
+    <section id="contacts" class="newsletter">
+      <div class="newsletter-content">
+        <div class="newsletter-text">
+          <h3><i class="fas fa-envelope"></i> Subscribe to our Newsletter</h3>
+          <p>Stay connected with the latest updates and local farm offers.</p>
+        </div>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Your email address" required />
+          <button type="submit">Subscribe</button>
+        </form>
+        <div class="social-icons">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
       </div>
-      <form class="newsletter-form">
-        <input type="email" placeholder="Your email address" required />
-        <button type="submit">Subscribe</button>
-      </form>
-      <div class="social-icons">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-      </div>
-    </div>
-  </section>
+    </section>
  
-  <!-- Footer -->
-  <footer class="main-footer">
-    <div class="footer-content">
-      <div class="footer-about">
-        <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-        Agrimart
-   
-        <p>Empowering farmers and connecting communities through sustainable commerce.</p>
-        <p><strong>09271674524</strong><br />agrimart@.com</p>
+    <!-- Footer -->
+    <footer class="main-footer">
+      <div class="footer-content">
+        <div class="footer-about">
+          <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
+          AngkatAni
+          <p>Empowering farmers and connecting communities through sustainable commerce.</p>
+          <p><strong>09271674524</strong><br />angkatani@.com</p>
+        </div>
+        <div class="footer-columns">
+          <div>
+            <h5>My Account</h5>
+            <ul>
+              <li>My Account</li>
+              <li>Order History</li>
+              <li>Shopping Cart</li>
+              <li>Wishlist</li>
+            </ul>
+          </div>
+          <div>
+            <h5>Help</h5>
+            <ul>
+              <li>Contact</li>
+              <li>FAQs</li>
+              <li>Terms & Conditions</li>
+              <li>Privacy Policy</li>
+            </ul>
+          </div>
+          <div>
+            <h5>Proxy</h5>
+            <ul>
+              <li>About</li>
+              <li>Shop</li>
+              <li>Product</li>
+              <li>Track Order</li>
+            </ul>
+          </div>
+          <div>
+            <h5>Categories</h5>
+            <ul>
+              <li>Order History</li>
+              <li>Shopping Cart</li>
+              <li>Wishlist</li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <div class="footer-columns">
-        <div>
-          <h5>My Account</h5>
-          <ul>
-            <li>My Account</li>
-            <li>Order History</li>
-            <li>Shopping Cart</li>
-            <li>Wishlist</li>
-          </ul>
-        </div>
-        <div>
-          <h5>Help</h5>
-          <ul>
-            <li>Contact</li>
-            <li>FAQs</li>
-            <li>Terms & Conditions</li>
-            <li>Privacy Policy</li>
-          </ul>
-        </div>
-        <div>
-          <h5>Proxy</h5>
-          <ul>
-            <li>About</li>
-            <li>Shop</li>
-            <li>Product</li>
-            <li>Track Order</li>
-          </ul>
-        </div>
-        <div>
-          <h5>Categories</h5>
-          <ul>
-            <li>Order History</li>
-            <li>Shopping Cart</li>
-            <li>Wishlist</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </footer>
+    </footer>
  
     <!-- JavaScript -->
     <script>
@@ -164,18 +265,16 @@
           this.closest('form').submit();
         });
       });
-    </script>
-    <script>
+
       document.addEventListener('DOMContentLoaded', function () {
         const userIcon = document.getElementById('userIcon');
         const userMenu = document.getElementById('userMenu');
    
         userIcon.addEventListener('click', function (event) {
           userMenu.classList.toggle('show');
-          event.stopPropagation(); // Prevents event from bubbling up
+          event.stopPropagation(); 
         });
-   
-        // Close the dropdown if clicked outside
+
         document.addEventListener('click', function (event) {
           if (!userMenu.contains(event.target)) {
             userMenu.classList.remove('show');
@@ -183,29 +282,128 @@
         });
       });
 
-            document.getElementById("addProductBtn").addEventListener("click", function () {
-    fetch("/check_payment_options")
-        .then(response => response.json())
-        .then(data => {
-            if (data.hasPayment) {
-                window.location.href = "/add_product";
-            } else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Set Payment Options First',
-                    text: 'Before adding a product, please set your payment options.',
-                    confirmButtonText: 'Go to Payment Options'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "/payment_options"; 
-                    }
-                });
-            }
-        });
+       document.getElementById("addProductBtn").addEventListener("click", function () {
+          fetch("/check_payment_options")
+              .then(response => response.json())
+              .then(data => {
+                  if (data.hasPayment) {
+                      window.location.href = "/add_product";
+                  } else {
+                      Swal.fire({
+                          icon: 'warning',
+                          title: 'Set Payment Options First',
+                          text: 'Before adding a product, please set your payment options.',
+                          confirmButtonText: 'Go to Payment Options'
+                      }).then((result) => {
+                          if (result.isConfirmed) {
+                              window.location.href = "/payment_options"; 
+                          }
+                      });
+                  }
+              });
+      });
+
+      // For graph 
+Chart.register(ChartDataLabels);
+
+// Last 7 days
+const salesData7 = {{ sales_last_7_days | tojson }};
+const values7 = Object.values(salesData7);
+const avg7 = values7.reduce((a,b) => a + b, 0) / values7.length;
+
+// Function to interpolate colors
+function getGradientColor(value, avg) {
+    const diff = Math.abs(value - avg);
+    const factor = Math.min(diff / avg, 1); // normalize 0-1
+    if (value >= avg) {
+        // Green gradient: light to solid
+        return `rgba(${40 - factor*20}, ${167 + factor*88}, ${69 - factor*69}, 0.7)`; 
+    } else {
+        // Red gradient: light to solid
+        return `rgba(${220 + factor*35}, ${53 - factor*53}, ${69 - factor*69}, 0.7)`;
+    }
+}
+
+const colors7 = values7.map(v => getGradientColor(v, avg7));
+const borderColors7 = colors7.map(c => c.replace('0.7','1'));
+
+const ctx7 = document.getElementById('salesBarChart7').getContext('2d');
+new Chart(ctx7, {
+    type: 'bar',
+    data: {
+        labels: Object.keys(salesData7),
+        datasets: [{
+            label: 'Revenue (₱)',
+            data: values7,
+            backgroundColor: colors7,
+            borderColor: borderColors7,
+            borderWidth: 1,
+            borderRadius: 10
+        }]
+    },
+    options: {
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => '₱' + ctx.raw } },
+            datalabels: { anchor: 'end', align: 'end', color: '#000', font: { weight: 'bold' } }
+        },
+        scales: {
+            x: { grid: { display: false } },
+            y: { beginAtZero: true, grid: { display: false }, ticks: { callback: v => '₱' + v } }
+        }
+    },
+    plugins: [ChartDataLabels]
 });
+
+// Last 30 days
+const salesData30 = {{ sales_last_30_days | tojson }};
+const values30 = Object.values(salesData30);
+const avg30 = values30.reduce((a,b) => a + b, 0) / values30.length;
+
+// Function to interpolate colors
+function getGradientColor(value, avg) {
+    const diff = Math.abs(value - avg);
+    const factor = Math.min(diff / avg, 1); // normalize 0-1
+    if (value >= avg) {
+        // Green gradient: light to solid
+        return `rgba(${40 - factor*20}, ${167 + factor*88}, ${69 - factor*69}, 0.7)`; 
+    } else {
+        // Red gradient: light to solid
+        return `rgba(${220 + factor*35}, ${53 - factor*53}, ${69 - factor*69}, 0.7)`;
+    }
+}
+
+const colors30 = values30.map(v => getGradientColor(v, avg30));
+const borderColors30 = colors30.map(c => c.replace('0.7','1'));
+
+const ctx30 = document.getElementById('salesBarChart30').getContext('2d');
+new Chart(ctx30, {
+    type: 'bar',
+    data: {
+        labels: Object.keys(salesData30),
+        datasets: [{
+            label: 'Revenue (₱)',
+            data: values30,
+            backgroundColor: colors30,
+            borderColor: borderColors30,
+            borderWidth: 1,
+            borderRadius: 10
+        }]
+    },
+    options: {
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => '₱' + ctx.raw } },
+            datalabels: { anchor: 'end', align: 'end', color: '#000', font: { weight: 'bold' } }
+        },
+        scales: {
+            x: { grid: { display: false } },
+            y: { beginAtZero: true, grid: { display: false }, ticks: { callback: v => '₱' + v } }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
+
     </script>
- 
-   
   </body>
   </html>
- 

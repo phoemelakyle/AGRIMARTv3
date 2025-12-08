@@ -105,9 +105,18 @@ class Product:
                 if cursor.fetchone():  
                     continue  
 
+                # Determine status based on quantity
+                qty = variation['quantity']
+                if qty == 0:
+                    status = 'restock'
+                elif qty < 10:
+                    status = 'low-stock'
+                else:  # qty >= 10
+                    status = 'in-stock'
+
                 variation_id = self.generate_variation_id()
                 variation_query = "INSERT INTO product_variation (VariationID, ProductID, Unit, Price, Quantity, Status) VALUES (%s, %s, %s, %s, %s, %s)"
-                variation_values = (variation_id, self.product_id, variation.get('unit', None), variation['price'], variation['quantity'], 'live')
+                variation_values = (variation_id, self.product_id, variation.get('unit', None), variation['price'], qty, status)
                 cursor.execute(variation_query, variation_values)
                 conn.commit()
 
