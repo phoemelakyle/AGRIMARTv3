@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import Navigation from '../components/Navigation'
-import { fetchPaymentOptions, savePaymentOptions } from '../api/agrimartApi'
+import { fetchPaymentOptions, logoutUser, savePaymentOptions } from '../api/agrimartApi'
 import './BuyerPaymentOptions.css'
 
 const CASH_ONLY_METHOD = 'Cash on Delivery'
@@ -13,6 +13,9 @@ const BuyerPaymentOptions = () => {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const navigate = useNavigate()
+  const dropdownRef = useRef(null)
 
   const hydrateState = (methodList, options) => {
     const next = {}
@@ -46,6 +49,16 @@ const BuyerPaymentOptions = () => {
     loadPaymentOptions()
   }, [])
 
+  useEffect(() => {
+    const handleBodyClick = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setUserMenuOpen(false)
+      }
+    }
+    document.addEventListener('click', handleBodyClick)
+    return () => document.removeEventListener('click', handleBodyClick)
+  }, [])
+
   const handleToggleMethod = (methodName) => {
     setFormState((prev) => {
       const current = prev[methodName] ?? { enabled: false, account: '' }
@@ -77,6 +90,7 @@ const BuyerPaymentOptions = () => {
     setError('')
     const payloadOptions = {}
     let missingMethod = ''
+
     Object.entries(formState).forEach(([methodName, state]) => {
       if (!state?.enabled) {
         return
@@ -108,98 +122,205 @@ const BuyerPaymentOptions = () => {
     }
   }
 
+  const handleLogout = async () => {
+    await logoutUser()
+    navigate('/login')
+  }
+
+  const makeId = (label) =>
+    (label || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+
   return (
-    <>
+    <div className="buyer-payment-page">
       <Navigation />
-      <section className="page-shell space-y-6">
-        <div className="mx-auto max-w-6xl">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-slate-500">Buyer account</p>
-              <h1 className="text-3xl font-semibold text-slate-900">Payment methods</h1>
-              <p className="text-sm text-slate-500">Keep your bank and wallet details current for quick checkout.</p>
-            </div>
-            <Link to="/homepage_buyer" className="shop-btn text-sm px-4 py-2">
-              Back to shopping
+      <nav className="nav-menu">
+        <ul>
+          <li>
+            <Link to="/homepage_buyer">Home</Link>
+          </li>
+          <li>
+            <a href="#contacts">Contacts</a>
+          </li>
+        </ul>
+      </nav>
+
+      <nav className="main-nav">
+        <ul className="breadcrumb">
+          <li>
+            <Link to="/homepage_buyer">
+              <i className="fas fa-home" />
             </Link>
+          </li>
+          <li>›</li>
+          <li>
+            <Link to="/buyer_payment_options" className="button">
+              Payment Options
+            </Link>
+          </li>
+        </ul>
+      </nav>
+
+      <div className="container">
+        <aside className="sidebar">
+          <div className="status">
+            <h3>ACCOUNT</h3>
+            <ul className="status-list">
+              <li>
+                <Link to="/buyer_account" className="account-btn">
+                  My Account
+                </Link>
+              </li>
+              <li>
+                <Link to="/buyer_payment_options" className="account-btn">
+                  Banks &amp; Cards
+                </Link>
+              </li>
+              <li>
+                <Link to="/buyer_address" className="account-btn">
+                  Addresses
+                </Link>
+              </li>
+            </ul>
+            <button type="button" className="logout-btn sidebar-logout" onClick={handleLogout}>
+              Logout
+            </button>
           </div>
-        </div>
+        </aside>
 
-        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[240px_1.2fr]">
-          <aside className="payment-sidebar">
-            <div className="status">
-              <h3>Account</h3>
-              <ul>
-                <li>
-                  <Link to="/buyer_account" className="account-btn">
-                    My Account
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/buyer_payment_options" className="account-btn">
-                    Banks &amp; Cards
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/buyer_address" className="account-btn">
-                    Addresses
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/cart" className="account-btn">
-                    Cart
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </aside>
-
-          <section className="payment-panel">
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <main className="main-container">
+          <section className="payment-options-box">
+            <h2>Select Your Payment Methods</h2>
+            <form className="payment-form" onSubmit={handleSubmit}>
               {message && <p className="info-message">{message}</p>}
               {error && <p className="error-message">{error}</p>}
-              <div className="payment-methods">
+              <div className="payment-options">
                 {loading ? (
-                  <p className="text-sm text-slate-500">Loading payment methods…</p>
+                  <p className="loading-text">Loading payment methods…</p>
                 ) : (
                   methods.map((method) => {
                     const state = formState[method.name] ?? { enabled: false, account: '' }
+                    const methodId = makeId(method.name)
                     return (
-                      <label key={method.name} className="payment-row">
-                        <div className="flex items-center gap-3">
+                      <article key={method.name} className={`payment-option ${state.enabled ? 'active' : ''}`}>
+                        <label className="payment-row" htmlFor={`method-${methodId}`}>
                           <input
                             type="checkbox"
+                            id={`method-${methodId}`}
                             checked={state.enabled}
                             onChange={() => handleToggleMethod(method.name)}
-                            className="accent-emerald-500"
+                            className="custom-checkbox"
                           />
-                          <span className="text-base font-semibold text-slate-900">{method.name}</span>
-                        </div>
-                        {method.name !== CASH_ONLY_METHOD && (
-                          <input
-                            type="text"
-                            placeholder="Account number"
-                            value={state.account}
-                            onChange={(event) => handleAccountChange(method.name, event.target.value)}
-                            disabled={!state.enabled}
-                          />
+                          <span className="payment-label">{method.name}</span>
+                        </label>
+                        {method.name !== CASH_ONLY_METHOD ? (
+                          <div className="account-number" style={{ display: state.enabled ? 'block' : 'none' }}>
+                            <label htmlFor={`account-${methodId}`}>Account Number</label>
+                            <input
+                              id={`account-${methodId}`}
+                              type="text"
+                              placeholder="Account number"
+                              value={state.account}
+                              onChange={(event) => handleAccountChange(method.name, event.target.value)}
+                              disabled={!state.enabled}
+                            />
+                          </div>
+                        ) : (
+                          <p className="account-hint">No account number needed for cash payments.</p>
                         )}
-                        {method.name === CASH_ONLY_METHOD && (
-                          <p className="text-xs text-slate-500">No account needed for cash payments.</p>
-                        )}
-                      </label>
+                      </article>
                     )
                   })
                 )}
               </div>
-              <button type="submit" className="button1" disabled={saving || loading || activeMethods.length === 0}>
-                {saving ? 'Saving…' : 'Save payment options'}
+              <button
+                type="submit"
+                className="save"
+                disabled={saving || loading || activeMethods.length === 0}
+              >
+                {saving ? 'Saving…' : 'SAVE PAYMENT OPTIONS'}
               </button>
             </form>
           </section>
+        </main>
+      </div>
+
+      <section className="newsletter" id="contacts">
+        <div className="newsletter-content">
+          <div className="newsletter-text">
+            <h3>
+              <i className="fas fa-envelope" /> Subscribe to our Newsletter
+            </h3>
+            <p>Stay connected with the latest updates and local farm offers.</p>
+          </div>
+          <form className="newsletter-form">
+            <input type="email" placeholder="Your email address" required />
+            <button type="submit">Subscribe</button>
+          </form>
+          <div className="social-icons">
+            <a href="#" aria-label="Facebook">
+              <i className="fab fa-facebook-f" />
+            </a>
+            <a href="#" aria-label="Twitter">
+              <i className="fab fa-twitter" />
+            </a>
+            <a href="#" aria-label="Instagram">
+              <i className="fab fa-instagram" />
+            </a>
+          </div>
         </div>
       </section>
-    </>
+
+      <footer className="main-footer">
+        <div className="footer-content">
+          <div className="footer-about">
+            <img src="/images/logo.png" alt="AngkatAni Logo" className="logo-icon" />
+            AngkatAni
+            <p>Empowering farmers and connecting communities through sustainable commerce.</p>
+            <p>
+              <strong>09271674524</strong>
+              <br /> angkatani@.com
+            </p>
+          </div>
+          <div className="footer-columns">
+            <div>
+              <h5>My Account</h5>
+              <ul>
+                <li>My Account</li>
+                <li>Order History</li>
+                <li>Shopping Cart</li>
+                <li>Wishlist</li>
+              </ul>
+            </div>
+            <div>
+              <h5>Help</h5>
+              <ul>
+                <li>Contact</li>
+                <li>FAQs</li>
+                <li>Terms &amp; Conditions</li>
+                <li>Privacy Policy</li>
+              </ul>
+            </div>
+            <div>
+              <h5>Proxy</h5>
+              <ul>
+                <li>About</li>
+                <li>Shop</li>
+                <li>Product</li>
+                <li>Track Order</li>
+              </ul>
+            </div>
+            <div>
+              <h5>Categories</h5>
+              <ul>
+                <li>Order History</li>
+                <li>Shopping Cart</li>
+                <li>Wishlist</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }
 

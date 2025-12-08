@@ -39,6 +39,78 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.buyer-homepage .hero-intro {
+  margin: 2rem auto 0;
+  padding: 2rem;
+  max-width: 1200px;
+  border-radius: 25px;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.09);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.buyer-homepage .hero-text h1 {
+  margin: 0.25rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.buyer-homepage .hero-subtitle {
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  color: #6b7280;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.buyer-homepage .hero-location {
+  margin: 0;
+  color: #4b5563;
+}
+
+.buyer-homepage .hero-stats {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.buyer-homepage .hero-card {
+  flex: 1 1 180px;
+  min-width: 160px;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  padding: 1rem 1.25rem;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.buyer-homepage .hero-card h3 {
+  margin: 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #0f5132;
+}
+
+.buyer-homepage .hero-value {
+  font-size: 1.9rem;
+  margin: 0;
+  font-weight: 700;
+  color: #0f5132;
+}
+
+.buyer-homepage .hero-description {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.85rem;
+}
+
 .buyer-homepage .breadcrumb {
   list-style: none;
   display: flex;

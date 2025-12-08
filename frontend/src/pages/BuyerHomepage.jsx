@@ -120,6 +120,11 @@ const BuyerHomepage = () => {
 
   const filteredCount = filteredProducts.length
   const breadcrumbLabel = selectedCategory === 'all' ? 'All Products' : selectedCategory
+  const locationLabel = defaultAddress
+    ? `${defaultAddress.Municipality}, ${defaultAddress.Province}`
+    : 'Add an address to get started'
+  const availableOffers = products.length
+  const withinRangeCount = products.filter((product) => typeof product.distance === 'number' && product.distance <= rangeKm).length
 
   return (
     <div className="buyer-homepage">
@@ -169,6 +174,31 @@ const BuyerHomepage = () => {
           </div>
         </div>
       </nav>
+
+      <section className="hero-intro">
+        <div className="hero-text">
+          <p className="hero-subtitle">Buyer Dashboard</p>
+          <h1>Welcome back, buyer</h1>
+          <p className="hero-location">{locationLabel}</p>
+        </div>
+        <div className="hero-stats">
+          <article className="hero-card">
+            <h3>Available Offers</h3>
+            <p className="hero-value">{availableOffers}</p>
+            <p className="hero-description">Curated from regional farms</p>
+          </article>
+          <article className="hero-card">
+            <h3>Within {rangeKm} km</h3>
+            <p className="hero-value">{withinRangeCount}</p>
+            <p className="hero-description">Matches your current delivery radius</p>
+          </article>
+          <article className="hero-card">
+            <h3>Filtered Results</h3>
+            <p className="hero-value">{filteredCount}</p>
+            <p className="hero-description">Refine filters to expand your choices</p>
+          </article>
+        </div>
+      </section>
 
       <div className="buyer-shell">
         <div className="container">

@@ -203,6 +203,18 @@
   gap: 0.6rem;
 }
 
+.sidebar .logout-btn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.8rem 0;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  background: #1e7e34;
+  color: #fff;
+  cursor: pointer;
+}
+
 .status-item {
   background: #fff;
   border: 1px solid #ddd;

@@ -33,7 +33,6 @@ const BuyerAddress = () => {
   const [saving, setSaving] = useState(false)
   const [notification, setNotification] = useState('')
   const [error, setError] = useState('')
-  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const navigate = useNavigate()
 
   const loadAddresses = async () => {
@@ -198,25 +197,6 @@ const BuyerAddress = () => {
             </Link>
           </li>
         </ul>
-        <div className="icons">
-          <span className="cart">
-            <Link to="/cart" className="cart-link">
-              <i className="fas fa-shopping-cart" />
-            </Link>
-          </span>
-          <div className="user-dropdown">
-            <span className="user" onClick={() => setUserMenuOpen((prev) => !prev)}>
-              <i className="fas fa-user" />
-            </span>
-            {userMenuOpen && (
-              <div className="user-menu">
-                <button type="button" className="logout-btn" onClick={handleLogout}>
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
       </nav>
 
       <div className="container">
@@ -263,6 +243,9 @@ const BuyerAddress = () => {
                 </Link>
               </li>
             </ul>
+            <button type="button" className="logout-btn" onClick={handleLogout}>
+              Logout
+            </button>
           </div>
         </aside>
 

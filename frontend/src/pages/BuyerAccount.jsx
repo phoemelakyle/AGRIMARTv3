@@ -203,7 +203,7 @@ const BuyerAccount = () => {
         </div>
       </section>
 
-      <footer className="main-footer">
+      {/* <footer className="main-footer">
           <div className="footer-content">
             <div className="footer-about">
               <img src={logoImage} alt="AngkatAni Logo" className="logo-icon" />
@@ -252,7 +252,7 @@ const BuyerAccount = () => {
             </div>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </>
   )
 }
