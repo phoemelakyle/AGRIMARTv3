@@ -1,0 +1,778 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  position: sticky;
+  top: 0;
+  z-index: 1000; /* Topmost */
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.logo-icon {
+  height: 40px; /* Fixed height */
+  width: 40px; /* Fixed width */
+  margin-right: 10px;
+  object-fit: contain; /* Ensures the image fits inside without distortion */
+}
+
+.tagline {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.1em;
+  font-weight: bold; /* Added to make the text bold */
+}
+
+.icons {
+  display: flex;
+  gap: 20px;
+}
+
+.badge {
+  background: green;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-size: 0.8em;
+  vertical-align: top;
+}
+
+
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #fff;
+}
+
+.cart {
+  position: relative;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background-color:#2e7d32 ;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+.cart-link {
+  color: white; /* Makes the cart icon white */
+  text-decoration: none;
+  position: relative;
+  font-size: 20px;
+}
+
+.cart-link i {
+  color: white; /* Ensures the icon is white */
+}
+
+.main-nav {
+  padding: 15px 20px;
+  font-size: 0.9rem;
+  background-image: url("../images/header4.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-bottom: 1px solid #ddd;
+  color: white;
+  position: sticky;
+  top: 60px; /* Height of .top-bar + .nav-menu */
+  z-index: 998;
+  display: flex;
+  justify-content: space-between;
+}
+
+.main-nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.main-nav li {
+  color: #fff; /* Set default color of breadcrumb items to white */
+}
+
+.main-nav li a {
+  text-decoration: none;
+  color: #fff; /* Set link color to white */
+}
+
+.main-nav li a:hover {
+  color: #2e7d32;
+}
+
+/* Set the color of 'Select Role' to white */
+.main-nav li:nth-child(5) {
+  color: #fff; /* White color for "Select Role" */
+}
+
+/* Set the color of 'Buyer Registration' to green */
+.main-nav li:nth-child(7) {
+  color: #2e7d32; /* Green color for "Buyer Registration" */
+}
+
+  
+.user-dropdown {
+  position: relative;
+}
+
+.user {
+  font-size: 22px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.user-menu {
+  display: none;
+  position: absolute;
+  top: 36px;
+  right: 0;
+  background-color: #fff;
+  min-width: 160px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  z-index: 100;
+}
+
+.user-menu.show {
+  display: block;
+}
+
+.user-menu a,
+.user-menu button {
+  display: block;
+  padding: 10px 16px;
+  text-align: left;
+  width: 100%;
+  background: none;
+  border: none;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.user-menu a:hover,
+.user-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+.logout-btn {
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+  
+  
+  /* Main Container Layout */
+  .container {
+    display: flex;
+    padding: 20px;
+  }
+  
+ .sidebar {
+    width: 320px;                 /* same width */
+    background-color: #fff;
+    padding: 20px;
+    position: sticky;
+    top: 0;
+    box-sizing: border-box;
+
+    /* Slight zoom-in */
+    transform: scale(0.92);       /* previously 0.85 — now a bit bigger */
+    transform-origin: top left;   /* keeps width visually the same */
+}
+
+  .category-filter {
+    margin-top: 30px;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+  }
+  
+  .category-filter h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #3C2A21;
+    text-align: center;
+  }
+  
+  .category-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .category-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    border: none;
+    background-color: #f5f5f5;
+    color: #333;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+  }
+  
+  .category-item:hover {
+    background-color: #e0f2e9;
+    transform: translateX(3px);
+  }
+  
+  .category-item.active {
+    background-color: #c8f7dc;  /* Light green */
+    color: #2e7d32;             /* Darker green text */
+    font-weight: 600;
+  }
+  
+  
+  .button {
+    color: #2e7d32;  /* Green color */
+    font-weight: 400;
+    padding: 8px 16px;
+    border-radius: 8px;
+
+  }
+  
+  .button:hover {
+    color: #32cd32;  /* Change text color to white on hover */
+  }
+
+  
+ /* Sidebar Status (Buyer Menu) */
+.status {
+    margin-top: 30px;
+    background-color: #f9f9f9;     /* container background */
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.status h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #3C2A21;
+    text-align: center;
+}
+
+.status-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Make status buttons look like category buttons */
+.status-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;        /* center text and icon */
+    gap: 6px;
+    background: #ffffff;            /* default white */
+    border: 1px solid #1c9f56;     
+    padding: 8px 18px;              /* oblong horizontal padding */
+    border-radius: 24px;            /* oblong rounding */
+    font-size: 14px;               
+    cursor: pointer;
+    width: 100%;                    
+    box-sizing: border-box;
+    color: #1c9f56;                 /* green text by default */
+    transition: all 0.2s ease;
+     margin-bottom: 10px; 
+}
+
+.status-item i {
+    color: #1c9f56;                 /* icon green by default */
+    width: 14px;
+    text-align: center;
+}
+
+/* Hover state */
+.status-item:hover {
+    background: #1c9f56;            /* solid green on hover */
+    color: #ffffff;
+    border-color: #1c9f56;
+}
+
+.status-item:hover i {
+    color: #ffffff;
+}
+
+/* Active / clicked state */
+.status-item.active {
+    background: #1c9f56;            /* solid green */
+    color: #ffffff;
+    border-color: #1c9f56;
+}
+
+.status-item.active i {
+    color: #ffffff;
+}
+
+ 
+  
+  
+  .column-right { 
+    flex: 1;
+    padding: 0 20px;
+  }
+  
+  .column-right h4 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #2c2c2c;
+  }
+  
+ 
+  /* Newsletter - Smaller Version */
+.newsletter {
+  background: whitesmoke;
+  color: #000;
+  padding: 1.5rem 0.5rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.newsletter-content {
+  max-width: 1000px;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.newsletter-text h3 {
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.newsletter-form {
+  display: flex;
+  flex: 1;
+  max-width: 400px;
+}
+
+.newsletter-form input {
+  flex: 1;
+  padding: 0.5rem 0.8rem;
+  border: none;
+  border-radius: 20px 0 0 20px;
+  font-size: 0.9rem;
+}
+
+.newsletter-form button {
+  padding: 0.5rem 1rem;
+  background: #32cd32;
+  color: #fff;
+  border: none;
+  border-radius: 0 20px 20px 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+.newsletter-form button:hover {
+  background: #28a428;
+}
+
+.social-icons {
+  display: flex;
+  gap: 0.8rem;
+  font-size: 1.1rem;
+}
+
+.social-icons a {
+  color: #000;
+  transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+  color: #32cd32;
+}
+
+
+/* Footer - Compact Modern Design */
+.main-footer {
+  background: #111;
+  color: #ddd;
+  padding: 2rem 1rem;
+  font-size: 0.85rem;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.footer-about h4 {
+  font-size: 1.2rem;
+  color: #32cd32;
+  margin-bottom: 0.75rem;
+}
+
+.footer-about p {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.footer-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1.2rem;
+}
+
+.footer-columns h5 {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.footer-columns ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-columns li {
+  font-size: 0.8rem;
+  margin-bottom: 0.4rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.footer-columns li:hover {
+  color: #32cd32;
+  text-decoration: underline;
+}
+
+/* Responsive tweaks for small screens */
+@media (max-width: 600px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .footer-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-columns h5 {
+    margin-top: 1rem;
+  }
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.signup-text {
+  font-size: 0.95rem;
+  color: #555;
+  margin: 0;
+}
+/* Profile Content – More Zoomed Out */
+.profile-content {
+    flex: 1;
+    background-color: #f9f9f9;       
+    padding: 25px;
+    border-radius: 12px;              
+    border: 1px solid #ddd;         
+    margin-left: 20px;
+
+    /* Zoom out more */
+    transform: scale(0.85);           /* 75% size */
+    transform-origin: top left;       /* keep width aligned */
+}
+
+/* Keep inner elements full width */
+.profile-content > * {
+    width: 100%;  
+}
+
+/* Header */
+.profile-content h2 {
+    font-size: 25px;
+    font-weight: 600;
+    color: #3C2A21;                   
+    margin-bottom: 5px;
+}
+
+/* Subtitle / description */
+.profile-content .subtitle {
+    color: #555;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* Saved addresses list */
+.saved-addresses ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.saved-addresses li {
+    background: #fefefe;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #1c9f56;
+    margin-bottom: 20px;
+}
+
+/* Address fields */
+.address-field {
+    background: #ffffff;        
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.address-field label {
+    font-weight: 500;
+    color: #1c9f56;
+    width: 120px;             
+}
+
+.address-field span {
+    flex: 1;
+    color: #333;
+}
+
+/* Action buttons */
+.address-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.edit-btn, .delete-btn {
+    background: #ffffff;
+    border: 1px solid #1c9f56;
+    border-radius: 20px;
+    color: #1c9f56;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.edit-btn:hover {
+    background: #1c9f56;
+    color: white;
+}
+
+.delete-btn:hover {
+    background: #d9534f;
+    color: white;
+}
+
+/* Add new address button */
+.add-btn {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 18px;
+    border-radius: 25px;
+    background: #1c9f56;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.add-btn:hover {
+    background: #168842;
+}
+
+/* Radio buttons */
+.radio-inline {
+    display: flex;
+    align-items: center;  
+    gap: 8px;             
+    margin-bottom: 15px;  
+}
+
+.radio-inline input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border: 2px solid #1c9f56;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.radio-inline input[type="radio"]:checked::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    background-color: #1c9f56;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.radio-inline input[type="radio"]:hover {
+    box-shadow: 0 0 3px #1c9f56;
+}
+
+.radio-inline label {
+    font-weight: 500;
+    color: #1c9f56;
+    cursor: pointer;
+}
+
+
+/* ===== Popup Modal Styling ===== */
+.modal {
+    display: none; /* hidden by default */
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* semi-transparent background */
+    overflow: hidden; /* no scroll outside */
+}
+
+.modal-content {
+    background: #fff;
+    width: 450px; /* keep width same */
+    max-width: 90%; /* responsive for smaller screens */
+    max-height: 90vh; /* increase height from 80vh to 90vh */
+    margin: 3% auto; /* slightly top, reduced margin to fit taller modal */
+    padding: 20px;
+    border-radius: 12px;
+    animation: fadeIn 0.3s ease;
+    transform: scale(0.95); /* slight zoom-out */
+    overflow: hidden; /* no scroll inside */
+    box-sizing: border-box;
+}
+
+/* Form fields container in 2 columns */
+#addressForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* two columns */
+    gap: 12px; /* space between fields */
+}
+
+/* Make hidden fields span both columns */
+#addressForm input[type="hidden"] {
+    grid-column: span 2;
+}
+
+/* Inputs/Textboxes */
+#addressForm input[type="text"],
+#addressForm input[type="email"],
+#addressForm input[type="tel"] {
+    width: 100%;
+    padding: 8px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+/* Make the map span both columns */
+#map {
+    width: 100%;
+    height: 200px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    grid-column: span 2;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+/* Modal title */
+#modalTitle {
+    grid-column: span 2;
+    margin-bottom: 10px;
+}
+
+/* Buttons */
+.save-btn {
+    width: 100%;
+    padding: 8px;
+    font-size: 15px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    grid-column: span 2; /* spans both columns */
+}
+
+.save-btn:hover {
+    background-color: #45a049;
+}
+
+/* Close button */
+.close {
+    float: right;
+    cursor: pointer;
+    font-size: 22px;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+#pinLocationLabel {
+    grid-column: 1 / 2; /* place in the first column (left side) */
+    margin-top: 5px;
+    
+    font-size: 14px;
+}
