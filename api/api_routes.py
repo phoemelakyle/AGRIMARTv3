@@ -457,12 +457,25 @@ def api_logout():
 
 @api_bp.route('/api/status')
 def api_status():
-    user = None
     user_id = session.get('user_id')
     user_type = session.get('user_type')
+    username = session.get('username')
+    
+    user = None
     if user_id:
-        user = {'userId': user_id, 'userType': user_type}
-    return jsonify({'user': user})
+        user = {
+            'userId': user_id,
+            'userType': user_type,
+            'username': username
+        }
+
+    return jsonify({
+        "ok": True,
+        "body": {
+            "user": user
+        }
+    })
+
 
 @api_bp.route('/api/cart')
 def api_cart():

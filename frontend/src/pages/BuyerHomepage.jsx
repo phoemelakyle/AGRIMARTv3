@@ -200,9 +200,6 @@ const BuyerHomepage = () => {
                   <Link to="/cart" className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-emerald-400 hover:text-emerald-600">
                     Shopping cart
                   </Link>
-                  <Link to="/checkout" className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-emerald-400 hover:text-emerald-600">
-                    Fresh checkout
-                  </Link>
                   <Link to="/buyer_orders" className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-emerald-400 hover:text-emerald-600">
                     Orders
                   </Link>

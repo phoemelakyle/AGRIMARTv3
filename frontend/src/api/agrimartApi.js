@@ -392,3 +392,40 @@ export async function markBuyerOrderReceived(orderId) {
   })
   return handleResponse(response)
 }
+
+export async function removeCartItem(itemId) {
+  const response = await fetch(`${API_URL}/remove_item`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ item_id: itemId }),
+  });
+  return handleResponse(response);
+}
+
+export async function updateCartQuantity(itemId, newQuantity) {
+  const response = await fetch(`${API_URL}/update_quantity`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      item_id: itemId,
+      new_quantity: newQuantity,
+    }),
+  });
+  return handleResponse(response);
+}
+
+export async function processCheckout({ selectedItems, productTotals, paymentOptions }) {
+  const response = await fetch(`${API_URL}/process_checkout`, {
+    method: 'POST',
+    credentials: 'include',  
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      selected_items: selectedItems,
+      product_total: productTotals,
+      payment_option_id: paymentOptions,
+    }),
+  });
+  return handleResponse(response);
+}
