@@ -1,0 +1,346 @@
+.buyer-homepage {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f4f6f3;
+  color: #1f1f1f;
+}
+
+.buyer-homepage .nav-menu {
+  background: #f8f8f8;
+  border-bottom: 1px solid #ddd;
+  padding: 0.5rem 2rem;
+}
+
+.buyer-homepage .nav-menu ul {
+  display: flex;
+  list-style: none;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.buyer-homepage .nav-menu a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.buyer-homepage .main-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #0f5132, #1a7331);
+  color: #fff;
+  position: sticky;
+  top: 60px;
+  z-index: 9;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.buyer-homepage .breadcrumb {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.buyer-homepage .breadcrumb a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.buyer-homepage .icons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.buyer-homepage .cart-link {
+  color: #fff;
+  font-size: 1.4rem;
+}
+
+.buyer-homepage .user-dropdown {
+  position: relative;
+}
+
+.buyer-homepage .user {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.buyer-homepage .user-menu {
+  position: absolute;
+  right: 0;
+  top: 36px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  display: none;
+  min-width: 180px;
+}
+
+.buyer-homepage .user-menu.show {
+  display: block;
+}
+
+.buyer-homepage .user-menu a,
+.buyer-homepage .user-menu button {
+  display: block;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  width: 100%;
+  border: none;
+  background: none;
+  color: #1d1d1d;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.buyer-homepage .user-menu button:hover,
+.buyer-homepage .user-menu a:hover {
+  background: #f0f0f0;
+}
+
+.buyer-homepage .buyer-shell {
+  padding: 3rem 2rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.buyer-homepage .container {
+  display: grid;
+  grid-template-columns: minmax(250px, 300px) 1fr;
+  gap: 1.5rem;
+}
+
+.buyer-homepage .sidebar {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 12px 25px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.buyer-homepage .category-filter h3,
+.buyer-homepage .status h3 {
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  color: #1f3d2f;
+}
+
+.buyer-homepage .category-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.buyer-homepage .category-item {
+  border: 1px solid #d4d4d4;
+  border-radius: 999px;
+  padding: 0.35rem 1rem;
+  font-size: 0.85rem;
+  background: #f5f5f5;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.buyer-homepage .category-item.active {
+  border-color: #1a7331;
+  background: #e3f9f1;
+  color: #0f5132;
+  font-weight: 600;
+}
+
+.buyer-homepage .status-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.buyer-homepage .status-item {
+  border-radius: 12px;
+  border: 1px solid #d4d4d4;
+  padding: 0.6rem 0.9rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: 600;
+  color: #1f1f1f;
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.buyer-homepage .status-item:hover {
+  border-color: #1a7331;
+  color: #0f5132;
+}
+
+.buyer-homepage .column-right {
+  background: #fff;
+  border-radius: 25px;
+  padding: 2rem;
+  box-shadow: 0 12px 18px rgba(15, 23, 42, 0.08);
+}
+
+.buyer-homepage .column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.buyer-homepage .column-header h2 {
+  margin-bottom: 0.4rem;
+}
+
+.buyer-homepage .status-text {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.buyer-homepage .address-banner {
+  background: #f8fafc;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px dashed #a9b3c1;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.buyer-homepage .product-search {
+  border-radius: 999px;
+  border: 1px solid #d4d4d4;
+  padding: 0.6rem 1rem;
+  width: 220px;
+}
+
+.buyer-homepage .product-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.buyer-homepage .product-box {
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 1rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.buyer-homepage .product-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 20px rgba(15, 23, 42, 0.15);
+}
+
+.buyer-homepage .image-container {
+  border-radius: 14px;
+  overflow: hidden;
+  height: 160px;
+  background: #f1f5f9;
+}
+
+.buyer-homepage .image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.buyer-homepage .product-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.buyer-homepage .product-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.buyer-homepage .product-actions {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #0f5132;
+  font-weight: 600;
+}
+
+.buyer-homepage .newsletter {
+  margin-top: 2rem;
+  background: #111827;
+  color: #f8fafc;
+  padding: 2rem;
+  border-radius: 16px;
+}
+
+.buyer-homepage .newsletter-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.buyer-homepage .newsletter-form input {
+  border-radius: 999px;
+  border: none;
+  padding: 0.7rem 1rem;
+  flex: 1;
+  min-width: 180px;
+}
+
+.buyer-homepage .newsletter-form button {
+  border-radius: 999px;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.buyer-homepage .social-icons {
+  display: flex;
+  gap: 0.7rem;
+  font-size: 0.8rem;
+}
+
+.buyer-homepage .social-icons a {
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.buyer-homepage .status-text.error {
+  color: #dc2626;
+}
+
+@media (max-width: 1024px) {
+  .buyer-homepage .container {
+    grid-template-columns: 1fr;
+  }
+
+  .buyer-homepage .column-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

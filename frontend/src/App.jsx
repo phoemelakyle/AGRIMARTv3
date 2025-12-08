@@ -22,6 +22,7 @@ import BuyerPaymentOptions from './pages/BuyerPaymentOptions'
 import BuyerAddress from './pages/BuyerAddress'
 import BuyerOrders from './pages/BuyerOrders'
 import SellerAddProduct from './pages/SellerAddProduct'
+import BuyerAccount from './pages/BuyerAccount'
 import Footer from './components/Footer'
 import { footerColumns } from './data/siteData'
 
@@ -58,6 +59,7 @@ function App() {
             <Route path="/buyer_payment_options" element={<BuyerPaymentOptions />} />
             <Route path="/buyer_orders" element={<BuyerOrders />} />
             <Route path="/buyer_address" element={<BuyerAddress />} />
+            <Route path="/buyer_account" element={<BuyerAccount />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
           </Route>
         </Routes>

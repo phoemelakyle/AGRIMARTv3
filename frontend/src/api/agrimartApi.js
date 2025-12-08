@@ -39,10 +39,13 @@ export async function fetchCartItems() {
   return handleResponse(response)
 }
 
-export async function fetchProducts({ category = 'all', rangeKm = 30 }) {
+export async function fetchProducts({ category = 'all', rangeKm = 30, search = '' }) {
   const query = new URLSearchParams()
   if (category) {
     query.set('category', category)
+  }
+  if (search) {
+    query.set('search', search)
   }
   query.set('range_km', String(rangeKm))
   const response = await fetch(`${API_URL}/api/products?${query.toString()}`, {
@@ -332,6 +335,23 @@ export async function fetchSellerOrders({ status = 'unpaid', sort = 'recent' } =
   query.set('sort', sort)
   const response = await fetch(`${API_URL}/api/seller_orders?${query.toString()}`, {
     credentials: 'include',
+  })
+  return handleResponse(response)
+}
+
+export async function fetchBuyerAccount() {
+  const response = await fetch(`${API_URL}/api/buyer_account`, {
+    credentials: 'include',
+  })
+  return handleResponse(response)
+}
+
+export async function updateBuyerAccount(payload) {
+  const response = await fetch(`${API_URL}/api/buyer_account`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   })
   return handleResponse(response)
 }
