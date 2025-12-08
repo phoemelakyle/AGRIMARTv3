@@ -56,7 +56,7 @@ def fetch_selected_items_details(selected_items):
 
     total_payment = 0
     for item in selected_items_details:
-        product_total = (item[5] * item[7]) + (item[4] * item[5]) + 10
+        product_total = (item[5] * item[7]) + (item[4] * item[5])
         total_payment += product_total
 
     buyer_id = session.get('user_id') 
@@ -446,14 +446,23 @@ def decrease_quantity(variation_id, cart_quantity):
     cursor = conn.cursor()
 
     try:
+        # Get current quantity
         quantity_query = "SELECT Quantity FROM product_variation WHERE VariationID = %s"
         cursor.execute(quantity_query, (variation_id,))
         current_quantity = cursor.fetchone()[0]
 
+        # Calculate new quantity
         new_quantity = max(current_quantity - cart_quantity, 0)
 
+        # Update quantity
         update_query = "UPDATE product_variation SET Quantity = %s WHERE VariationID = %s"
         cursor.execute(update_query, (new_quantity, variation_id))
+
+        # If quantity is now 0, set status to 'restock'
+        if new_quantity == 0:
+            status_query = "UPDATE product_variation SET Status = 'restock' WHERE VariationID = %s"
+            cursor.execute(status_query, (variation_id,))
+
         conn.commit()
 
     except Exception as e:
@@ -462,3 +471,4 @@ def decrease_quantity(variation_id, cart_quantity):
     finally:
         cursor.close()
         conn.close()
+

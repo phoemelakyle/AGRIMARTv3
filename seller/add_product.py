@@ -106,8 +106,8 @@ class Product:
                     continue  
 
                 variation_id = self.generate_variation_id()
-                variation_query = "INSERT INTO product_variation (VariationID, ProductID, Unit, Price, Quantity) VALUES (%s, %s, %s, %s, %s)"
-                variation_values = (variation_id, self.product_id, variation.get('unit', None), variation['price'], variation['quantity'])
+                variation_query = "INSERT INTO product_variation (VariationID, ProductID, Unit, Price, Quantity, Status) VALUES (%s, %s, %s, %s, %s, %s)"
+                variation_values = (variation_id, self.product_id, variation.get('unit', None), variation['price'], variation['quantity'], 'live')
                 cursor.execute(variation_query, variation_values)
                 conn.commit()
 

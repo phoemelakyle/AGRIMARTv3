@@ -60,6 +60,7 @@ def login():
             user_id, user_type = user_data
             session['user_id'] = user_id
             session['user_type']= user_type
+            session['username']= username
 
             if user_type == 'buyer':
                 session['BuyerID'] = user_id

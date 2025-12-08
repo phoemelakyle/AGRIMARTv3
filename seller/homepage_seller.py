@@ -32,9 +32,16 @@ def fetch_products_for_seller(seller_id):
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT ProductID, Product_Name, ImageFilename FROM product WHERE SellerID = %s", (seller_id,))
     products = cursor.fetchall()
+
+    for product in products:
+        # fetch variations for each product
+        cursor.execute("SELECT Unit, Status FROM product_variation WHERE ProductID = %s", (product['ProductID'],))
+        product['variations'] = cursor.fetchall()
+
     cursor.close()
     conn.close()
     return products
+
 
 def fetch_product_details(product_id):
     conn = get_db_connection()
@@ -152,6 +159,57 @@ def fetch_address_by_id(address_id):
     conn.close()
     return address
 
+def count_live_variations(seller_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = """
+        SELECT COUNT(*)
+        FROM product_variation pv
+        JOIN product p ON pv.ProductID = p.ProductID
+        WHERE pv.Status = 'live' AND p.SellerID = %s
+    """
+    cursor.execute(query, (seller_id,))
+    count = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    return count
+
+def count_restock_variations(seller_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = """
+        SELECT COUNT(*)
+        FROM product_variation pv
+        JOIN product p ON pv.ProductID = p.ProductID
+        WHERE pv.Quantity = 0 AND p.SellerID = %s
+    """
+    cursor.execute(query, (seller_id,))
+    count = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    return count
+
+def calculate_total_revenue(seller_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    query = """
+        SELECT so.Quantity, pv.Price
+        FROM seller_order so
+        JOIN product_variation pv ON so.VariationID = pv.VariationID
+        JOIN product p ON pv.ProductID = p.ProductID
+        WHERE so.SellerID = %s AND so.Order_Status = 'delivered'
+    """
+    cursor.execute(query, (seller_id,))
+    rows = cursor.fetchall()
+
+    total_revenue = sum(quantity * float(price) for quantity, price in rows)
+
+    cursor.close()
+    conn.close()
+    return total_revenue
+
+
 @homepage_seller_app.route('/delete_product/<string:product_id>', methods=['POST'])
 def delete_product(product_id):
     user_id = session.get("user_id")
@@ -183,11 +241,29 @@ def delete_product(product_id):
 @homepage_seller_app.route('/homepage_seller')
 def homepage_seller():    
     user_id = session.get("user_id")
+    username = session.get("username")
     if not user_id:
         return redirect('/login') 
-    print(user_id)
+    
     products = fetch_products_for_seller(user_id)
-    return render_template('homepage_seller.html', products=products)
+    
+    # Fetch variations for each product
+    for product in products:
+        product['variations'] = fetch_variations_for_product(product['ProductID'])
+    
+    live_listings_count = count_live_variations(user_id)
+    restock_count = count_restock_variations(user_id)
+    total_revenue = calculate_total_revenue(user_id) 
+
+    return render_template(
+        'homepage_seller.html', 
+        products=products, 
+        username=username,
+        live_listings_count=live_listings_count,
+        restock_count=restock_count,
+        total_revenue=total_revenue 
+    )
+
 
 @homepage_seller_app.route('/edit_product/<string:product_id>', methods=['GET', 'POST'])
 def edit_product(product_id):

@@ -224,9 +224,6 @@ body {
     font-weight: bold;
   }
   
-  
-  
-
 .status {
   margin-top: 30px;
   background-color: #f9f9f9;
@@ -538,5 +535,59 @@ body {
     color: #555;
     margin: 0;
   }
-  
-  
+
+.top-content-container {
+  max-width: 1400px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: row;    
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
+}
+
+.stat-box {
+  flex: 1;                 
+  min-width: 0;          
+  background: #f8f9fb;
+  padding: 25px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.variation-container {
+    margin-top: 5px;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.variation-unit {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Status-specific colors */
+.variation-unit.live {
+    background-color: #4CAF50; /* green */
+}
+
+.variation-unit.restock {
+    background-color: #F44336; /* red */
+}
