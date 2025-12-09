@@ -52,38 +52,7 @@ body {
     vertical-align: top;
   }
   
-  /* Navigation Menu */
-  .nav-menu {
-    background-color: #f8f8f8;
-    padding: 1px 1px;
-    border-bottom: 1px solid #ddd;
-    position: sticky;
-    top: 60px; /* Height of .top-bar */
-    z-index: 999;
-  }
-  
-  .nav-menu ul {
-    list-style: none;
-    display: flex;
-    gap: 15px; /* Reduced gap between items */
-    justify-content: center;
-  }
-  
-  .nav-menu ul li {
-    position: relative;
-  }
-  
-  .nav-menu ul li a {
-    text-decoration: none;
-    color: #333;
-    font-weight: 400; /* Slightly lighter font */
-    font-size: 0.85rem; /* Reduced font size */
-    transition: color 0.3s ease;
-  }
-  
-  .nav-menu ul li a:hover {
-    color: #27ae60;
-  }
+
   
   
   .icons {
@@ -130,7 +99,7 @@ body {
     border-bottom: 1px solid #ddd;
     color: white;
     position: sticky;
-    top: 110px; /* Height of .top-bar + .nav-menu */
+    top: 60px; /* Height of .top-bar + .nav-menu */
     z-index: 998;
     display: flex;
     justify-content: space-between;
@@ -223,80 +192,199 @@ body {
     cursor: pointer;
     font-weight: bold;
   }
+
+/* Sidebar fixed on the left */
+.sidenav {
+    position: fixed;
+    top: 116px;           /* below header + nav */
+    left: 0;
+    width: 250px;
+    height: calc(120vh - 120px);
+    background-color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+    border-right: 1px solid #ddd;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+/* Push main content to the right of sidebar */
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+/* Sidebar Title */
+.sidebar .status h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #3C2A21;
+}
+
+/* Sidebar List */
+.sidebar .status-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Sidebar Buttons */
+.sidebar .status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 16px;
+    margin-bottom: 10px;
+    border: 1px solid #1c9f56;
+    border-radius: 24px;
+    background: #fff;
+    color: #1c9f56;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.sidebar .status-item i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Hover state */
+.sidebar .status-item:hover {
+    background: #1c9f56;
+    color: #fff;
+    border-color: #1c9f56;
+}
+
+.sidebar .status-item:hover i {
+    color: #fff;
+}
+
+/* Active button */
+.sidebar .status-item.active {
+    background: #1c9f56;
+    color: #fff;
+    border-color: #1c9f56;
+}
+
+.sidebar .status-item.active i {
+    color: #fff;
+}
+
+/* Push main content to the right */
+.main-container {
+    margin-left: 250px;      /* same as sidebar width */
+    padding: 20px;
+}
+
   
+/* Sidebar Status (Buyer Menu) */
 .status {
-  margin-top: 30px;
-  background-color: #f9f9f9;
-  padding: 15px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
+    margin-top: 30px;
+    background-color: #f9f9f9;     /* container background */
+    padding: 15px;
+    border-radius: 12px;
 }
+
 .status h3 {
-  font-size: 18px;
-  margin-bottom: 15px;
-  color: #3C2A21;
-  text-align: center;
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #3C2A21;
+    text-align: center;
 }
+
 .status-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
+
+/* Make status buttons look like category buttons */
 .status-item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
-  font-size: 15px;
-  font-weight: 500;
-  border: none;
-  background-color: #f5f5f5;
-  color: #333;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;        /* center text and icon */
+    gap: 6px;
+    background: #ffffff;            /* default white */
+    border: 1px solid #1c9f56;     
+    padding: 8px 18px;              /* oblong horizontal padding */
+    border-radius: 24px;            /* oblong rounding */
+    font-size: 14px;               
+    cursor: pointer;
+    width: 100%;                    
+    box-sizing: border-box;
+    color: #1c9f56;                 /* green text by default */
+    transition: all 0.2s ease;
+     margin-bottom: 10px; 
 }
+
 .status-item i {
-  color: #4caf50;
-  font-size: 16px;
-  width: 20px;
+    color: #1c9f56;                 /* icon green by default */
+    width: 14px;
+    text-align: center;
 }
+
+/* Hover state */
 .status-item:hover {
-  background-color: #e0f2e9;
-  transform: translateX(3px);
-}
-.status-item.clicked {
-  background-color: #007BFF;
-  color: white;
+    background: #1c9f56;            /* solid green on hover */
+    color: #ffffff;
+    border-color: #1c9f56;
 }
 
+.status-item:hover i {
+    color: #ffffff;
+}
 
-.column-right { 
-    flex: 1;
-    padding: 0 20px;
-  }
-  
-  .column-right h4 {
+/* Active / clicked state */
+.status-item.active {
+    background: #1c9f56;            /* solid green */
+    color: #ffffff;
+    border-color: #1c9f56;
+}
+
+.status-item.active i {
+    color: #ffffff;
+}
+
+/* ============================
+   COLUMN RIGHT STYLING
+   ============================ */
+.column-right {
+    padding: 0;
+    display: block;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    width: 100%;                  /* make container wider */
+    transform: scale(0.92);  /* scaleX smaller = width slightly shrinks, scaleY smaller = more zoom out vertically */
+    transform-origin: top left;
+}
+
+.column-right h4 {
     font-size: 24px;
     font-weight: 600;
     margin-bottom: 20px;
     color: #2c2c2c;
-  }
-  
-  /* Product Grid */
-  .product-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 24px;
-  }
-  
-  /* Product Box Styling */
-  .product-box {
+}
+
+/* ============================
+   PRODUCT GRID (Zoomed Out)
+   ============================ */
+
+
+
+/* ============================
+   PRODUCT BOX STYLE
+   ============================ */
+.product-box {
     background-color: #fff;
     border-radius: 12px;
-    padding: 16px;
+    padding: 20px;
     text-align: left;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
     border: 1px solid #e0e0e0;
@@ -305,87 +393,137 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-  }
-  
-  /* Product Box Hover Effect */
-  .product-box:hover {
+    margin-top: 50px;
+}
+
+/* Hover effect */
+.product-box:hover {
     transform: translateY(-6px);
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
     border-color: #388e3c;
-  }
-  
-  /* Product Image */
-  .product-box img {
+}
+
+/* ============================
+   PRODUCT IMAGE
+   ============================ */
+.product-box img {
     width: 100%;
     height: 180px;
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 12px;
-  }
-  
-  .product-box img:hover {
-    transform: scale(1.02);
     transition: transform 0.3s ease;
-  }
-  
-  /* Product Details */
-  .product-details {
-    padding: 0 4px;
-  }
-  
-  /* Product Name */
-  .product-name {
+}
+
+.product-box img:hover {
+    transform: scale(1.02);
+}
+
+/* ============================
+   PRODUCT NAME
+   ============================ */
+.product-name {
     font-size: 16px;
     font-weight: 600;
     color: #212121;
     margin: 0 0 8px 0;
     line-height: 1.3;
-  }
-  
-  /* Button Styling */
-  .button-container {
+}
+
+/* ============================
+   VARIATION BADGES
+   ============================ */
+.variation-container {
+    margin: 8px 0 12px 0;
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.variation-unit {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+}
+
+/* Color coding */
+.variation-unit.in-stock {
+    background: #2e7d32;
+}
+
+.variation-unit.low-stock {
+    background: #ff8f00;
+}
+
+.variation-unit.restock {
+    background: #c62828;
+}
+
+/* ============================
+   ACTION BUTTONS (Edit/Delete)
+   ============================ */
+.button-container {
+    display: flex;
+    justify-content: space-between;
     margin-top: 12px;
-  }
-  
-  .edit-button,
-  .delete-button {
-    padding: 6px 12px;
+}
+
+.edit-button,
+.delete-button {
+    padding: 8px 14px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 14px;
-    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .edit-button {
-    background-color:#2e7d32;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+/* Edit */
+.edit-button {
+    background: #388e3c;
     color: white;
-  }
-  
-  .edit-button:hover {
-    background-color: #27ae60;
-  }
-  
-  .delete-button {
-    background-color:#2e7d32;
+}
+
+.edit-button:hover {
+    background: #2e7d32;
+}
+
+/* Delete */
+.delete-button {
+    background: #d32f2f;
     color: white;
-  }
-  
-  .delete-button:hover {
-    background-color:  #27ae60;
-  }
+}
+
+.delete-button:hover {
+    background: #b71c1c;
+}
+
   
 
   /* Newsletter - Smaller Version */
+/* Newsletter aligned with main content */
 .newsletter {
     background: whitesmoke;
     color: #000;
     padding: 1.5rem 0.5rem;
     border-bottom: 1px solid #ccc;
-  }
+    margin-left: 250px;          /* same as sidebar width */
+    width: calc(100% - 250px);   /* fill remaining width beside sidebar */
+    box-sizing: border-box;
+}
+
+/* Responsive tweaks for smaller screens */
+@media (max-width: 768px) {
+    .newsletter {
+        margin-left: 0;          /* no sidebar offset on small screens */
+        width: 100%;             /* full width */
+        padding: 1rem 0.5rem;
+    }
+}
+
   
   .newsletter-content {
     max-width: 1000px;
@@ -447,13 +585,28 @@ body {
   }
   
   
-  /* Footer - Compact Modern Design */
-  .main-footer {
+/* Footer - Compact Modern Design */
+.main-footer {
     background: #111;
     color: #ddd;
     padding: 2rem 1rem;
     font-size: 0.85rem;
-  }
+    margin-left: 250px;          /* same as sidebar width */
+    transform-origin: bottom;
+    width: calc(100% - 250px);   /* fill remaining space beside sidebar */
+    box-sizing: border-box;
+}
+
+/* Responsive tweaks for smaller screens */
+@media (max-width: 768px) {
+    .main-footer {
+        margin-left: 0;          /* no sidebar offset on small screens */
+        width: 100%;             /* full width */
+        padding: 1.5rem 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
   
   .footer-content {
     max-width: 1200px;
@@ -461,6 +614,7 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1.5rem;
+    
   }
   
   .footer-about h4 {
@@ -537,42 +691,77 @@ body {
   }
 
 .top-content-container {
-  max-width: 1400px;
-  margin: 20px auto;
-  padding: 20px;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-.stat-box.low-stock {
-    background-color: #f4f136; /* yellow */
-    color: white;
-}
-
-.stat-box.in-stock {
-    background-color: #4CAF50; /* green */
-    color: black;
-}
-
-.stat-box.restock {
-    background-color: #F44336; /* red */
-    color: black;
-}
-
-/* Optional styling for better appearance */
-.stat-box {
     padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    width: 100%;                  /* make container wider */
+    transform: scale(0.92);  /* scaleX smaller = width slightly shrinks, scaleY smaller = more zoom out vertically */
+    transform-origin: top left;   /* keep alignment to the left */
+}
+
+.stats-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    transform: scale(0.9, 0.9);   /* zoom out slightly more */
+    transform-origin: top left;
+}
+
+/* Stat box colors with lighter background, darker border, black text, hover effect, and left padding */
+.stat-box {
+    display: flex;
+    flex-direction: column;   /* text on top, number below */
+    justify-content: center;
+    padding: 20px 20px 20px 25px;  /* top/right/bottom 20px, left 25px */
     border-radius: 10px;
-    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
     flex: 1;
     margin: 5px;
 }
-.stats-container {
-    display: flex;
-    gap: 10px;
+
+/* Individual status styles */
+.stat-box.in-stock {
+    background-color: #d4edda;       /* light green */
+    color: black;                     /* black text */
+    border: 2px solid #4CAF50;       /* darker green border */
 }
+
+.stat-box.restock {
+    background-color: #f8d7da;       /* light red/pink */
+    color: black;
+    border: 2px solid #F44336;
+}
+
+.stat-box.low-stock {
+    background-color: #fff3cd;       /* light yellow */
+    color: black;
+    border: 2px solid #f4f136;
+}
+
+/* Hover effect for stat boxes */
+.stat-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+}
+
+/* Text and number styling */
+.stat-box h4 {
+    margin: 0;
+    text-align: left;          /* align text to left */
+    font-size: 1rem;           /* normal size for label */
+    font-weight: 600;
+}
+
+.stat-box h2 {
+    margin: 15px 0 0 0;        /* add more space above number */
+    text-align: left;           /* align number to left */
+    font-size: 3.5rem;          /* make number larger */
+    font-weight: bold;
+    line-height: 1;            /* optional for tighter spacing */
+}
+
 
 .variation-container {
     margin-top: 5px;
@@ -590,16 +779,33 @@ body {
     font-size: 14px;
     font-weight: bold;
 }
-
-/* Status-specific colors */
+/* Status-specific colors with lighter background, darker border, and black text */
 .variation-unit.in-stock {
-    background-color: #4CAF50; 
+    background-color: #d4edda;      /* light green */
+    border: 2px solid #4CAF50;      /* darker green border */
+    color: black;                    /* black text */
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .variation-unit.restock {
-    background-color: #F44336; 
+    background-color: #f8d7da;      /* light red/pink */
+    border: 2px solid #F44336;      /* darker red border */
+    color: black;                    /* black text */
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .variation-unit.low-stock {
-    background-color: #f4f136; 
+    background-color: #fff3cd;      /* light yellow */
+    border: 2px solid #f4f136;      /* darker yellow border */
+    color: black;                    /* black text */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Hover effect */
+.variation-unit.in-stock:hover,
+.variation-unit.restock:hover,
+.variation-unit.low-stock:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    cursor: pointer;
 }

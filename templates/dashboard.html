@@ -21,14 +21,7 @@
         <div class="tagline">Connecting you to Local Farmers</div>
       </header>
   
-      <!-- Navigation Menu -->
-      <nav class="nav-menu">
-        <ul>
-          <li><a href="/homepage_seller">Home</a></li>
-          <li><a href="#contacts">Contacts</a></li>
-        </ul>
-      </nav>
-    
+     
       <!-- Breadcrumb Navigation -->
     <nav class="main-nav">
       <ul class="breadcrumb">
@@ -50,8 +43,8 @@
       </div>
     </nav>
  
-    <div class="container">
-      <aside class="sidebar">
+      <div class="dashboard-container">
+    <aside class="sidenav">
         <div class="status">
           <h3>SELLER MENU</h3>
           <ul class="status-list">
@@ -76,7 +69,7 @@
             </li>
             <li>
               <form action="/dashboard" method="get">
-                <button type="submit" class="status-item">
+                <button type="submit" class="status-item active">
                   <i class="fas fa-tachometer-alt"></i> Dashboard
                 </button>
               </form>
@@ -85,50 +78,52 @@
         </div>
       </aside>
 
-      <!-- Right-side main content -->
-      <div class="main-content">
-        <!-- 1. Business Snapshot -->
-        <section class="business-snapshot container-box">
-          <h2>Hey {{ username }}!</h2>
-          <p>Check out your dashboard and see how your farm business is growing.</p>
-          <h3>Business Snapshot</h3>
-          <div class="snapshot-stats">
-
-            <div class="stat-item">
-              <h4>TOTAL REVENUE</h4>
-              <h2>₱{{ total_revenue }}</h2>
-              <p>From all sold products</p>
-            </div>
-
-            <div class="stat-item">
-              <h4>TOTAL SOLD</h4>
-              <h2>{{ total_sold_variations }}</h2>
-              <p>Unique products sold</p>
-            </div>
-
-            <div class="stat-item">
-              <h4>DELIVERED ORDERS</h4>
-              <h2>{{ total_delivered_orders }}</h2>
-              <p>Orders successfully delivered</p>
-            </div>
-
-            <div class="stat-item">
-              <h4>AVERAGE ORDER VALUE</h4>
-              <h2>₱{{ average_order_value }}</h2>
-              <p>Average amount spent per order</p>
-            </div>
+      <main class="main-content">
+      <!-- Business Snapshot Section -->
+      <section class="business-snapshot container-box">
+        <h2>Hey {{ username }}!</h2>
+        <p>Check out your dashboard and see how your farm business is growing.</p>
+        <h3>Business Snapshot</h3>
+        <div class="snapshot-stats">
+          <div class="stat-item">
+            <h4>TOTAL REVENUE</h4>
+            <h2>₱{{ total_revenue }}</h2>
+            <p>From all sold products</p>
           </div>
-        </section>  
+          <div class="stat-item">
+            <h4>TOTAL SOLD</h4>
+            <h2>{{ total_sold_variations }}</h2>
+            <p>Unique products sold</p>
+          </div>
+          <div class="stat-item">
+            <h4>DELIVERED ORDERS</h4>
+            <h2>{{ total_delivered_orders }}</h2>
+            <p>Orders successfully delivered</p>
+          </div>
+          <div class="stat-item">
+            <h4>AVERAGE ORDER VALUE</h4>
+            <h2>₱{{ average_order_value }}</h2>
+            <p>Average amount spent per order</p>
+          </div>
+        </div>
+      </section>
 
         <!-- 2. Statistics -->
-        <section class="statistics container-box">
-          <h3>Statistics</h3>
-          <h4>Sales in the Last 7 Days</h4>
-          <canvas id="salesBarChart7" width="400" height="200"></canvas>
-
-          <h4>Sales in the Last 30 Days</h4>
-          <canvas id="salesBarChart30" width="400" height="200"></canvas>
-        </section>
+   <!-- Statistics Section -->
+      <section class="statistics container-box">
+        <h3>Statistics</h3>
+        <div class="charts-grid">
+          <div class="chart-container">
+            <h4>Sales in the Last 7 Days</h4>
+            <canvas id="salesBarChart7" width="400" height="200"></canvas>
+          </div>
+          <div class="chart-container">
+            <h4>Sales in the Last 30 Days</h4>
+            <canvas id="salesBarChart30" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </section>
+     
 
         <!-- 3. Tracking Orders -->
         <section class="tracking-orders container-box">
@@ -161,102 +156,45 @@
 
           </div>
         </section>
+   
 
         <section class="top-performing-products container-box">
-          <h3>Top Performing Products</h3>
-          <div class="top-products">
-            {% for product in top_products %}
-              <div class="product-card">
-                <!-- Product Image -->
-                <img class="product-img" 
-                    src="{{ url_for('static', filename='images/products/' + product['ImageFilename']) }}" 
-                    alt="{{ product.Product_Name }}" 
-                    width="100" 
-                    height="100">
-
-                <!-- Product Info -->
-                <div class="product-info">
-                  <h4 style="margin: 0;">{{ product.Product_Name }}</h4>
-                  <p>{{ product.Unit }}</p>
-                  <p>Sold: {{ product.total_sold }}</p>
-                  <p>Revenue: ₱{{ "%.2f"|format(product.revenue) }}</p>
-                </div>
-              </div>
-            {% else %}
-              <p>No products sold yet.</p>
-            {% endfor %}
+  <div class="header mb-6">
+    <h2 class="title">Top Performing Products</h2>
+    <p class="subtitle">Your best selling items this month</p>
+  </div>
+  
+  <div class="top-products">
+    {% for product in top_products %}
+    <div class="product-card">
+      <!-- Product Image -->
+      <img class="product-img"
+           src="{{ url_for('static', filename='images/products/' + product['ImageFilename']) }}"
+           alt="{{ product.Product_Name }}">
+      
+      <!-- Product Info -->
+      <div class="product-info">
+        <h3 class="product-name">{{ product.Product_Name }}</h3>
+        <p class="product-unit">{{ product.Unit }}</p>
+        <div class="product-stats">
+          <div class="stat">
+            <span class="label">Sold</span>
+            <span class="value">{{ product.total_sold }} units</span>
           </div>
-        </section>
+          <div class="stat">
+            <span class="label">Revenue</span>
+            <span class="value">₱{{ "%.2f"|format(product.revenue) }}</span>
+          </div>
+        </div>
       </div>
     </div>
-
-    <!-- Newsletter -->
-    <section id="contacts" class="newsletter">
-      <div class="newsletter-content">
-        <div class="newsletter-text">
-          <h3><i class="fas fa-envelope"></i> Subscribe to our Newsletter</h3>
-          <p>Stay connected with the latest updates and local farm offers.</p>
-        </div>
-        <form class="newsletter-form">
-          <input type="email" placeholder="Your email address" required />
-          <button type="submit">Subscribe</button>
-        </form>
-        <div class="social-icons">
-          <a href="#"><i class="fab fa-facebook-f"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
-          <a href="#"><i class="fab fa-instagram"></i></a>
-        </div>
-      </div>
-    </section>
- 
-    <!-- Footer -->
-    <footer class="main-footer">
-      <div class="footer-content">
-        <div class="footer-about">
-          <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-          AngkatAni
-          <p>Empowering farmers and connecting communities through sustainable commerce.</p>
-          <p><strong>09271674524</strong><br />angkatani@.com</p>
-        </div>
-        <div class="footer-columns">
-          <div>
-            <h5>My Account</h5>
-            <ul>
-              <li>My Account</li>
-              <li>Order History</li>
-              <li>Shopping Cart</li>
-              <li>Wishlist</li>
-            </ul>
-          </div>
-          <div>
-            <h5>Help</h5>
-            <ul>
-              <li>Contact</li>
-              <li>FAQs</li>
-              <li>Terms & Conditions</li>
-              <li>Privacy Policy</li>
-            </ul>
-          </div>
-          <div>
-            <h5>Proxy</h5>
-            <ul>
-              <li>About</li>
-              <li>Shop</li>
-              <li>Product</li>
-              <li>Track Order</li>
-            </ul>
-          </div>
-          <div>
-            <h5>Categories</h5>
-            <ul>
-              <li>Order History</li>
-              <li>Shopping Cart</li>
-              <li>Wishlist</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </footer>
+    {% else %}
+    <p>No products sold yet.</p>
+    {% endfor %}
+  </div>
+</section>
+      </main>
+     
  
     <!-- JavaScript -->
     <script>

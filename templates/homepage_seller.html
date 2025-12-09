@@ -21,109 +21,93 @@
       </div>
     </header>
  
-    <!-- Navigation Menu -->
-    <nav class="nav-menu">
-      <ul>
-        <li><a href="/homepage_seller">Home</a></li>
-        <li><a href="#contacts">Contacts</a></li>
-      </ul>
-    </nav>
+        <!-- Breadcrumb Navigation -->
+  <nav class="main-nav">
+    <ul class="breadcrumb">
+      <li><a href="/homepage_seller"> <i class="fas fa-home"></i></a></li>
+      <li>›</li>   
+    </ul>
    
-    <!-- Breadcrumb Navigation -->
-    <nav class="main-nav">
-      <ul class="breadcrumb">
-        <li><a href="/homepage_seller"> <i class="fas fa-home"></i></a></li>
-        <li>›</li>
-        <li>
-          <a href="/homepage_seller" class="button">Homepage Seller</a>
-        </li> 
-      </ul>
-   
-      <div class="user-dropdown" id="userDropdown">
-        <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
-        <div class="user-menu" id="userMenu">
-          <a href="{{ url_for('seller_account.seller_account') }}" class="account-btn">My Account</a>
-            <form action="{{ url_for('homepage_seller.logout') }}" method="post">
-              <button class="logout-btn" type="submit">Logout</button>
-            </form>
+    <div class="icons">
+        <div class="user-dropdown" id="userDropdown">
+            <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
+            <div class="user-menu" id="userMenu">
+              <a href="{{ url_for('seller_account.seller_account') }}" class="account-btn">My Account</a>
+              <form action="{{ url_for('homepage_seller.logout') }}" method="post">
+                <button class="logout-btn" type="submit">Logout</button>
+              </form>
+            </div>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
 
-  <div class="top-content-container">
-    <h2>Welcome, {{ username }}!</h2>
-    <p>You have {{ total_products }} products. Monitor the stock of each product variation here.</p>
+   <aside class="sidenav">
+    <div class="status">
+      <h3>SELLER MENU</h3>
+      <ul class="status-list">
+        <li>
+          <form action="/homepage_seller" method="get">
+           <button type="submit" class="status-item active">
+    <i class="fas fa-home"></i> Homepage
+</button>
+          </form>
+        </li>
+        <li>
+          <form action="{{ url_for('seller_orders.unpaid_orders') }}" method="get">
+            <button type="submit" class="status-item"><i class="fas fa-receipt"></i> Orders</button>
+          </form>
+        </li>
+        <li>
+          <button type="button" class="status-item" id="addProductBtn"><i class="fas fa-plus-circle"></i> Add Product</button>
+        </li>
+        <li>
+          <form action="/dashboard" method="get">
+            <button type="submit" class="status-item"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </aside>
 
-    <div class="stats-container">
-      <div class="stat-box low-stock">
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <!-- Top stats -->
+    <div class="top-content-container">
+      <h2>Welcome, {{ username }}!</h2>
+      <p>You have {{ total_products }} products. Monitor the stock of each product variation here.</p>
+      <div class="stats-container">
+        <div class="stat-box low-stock">
           <h4>LOW STOCK</h4>
           <h2>{{ low_stock_count }}</h2>
           <p>Products running low</p>
-      </div>
-
-      <div class="stat-box in-stock">
-        <h4>IN STOCK</h4>
-        <h2>{{ in_stock_count }}</h2>
-        <p>Products ready for buyers</p>
-      </div>
-
-      <div class="stat-box restock">
+        </div>
+        <div class="stat-box in-stock">
+          <h4>IN STOCK</h4>
+          <h2>{{ in_stock_count }}</h2>
+          <p>Products ready for buyers</p>
+        </div>
+        <div class="stat-box restock">
           <h4>RESTOCK</h4>
           <h2>{{ restock_count }}</h2>
           <p>Products out of stock</p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="container">
-    <aside class="sidebar">
-      <div class="status">
-        <h3>SELLER MENU</h3>
-        <ul class="status-list">
-          <li>
-            <form action="/homepage_seller" method="get">
-              <button type="submit" class="status-item">
-                <i class="fas fa-home"></i> Homepage
-              </button>
-            </form>
-          </li>
-          <li>
-            <form action="{{ url_for('seller_orders.unpaid_orders') }}" method="get">
-              <button type="submit" class="status-item">
-                <i class="fas fa-receipt"></i> Orders
-              </button>
-            </form>
-          </li>
-          <li>
-            <button type="button" class="status-item" id="addProductBtn">
-                <i class="fas fa-plus-circle"></i> Add Product
-            </button>
-          </li>
-          <li>
-            <form action="/dashboard" method="get">
-              <button type="submit" class="status-item">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
-              </button>
-            </form>
-          </li>
-        </ul>
-      </div>
-    </aside>
-  
-    <!-- Product Column -->
+    <!-- Product Grid -->
     <div class="column-right">
       <div class="product-container">
         {% for product in products %}
-        <div class="product-box">
-          <div class="image-container">
-            <a href="{{ url_for('homepage_seller.edit_product', product_id=product['ProductID']) }}">
-              <img src="{{ url_for('static', filename='images/products/' + product['ImageFilename']) }}" alt="Product Image">
-            </a>
-          </div>
-          <div class="product-details">
-            <p class="product-name">{{ product['Product_Name'] }}</p>
-          </div>
-          <div class="variation-container">
+          <div class="product-box">
+            <div class="image-container">
+              <a href="{{ url_for('homepage_seller.edit_product', product_id=product['ProductID']) }}">
+                <img src="{{ url_for('static', filename='images/products/' + product['ImageFilename']) }}" alt="Product Image">
+              </a>
+            </div>
+            <div class="product-details">
+              <p class="product-name">{{ product['Product_Name'] }}</p>
+            </div>
+            <div class="variation-container">
               {% for variation in product['variations'] %}
                 <span class="variation-unit 
                   {% if variation['Status'] == 'in-stock' %}in-stock
@@ -132,89 +116,21 @@
                   {{ variation['Unit'] }}
                 </span>
               {% endfor %}
+            </div>
+            <div class="button-container">
+              <form action="{{ url_for('homepage_seller.edit_product', product_id=product['ProductID']) }}" method="get">
+                <button type="submit" class="edit-button">Edit</button>
+              </form>
+              <form action="{{ url_for('homepage_seller.delete_product', product_id=product['ProductID']) }}" method="post">
+                <button type="submit" class="delete-button">Delete</button>
+              </form>
+            </div>
           </div>
-          <div class="button-container">
-            <form action="{{ url_for('homepage_seller.edit_product', product_id=product['ProductID']) }}" method="get" style="display: inline;">
-              <button type="submit" class="edit-button">Edit</button>
-            </form>
-            <form action="{{ url_for('homepage_seller.delete_product', product_id=product['ProductID']) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this product?');" style="display: inline;">
-              <button type="submit" class="delete-button">Delete</button>
-            </form>
-          </div>
-        </div>
         {% endfor %}
       </div>
     </div>
   </div>
-
-
-  <!-- Newsletter -->
-  <section id="contacts" class="newsletter">
-    <div class="newsletter-content">
-      <div class="newsletter-text">
-        <h3><i class="fas fa-envelope"></i> Subscribe to our Newsletter</h3>
-        <p>Stay connected with the latest updates and local farm offers.</p>
-      </div>
-      <form class="newsletter-form">
-        <input type="email" placeholder="Your email address" required />
-        <button type="submit">Subscribe</button>
-      </form>
-      <div class="social-icons">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-      </div>
-    </div>
-  </section>
  
-  <!-- Footer -->
-  <footer class="main-footer">
-    <div class="footer-content">
-      <div class="footer-about">
-        <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-        AngkatAni
-        <p>Empowering farmers and connecting communities through sustainable commerce.</p>
-        <p><strong>09271674524</strong><br />angkatani@.com</p>
-      </div>
-      <div class="footer-columns">
-        <div>
-          <h5>My Account</h5>
-          <ul>
-            <li>My Account</li>
-            <li>Order History</li>
-            <li>Shopping Cart</li>
-            <li>Wishlist</li>
-          </ul>
-        </div>
-        <div>
-          <h5>Help</h5>
-          <ul>
-            <li>Contact</li>
-            <li>FAQs</li>
-            <li>Terms & Conditions</li>
-            <li>Privacy Policy</li>
-          </ul>
-        </div>
-        <div>
-          <h5>Proxy</h5>
-          <ul>
-            <li>About</li>
-            <li>Shop</li>
-            <li>Product</li>
-            <li>Track Order</li>
-          </ul>
-        </div>
-        <div>
-          <h5>Categories</h5>
-          <ul>
-            <li>Order History</li>
-            <li>Shopping Cart</li>
-            <li>Wishlist</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </footer>
  
   <!-- JavaScript -->
   <script>
