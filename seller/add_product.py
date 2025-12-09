@@ -3,6 +3,7 @@ import mysql.connector
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import os
+import uuid
 
 load_dotenv()
 
@@ -146,8 +147,10 @@ def add_product():
         image_filename = None
 
         if image:
-            image_filename = secure_filename(image.filename)
-            image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+            filename = secure_filename(image.filename)
+            unique_filename = f"{uuid.uuid4().hex}_{filename}"
+            image.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
+            image_filename = unique_filename
 
         if productname and weight and packaging_length and packaging_width and packaging_height and category_id:
             product = Product(productname, weight, packaging_length, packaging_width, packaging_height, category_id, image_filename)

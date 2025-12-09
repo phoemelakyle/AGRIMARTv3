@@ -3,6 +3,7 @@ import mysql.connector
 from flask import jsonify
 from dotenv import load_dotenv
 import os
+import math
 
 load_dotenv()
 
@@ -24,6 +25,19 @@ def get_db_connection():
     except mysql.connector.Error as err:
         print(f"Error: {err}")
         return None
+    
+def haversine_distance(lat1, lon1, lat2, lon2):
+    R = 6371  # Earth radius in km
+    phi1 = math.radians(lat1)
+    phi2 = math.radians(lat2)
+    delta_phi = math.radians(lat2 - lat1)
+    delta_lambda = math.radians(lon2 - lon1)
+
+    a = math.sin(delta_phi/2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda/2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+
+    distance = R * c
+    return round(distance, 2)  # distance in km, rounded to 2 decimals
 
 @viewproduct_app.route('/viewproduct/<string:product_id>')
 def viewproduct(product_id):
@@ -33,11 +47,8 @@ def viewproduct(product_id):
     with get_db_connection() as connection:
         cursor = connection.cursor(dictionary=True)
 
-        print("Product IDviewproductapp:")
-        print(product_id)
-
         query = f"""
-        SELECT p.ProductID, p.Product_Name, p.CategoryID, pv.Price, p.ImageFileName, pv.Unit, pv.Quantity
+        SELECT p.ProductID, p.Product_Name, p.CategoryID, p.AddressID, pv.Price, p.ImageFileName, pv.Unit, pv.Quantity
         FROM product p
         JOIN product_variation pv ON p.ProductID = pv.ProductID
         WHERE p.ProductID = '{product_id}'
@@ -47,6 +58,32 @@ def viewproduct(product_id):
 
         if not product_data:
             return "Product not found", 404
+        
+        # Get buyer's default address
+        cursor.execute("""
+            SELECT Latitude, Longitude 
+            FROM buyer_addresses
+            WHERE BuyerID = %s AND isDefault = 1
+        """, (user_id,))
+        buyer_address = cursor.fetchone()
+        buyer_lat = float(buyer_address['Latitude'])
+        buyer_lon = float(buyer_address['Longitude'])
+
+        # For each product, get seller address
+        for product in product_data:
+            cursor.execute("""
+                SELECT Latitude, Longitude, Municipality, Region
+                FROM seller_addresses
+                WHERE AddressID = %s
+            """, (product['AddressID'],))
+            seller_address = cursor.fetchone()
+            seller_lat = float(seller_address['Latitude'])
+            seller_lon = float(seller_address['Longitude'])
+
+            # Calculate distance
+            product['Distance_km'] = haversine_distance(buyer_lat, buyer_lon, seller_lat, seller_lon)
+            product['Municipality'] = seller_address['Municipality']
+            product['Region'] = seller_address['Region']
 
         units_query = f"""
         SELECT DISTINCT Unit
@@ -82,7 +119,10 @@ def viewproduct(product_id):
                                          'ImageFileName': product['ImageFileName'],
                                          'Prices': prices,
                                          'Units': units,
-                                         'Quantities': quantities}
+                                         'Quantities': quantities,
+                                         'Distance_km': product['Distance_km'],
+                                         'Municipality': product['Municipality'],
+                                         'Region': product['Region']}
             else:
                 if product['Price'] not in grouped_products[key]['Prices']:
                     grouped_products[key]['Prices'].append(product['Price'])

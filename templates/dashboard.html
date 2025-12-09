@@ -79,10 +79,38 @@
       </aside>
 
       <main class="main-content">
+        <h2 class="market-title">Marketplace Overview</h2>
+        <p class="market-subtitle">Get insights into the current state of the marketplace.</p>
+        <section class="top-performing-products container-box">
+          <div class="header mb-6">
+            <h2 class="title">Top 5 Performing Products in the Market</h2>
+          </div>
+  
+          <div class="top-products">
+            {% for product in market_top_products %}
+            <div class="product-card">
+              <!-- Product Info -->
+              <div class="product-info">
+                <h3 class="product-name">{{ product.Product_Name }}</h3>
+                <p class="product-unit">{{ product.Unit }}</p>
+                <div class="product-stats">
+                  <div class="stat">
+                    <span class="label">Sold</span>
+                    <span class="value">{{ product.total_sold }} {{ 'unit' if product.total_sold == 1 else 'units' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% else %}
+            <p>No products sold yet.</p>
+            {% endfor %}
+          </div>
+        </section>
+
+        <h2 class="market-title">Your Products' Performance</h2>
+        <p class="market-subtitle">Check out your dashboard and see how your farm business is growing.</p>
       <!-- Business Snapshot Section -->
       <section class="business-snapshot container-box">
-        <h2>Hey {{ username }}!</h2>
-        <p>Check out your dashboard and see how your farm business is growing.</p>
         <h3>Business Snapshot</h3>
         <div class="snapshot-stats">
           <div class="stat-item">
@@ -159,40 +187,40 @@
    
 
         <section class="top-performing-products container-box">
-  <div class="header mb-6">
-    <h2 class="title">Top Performing Products</h2>
-    <p class="subtitle">Your best selling items this month</p>
-  </div>
+          <div class="header mb-6">
+            <h2 class="title">Top 5 Performing Products</h2>
+            <p class="subtitle">Your best selling items</p>
+          </div>
   
-  <div class="top-products">
-    {% for product in top_products %}
-    <div class="product-card">
-      <!-- Product Image -->
-      <img class="product-img"
-           src="{{ url_for('static', filename='images/products/' + product['ImageFilename']) }}"
-           alt="{{ product.Product_Name }}">
-      
-      <!-- Product Info -->
-      <div class="product-info">
-        <h3 class="product-name">{{ product.Product_Name }}</h3>
-        <p class="product-unit">{{ product.Unit }}</p>
-        <div class="product-stats">
-          <div class="stat">
-            <span class="label">Sold</span>
-            <span class="value">{{ product.total_sold }} units</span>
+          <div class="top-products">
+            {% for product in top_products %}
+            <div class="product-card">
+              <!-- Product Image -->
+              <img class="product-img"
+                  src="{{ url_for('static', filename='images/products/' + product['ImageFilename']) }}"
+                  alt="{{ product.Product_Name }}">
+              
+              <!-- Product Info -->
+              <div class="product-info">
+                <h3 class="product-name">{{ product.Product_Name }}</h3>
+                <p class="product-unit">{{ product.Unit }}</p>
+                <div class="product-stats">
+                  <div class="stat">
+                    <span class="label">Sold</span>
+                    <span class="value">{{ product.total_sold }} {{ 'unit' if product.total_sold == 1 else 'units' }}</span>
+                  </div>
+                  <div class="stat">
+                    <span class="label">Revenue</span>
+                    <span class="value">₱{{ "%.2f"|format(product.revenue) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% else %}
+            <p>No products sold yet.</p>
+            {% endfor %}
           </div>
-          <div class="stat">
-            <span class="label">Revenue</span>
-            <span class="value">₱{{ "%.2f"|format(product.revenue) }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% else %}
-    <p>No products sold yet.</p>
-    {% endfor %}
-  </div>
-</section>
+        </section>
       </main>
      
  

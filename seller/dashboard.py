@@ -173,6 +173,32 @@ def get_top_performing_variations(seller_id):
 
     return results
 
+def get_top_selling_product_units():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    query = """
+        SELECT 
+            p.Product_Name,
+            pv.Unit,
+            SUM(so.Quantity) AS total_sold
+        FROM seller_order so
+        JOIN product_variation pv ON so.VariationID = pv.VariationID
+        JOIN product p ON pv.ProductID = p.ProductID
+        WHERE so.Order_Status = 'delivered'
+        GROUP BY p.Product_Name, pv.Unit
+        ORDER BY total_sold DESC
+        LIMIT 5;
+    """
+
+    cursor.execute(query)
+    results = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return results
+
 from datetime import datetime, timedelta
 
 def get_last_7_days_sales(seller_id):
@@ -246,6 +272,7 @@ def dashboard():
     top_products = get_top_performing_variations(user_id)
     sales_last_7_days = get_last_7_days_sales(user_id)
     sales_last_30_days = get_last_30_days_sales(user_id)
+    market_top_products = get_top_selling_product_units()
 
     average_order_value = calculate_aov(total_revenue, total_delivered_orders)
 
@@ -262,7 +289,8 @@ def dashboard():
         cancelled=cancelled,
         top_products=top_products,
         sales_last_7_days=sales_last_7_days,
-        sales_last_30_days=sales_last_30_days
+        sales_last_30_days=sales_last_30_days,
+        market_top_products=market_top_products
     )
 
 @dashboard_app.route('/logout', methods=['POST'])

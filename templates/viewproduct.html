@@ -128,12 +128,10 @@
 <div class="column column-right"> 
     {% for product in product_data %}
     
-    <h4>VIEW PRODUCTS</h4>
-
     <div class="product-view-wrapper styled-view-container" data-product-id="{{ product['ProductID'] }}">
         
         <!-- TITLE ABOVE GRID -->
-        <h3 class="name">{{ category_name.Category_Name }} / {{ product['Product_Name'] }}</h3>  
+        <h3 class="name">{{ category_name.Category_Name }}</h3>  
 
         <!-- GRID CONTAINER -->
         <div class="view-grid">
@@ -163,7 +161,8 @@
                         <i class="fas fa-map-marker-alt farmer-icon"></i>
                         <span class="farmer-title">Local Farmer Connection</span>
                     </div>
-                    <p class="farmer-sub">From farms within 15 km of your location</p>
+                    <p class="farmer-sub">{{ product['Distance_km'] }} km from you</p>
+                    <p class="farmer-sub">{{ product['Municipality'] }}, {{ product['Region'] }}</p>
                 </div>
 
                 <!-- Units -->
@@ -320,10 +319,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
-</script>
-<script>
-    document.getElementById('farmer-distance').innerText = 
-        `From farms within ${product.Distance} km of your location`;
 </script>
 </body>
 </html>

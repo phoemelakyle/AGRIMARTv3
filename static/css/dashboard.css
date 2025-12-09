@@ -346,5 +346,17 @@
   }
 }
 
+.market-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--foreground);
+  margin-bottom: 0.2rem;
+  margin-left:0.40rem;
+}
 
-
+.market-subtitle {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  margin:0px;
+  margin-left:0.40rem;
+}
