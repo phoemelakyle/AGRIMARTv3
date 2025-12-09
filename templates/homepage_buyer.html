@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agrimart - Filtered Products</title>
+    <title>AngkatAni - Filtered Products</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/homepage_buyer.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +15,7 @@
     <header class="top-bar">
       <div class="logo">
         <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo-icon"/>
-          Agrimart
+          AngkatAni
       </div>          
       <div class="tagline">Connecting you to Local Farmers</div>
     </header>
@@ -54,39 +54,10 @@
         </div>
       </div>
     </nav>
-    
-    <div class="top-content-container">
-    <h2>Welcome, {{ username }}!</h2>
-    {% if default_address %}
-        <p>Default address: {{ default_address.Municipality }}, {{ default_address.Province }}</p>
-    {% else %}
-        <p>Default address: Not set</p>
-    {% endif %}
-
-    <div class="stats-container">
-      <div class="stat-box low-stock">
-          <h4>AVAILABLE OFFERS</h4>
-          <h2>{{ total_products }}</h2>
-          <p>Available farm produce</p>
-      </div>
-
-      <div class="stat-box in-stock">
-        <h4> Showing products within {{ selected_km }} km 
-            {% if selected_category == 'all' or not selected_category %}
-                (All Categories)
-            {% else %}
-                ({{ selected_category|capitalize }})
-            {% endif %}
-        </h4>
-        <h2>{{ filtered_count }}</h2>
-        <p>Products matching your filters</p>
-      </div>
-    </div>
-  </div>
      
     <!-- Main Container -->
-    <div class="container">
-      <aside class="sidebar">
+
+      <aside class="sidenav">
         <!--  CATEGORY Section -->
         <div class="category-filter">
           <form id="filterForm" action="{{ url_for('homepage_buyer.filter_products') }}" method="get">
@@ -98,8 +69,7 @@
                 <button type="submit" class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
               </div>
             </div>
-
-
+     
           <!-- Categories -->
           <h3>CATEGORIES</h3>
           <!-- 2-column category grid -->
@@ -153,7 +123,37 @@
           </div>
         </div>
       </aside>
+      
 
+      <div class="main-content">
+       <div class="top-content-container">
+    <h2>Welcome, {{ username }}!</h2>
+    {% if default_address %}
+        <p>Default address: {{ default_address.Municipality }}, {{ default_address.Province }}</p>
+    {% else %}
+        <p>Default address: Not set</p>
+    {% endif %}
+
+    <div class="stats-container">
+      <div class="stat-box low-stock">
+          <h4>AVAILABLE OFFERS</h4>
+          <h2>{{ total_products }}</h2>
+          <p>Available farm produce</p>
+      </div>
+
+      <div class="stat-box in-stock">
+        <h4> Showing products within {{ selected_km }} km 
+            {% if selected_category == 'all' or not selected_category %}
+                (All Categories)
+            {% else %}
+                ({{ selected_category|capitalize }})
+            {% endif %}
+        </h4>
+        <h2>{{ filtered_count }}</h2>
+        <p>Products matching your filters</p>
+      </div>
+    </div>
+  </div>
 
       <div class="column column-right">
         <h4>PRODUCTS</h4>
@@ -161,102 +161,45 @@
       </div>
 
       <div class="product-container">
-      {% if product_data %}
-          {% for product in product_data %}
-              <div class="product-box">
-                <div class="image-container">
-                  <a href="{{ url_for('viewproduct.viewproduct', product_id=product['ProductID']) }}">
-                      <img src="{{ url_for('static', filename='images/products/' + product['ImageFileName']) }}"  alt="Product Image" width="200" height="200">
-                  </a>
-                </div>
-                <p>{{ product['Product_Name'] }}</p>
-                {% if product['MinPrice'] == product['MaxPrice'] %}
-                <p>P{{ product['MinPrice'] }}</p>
-                {% else %}
-                <p>P{{ product['MinPrice'] }} - P{{ product['MaxPrice'] }}</p>
-                {% endif %}
-                <p>{{ product['Municipality'] }}, {{ product['Province'] }}</p>
-                {% if product.Distance is not none %}
-                  <p><small>{{ product.Distance }} km away</small></p>
-                {% endif %}
-              </div>
-          {% endfor %}
-      {% else %}
-        <p>No products available for the selected category.</p>
-      {% endif %}
-      </div>
-      </div>
-    </div>
+  {% if product_data %}
+    {% for product in product_data %}
+      <div class="product-box">
+        <div class="image-container">
+          <a href="{{ url_for('viewproduct.viewproduct', product_id=product['ProductID']) }}">
+            <img src="{{ url_for('static', filename='images/products/' + product['ImageFileName']) }}" alt="Product Image">
+          </a>
+          <div class="in-stock">In Stock</div>
+        </div>
+        <div class="product-content">
+          <h3>{{ product['Product_Name'] }}</h3>
 
+          {% if product['MinPrice'] == product['MaxPrice'] %}
+            <p class="price">₱{{ product['MinPrice'] }}</p>
+          {% else %}
+            <p class="price">₱{{ product['MinPrice'] }} - ₱{{ product['MaxPrice'] }}</p>
+          {% endif %}
+          <p class="per-unit">per unit</p>
 
-    <!-- Newsletter -->
-    <section id="contacts" class="newsletter">
-      <div class="newsletter-content">
-        <div class="newsletter-text">
-          <h3><i class="fas fa-envelope"></i> Subscribe to our Newsletter</h3>
-          <p>Stay connected with the latest updates and local farm offers.</p>
-        </div>
-        <form class="newsletter-form">
-          <input type="email" placeholder="Your email address" required />
-          <button type="submit">Subscribe</button>
-        </form>
-        <div class="social-icons">
-          <a href="#"><i class="fab fa-facebook-f"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
-          <a href="#"><i class="fab fa-instagram"></i></a>
+          <div class="location">
+  <i class="fas fa-map-marker-alt"></i>
+  <div>
+    <p>{{ product['Municipality'] }}, {{ product['Province'] }}</p>
+    {% if product.Distance is not none %}
+      <p>{{ product.Distance }} km away</p>
+    {% endif %}
+  </div>
+</div>
+        <a href="{{ url_for('viewproduct.viewproduct', product_id=product['ProductID']) }}" class="view-product">
+  <i class="fas fa-eye"></i> View Product
+</a>
         </div>
       </div>
-    </section>
+    {% endfor %}
+  {% else %}
+    <p>No products available for the selected category.</p>
+  {% endif %}
+</div>
 
-    <!-- Footer -->
-    <footer class="main-footer">
-      <div class="footer-content">
-        <div class="footer-about">
-          <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo-icon"/>
-          Agrimart
-    
-          <p>Empowering farmers and connecting communities through sustainable commerce.</p>
-          <p><strong>09271674524</strong><br />agrimart@.com</p>
-        </div>
-        <div class="footer-columns">
-          <div>
-            <h5>My Account</h5>
-            <ul>
-              <li>My Account</li>
-              <li>Order History</li>
-              <li>Shopping Cart</li>
-              <li>Wishlist</li>
-            </ul>
-          </div>
-          <div>
-            <h5>Help</h5>
-            <ul>
-              <li>Contact</li>
-              <li>FAQs</li>
-              <li>Terms & Conditions</li>
-              <li>Privacy Policy</li>
-            </ul>
-          </div>
-          <div>
-            <h5>Proxy</h5>
-            <ul>
-              <li>About</li>
-              <li>Shop</li>
-              <li>Product</li>
-              <li>Track Order</li>
-            </ul>
-          </div>
-          <div>
-            <h5>Categories</h5>
-            <ul>
-              <li>Order History</li>
-              <li>Shopping Cart</li>
-              <li>Wishlist</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </footer>
 
     <script>
       {% if show_address_alert %}

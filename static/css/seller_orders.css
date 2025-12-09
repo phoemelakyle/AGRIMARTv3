@@ -120,6 +120,29 @@ body {
   color: white; /* Ensures the icon is white */
 }
 
+/* Sidebar fixed on the left */
+.sidenav {
+    position: fixed;
+    top: 116px;           /* below header + nav */
+    left: 0;
+    width: 250px;
+    height: calc(120vh - 120px);
+    background-color: #f9f9f9;
+    padding: 10px;
+    box-sizing: border-box;
+    border-right: 1px solid #f9f9f9;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
 .main-nav {
   padding: 15px 20px;
   font-size: 0.9rem;
@@ -135,6 +158,7 @@ body {
   display: flex;
   justify-content: space-between;
 }
+
 
 .main-nav ul {
   list-style: none;
@@ -228,7 +252,6 @@ body {
   background-color: #f9f9f9;
   padding: 15px;
   border-radius: 12px;
-  border: 1px solid #ddd;
 }
 .status h3 {
   font-size: 18px;

@@ -40,8 +40,7 @@
   </nav>
 
 
-  <div class="container">
-    <aside class="sidebar">
+       <aside class="sidenav">
       <div class="status">
         <h3>SELLER MENU</h3>
         <ul class="status-list">
@@ -52,7 +51,7 @@
           </li>
           <li>
             <form action="{{ url_for('seller_orders.unpaid_orders') }}" method="get">
-              <button type="submit" class="status-item"><i class="fas fa-receipt"></i> Orders</button>
+              <button type="submit" class="status-item active"><i class="fas fa-receipt"></i> Orders</button>
             </form>
           </li>
           <li>
@@ -71,6 +70,8 @@
       </div>
     </aside>
 
+    
+     <div class="main-content">
     <div class="column-right">
       <div class="status-container">
         <h3>STATUS</h3>
@@ -235,73 +236,6 @@
     </div>
   </div>
 
-  <!-- Newsletter -->
-  <section id ="contacts" class="newsletter">
-    <div class="newsletter-content">
-      <div class="newsletter-text">
-        <h3><i class="fas fa-envelope"></i> Subscribe to our Newsletter</h3>
-        <p>Stay connected with the latest updates and local farm offers.</p>
-      </div>
-      <form class="newsletter-form">
-        <input type="email" placeholder="Your email address" required />
-        <button type="submit">Subscribe</button>
-      </form>
-      <div class="social-icons">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="main-footer">
-    <div class="footer-content">
-      <div class="footer-about">
-        <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-        AngkatAni
-        <p>Empowering farmers and connecting communities through sustainable commerce.</p>
-        <p><strong>09271674524</strong><br />angkatani@.com</p>
-      </div>
-      <div class="footer-columns">
-        <div>
-          <h5>My Account</h5>
-          <ul>
-            <li>My Account</li>
-            <li>Order History</li>
-            <li>Shopping Cart</li>
-            <li>Wishlist</li>
-          </ul>
-        </div>
-        <div>
-          <h5>Help</h5>
-          <ul>
-            <li>Contact</li>
-            <li>FAQs</li>
-            <li>Terms & Conditions</li>
-            <li>Privacy Policy</li>
-          </ul>
-        </div>
-        <div>
-          <h5>Proxy</h5>
-          <ul>
-            <li>About</li>
-            <li>Shop</li>
-            <li>Product</li>
-            <li>Track Order</li>
-          </ul>
-        </div>
-        <div>
-          <h5>Categories</h5>
-          <ul>
-            <li>Order History</li>
-            <li>Shopping Cart</li>
-            <li>Wishlist</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </footer>
 
 <!-- Scripts -->
 <script>

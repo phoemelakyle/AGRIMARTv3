@@ -52,39 +52,7 @@ body {
     vertical-align: top;
   }
   
-  /* Navigation Menu */
-  .nav-menu {
-    background-color: #f8f8f8;
-    padding: 1px 1px;
-    border-bottom: 1px solid #ddd;
-    position: sticky;
-    top: 60px; /* Height of .top-bar */
-    z-index: 999;
-  }
-  
-  .nav-menu ul {
-    list-style: none;
-    display: flex;
-    gap: 15px; /* Reduced gap between items */
-    justify-content: center;
-  }
-  
-  .nav-menu ul li {
-    position: relative;
-  }
-  
-  .nav-menu ul li a {
-    text-decoration: none;
-    color: #333;
-    font-weight: 400; /* Slightly lighter font */
-    font-size: 0.85rem; /* Reduced font size */
-    transition: color 0.3s ease;
-  }
-  
-  .nav-menu ul li a:hover {
-    color: #27ae60;
-  }
-
+ 
   .main-nav {
     padding: 15px 20px;
     font-size: 0.9rem;
@@ -95,7 +63,7 @@ body {
     border-bottom: 1px solid #ddd;
     color: white;
     position: sticky;
-    top: 110px; /* Height of .top-bar + .nav-menu */
+    top: 60px; /* Height of .top-bar + .nav-menu */
     z-index: 998;
   }
   

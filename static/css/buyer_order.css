@@ -223,12 +223,35 @@ body {
   font-weight: bold;
 }
 
+/* Sidebar fixed on the left */
+.sidenav {
+    top: 116px;           /* below header + nav */
+    left: 0;
+    width: 250px;
+    height: calc(120vh - 120px);
+    background-color: #f9f9f9;
+    padding: 10px;
+    box-sizing: border-box;
+    border-right: 1px solid #f9f9f9;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+/* Push main content to the right of sidebar */
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
 .status {
   margin-top: 30px;
   background-color: #f9f9f9;
   padding: 15px;
   border-radius: 12px;
-  border: 1px solid #ddd;
+
 }
 .status h3 {
   font-size: 18px;

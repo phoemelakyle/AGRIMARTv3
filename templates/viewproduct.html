@@ -6,6 +6,7 @@
   <title>Agrimart - Product Details</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/viewproduct.css') }}">
     <script src="{{ url_for('static', filename='viewproduct.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -53,9 +54,7 @@
 </nav>
 
 
-  <!-- Main Container -->
-<div class="container">
-  <aside class="sidebar">
+<aside class="sidenav"> 
     <!-- Redesigned CATEGORY Section -->
     <div class="category-filter">
     <form id="filterForm" action="{{ url_for('homepage_buyer.filter_products') }}" method="get">
@@ -125,152 +124,206 @@
     </div>
   </aside>
   
-
-        <div class="column column-right"> 
+       <div class="main-content">
+<div class="column column-right"> 
     {% for product in product_data %}
+    
     <h4>VIEW PRODUCTS</h4>
 
-    <div class="product-view-wrapper" data-product-id="{{ product['ProductID'] }}">
+    <div class="product-view-wrapper styled-view-container" data-product-id="{{ product['ProductID'] }}">
         
-        <!-- LEFT SIDE -->
-        <div class="product-container">
-            <h3 class="name">{{ category_name.Category_Name }} / {{ product['Product_Name'] }}</h3>
+        <!-- TITLE ABOVE GRID -->
+        <h3 class="name">{{ category_name.Category_Name }} / {{ product['Product_Name'] }}</h3>  
 
-            <div class="image-container">
-                <img class="product-img" 
-                     src="{{ url_for('static', filename='images/products/' + product['ImageFileName']) }}" 
-                     alt="Product Image">
+        <!-- GRID CONTAINER -->
+        <div class="view-grid">
+
+            <!-- LEFT SIDE IMAGE -->
+            <div class="left-panel">
+                <div class="image-card">
+                    <img 
+                        src="{{ url_for('static', filename='images/products/' + product['ImageFileName']) }}" 
+                        alt="Product Image"
+                        class="image-fit"
+                    >
+                </div>
             </div>
 
-            <!-- REMOVED: product-var and Add to Cart button from here -->
+            <!-- RIGHT SIDE CONTENT -->
+            <div class="header-block">
+
+                <!-- Product Title -->
+                <div class="title-row">
+                    <h1 class="product-title">{{ product['Product_Name'] }}</h1>
+                </div>
+
+                <!-- Farmer Box -->
+                <div class="farmer-box">
+                    <div class="farmer-row">
+                        <i class="fas fa-map-marker-alt farmer-icon"></i>
+                        <span class="farmer-title">Local Farmer Connection</span>
+                    </div>
+                    <p class="farmer-sub">From farms within 15 km of your location</p>
+                </div>
+
+                <!-- Units -->
+                <div class="section-block">
+                    <label class="section-label">Select Unit</label>
+                    <div class="unit-wrap">
+                        {% for unit in product['Units'] %}
+                            <button class="unit-button styled-unit" data-unit="{{ unit }}">{{ unit }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Prices -->
+                <div class="section-block">
+                    <label class="section-label">Prices per Unit</label>
+                    <div class="price-grid">
+                        {% for price in product['Prices'] %}
+                            <button class="price-button styled-price unclickable" data-price="{{ price }}">
+                                {{ price }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+
+
+        <!-- ACTION AREA BELOW GRID -->
+        <div class="product-action-wrapper">
+            
+            <!-- Quantity -->
+            <div id="product-var">            
+                <div id="quan-disp"></div>
+                <div id="plusminuscart"></div>
+            </div>
+
+            <!-- Add to Cart -->
+            <button class="btn-addtocart btn-addcart-styled" data-product-id="{{ product['ProductID'] }}">
+                ADD TO CART
+            </button>
+
         </div>
 
-        <!-- RIGHT SIDE -->
-        <div class="viewproduct-container">
+    </div> <!-- END product-view-wrapper -->
 
-            <p class="product-name">{{ product['Product_Name'] }}</p>    
-
-            <p class="variation">Units:</p>
-            {% for unit in product['Units'] %}
-                <button class="unit-button" data-unit="{{ unit }}">{{ unit }}</button>
-            {% endfor %}
-
-            <p class="variation">Prices:</p>
-            {% for price in product['Prices'] %}
-                <button class="price-button unclickable" data-price="{{ price }}">{{ price }}</button>
-            {% endfor %}
-
-           <div class="product-action-wrapper">
-    <!-- Quantity + Plus/Minus -->
-    <div id="product-var">            
-        <div id="quan-disp"></div>
-        <div id="plusminuscart"></div>
-    </div>
-
-    <!-- Add to Cart Button -->
-    <button class="btn-addtocart" data-product-id="{{ product['ProductID'] }}">
-        ADD TO CART
-    </button>
-
-        </div>
-
-    </div>
     {% endfor %}
 </div>
 
-            
-        </div>
-    </div>
 
-    <!-- Newsletter -->
- <section id="contacts" class="newsletter">
-  <div class="newsletter-content">
-    <div class="newsletter-text">
-      <h3><i class="fas fa-envelope"></i> Subscribe to our Newsletter</h3>
-      <p>Stay connected with the latest updates and local farm offers.</p>
-    </div>
-    <form class="newsletter-form">
-      <input type="email" placeholder="Your email address" required />
-      <button type="submit">Subscribe</button>
-    </form>
-    <div class="social-icons">
-      <a href="#"><i class="fab fa-facebook-f"></i></a>
-      <a href="#"><i class="fab fa-twitter"></i></a>
-      <a href="#"><i class="fab fa-instagram"></i></a>
-    </div>
-  </div>
-</section>
-
-
-<!-- Footer -->
-<footer class="main-footer">
-  <div class="footer-content">
-    <div class="footer-about">
-      <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-      Agrimart
- 
-      <p>Empowering farmers and connecting communities through sustainable commerce.</p>
-      <p><strong>09271674524</strong><br />agrimart@.com</p>
-    </div>
-    <div class="footer-columns">
-      <div>
-        <h5>My Account</h5>
-        <ul>
-          <li>My Account</li>
-          <li>Order History</li>
-          <li>Shopping Cart</li>
-          <li>Wishlist</li>
-        </ul>
-      </div>
-      <div>
-        <h5>Help</h5>
-        <ul>
-          <li>Contact</li>
-          <li>FAQs</li>
-          <li>Terms & Conditions</li>
-          <li>Privacy Policy</li>
-        </ul>
-      </div>
-      <div>
-        <h5>Proxy</h5>
-        <ul>
-          <li>About</li>
-          <li>Shop</li>
-          <li>Product</li>
-          <li>Track Order</li>
-        </ul>
-      </div>
-      <div>
-        <h5>Categories</h5>
-        <ul>
-          <li>Order History</li>
-          <li>Shopping Cart</li>
-          <li>Wishlist</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</footer>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
+    /* ---------------------- USER DROPDOWN ---------------------- */
     const userIcon = document.getElementById('userIcon');
     const userMenu = document.getElementById('userMenu');
 
-    userIcon.addEventListener('click', function (event) {
-      userMenu.classList.toggle('show');
-      event.stopPropagation(); // Prevents event from bubbling up
-    });
+    if (userIcon && userMenu) {
+        userIcon.addEventListener('click', function (event) {
+            userMenu.classList.toggle('show');
+            event.stopPropagation();
+        });
 
-    // Close the dropdown if clicked outside
-    document.addEventListener('click', function (event) {
-      if (!userMenu.contains(event.target)) {
-        userMenu.classList.remove('show');
-      }
+        document.addEventListener('click', function (event) {
+            if (!userMenu.contains(event.target)) {
+                userMenu.classList.remove('show');
+            }
+        });
+    }
+
+    /* ---------------------- UNIT + PRICE + QUANTITY ---------------------- */
+  const unitButtons = document.querySelectorAll(".unit-button");
+
+unitButtons.forEach(unitBtn => {
+    unitBtn.addEventListener("click", function () {
+        const wrapper = this.closest(".product-view-wrapper");
+        const priceButtons = wrapper.querySelectorAll(".price-button");
+
+        // Remove previous active classes
+        unitButtons.forEach(btn => btn.classList.remove("active-unit"));
+        priceButtons.forEach(btn => btn.classList.remove("active-price"));
+
+        // Activate the clicked unit
+        this.classList.add("active-unit");
+
+        // Get index of clicked unit
+        const unitIndex = Array.from(unitButtons).indexOf(this);
+
+        // Activate the corresponding price
+        if (priceButtons[unitIndex]) {
+            priceButtons[unitIndex].classList.add("active-price");
+        }
     });
-  });
+});
+
+
+    // Quantity increment/decrement
+    document.querySelectorAll(".product-view-wrapper").forEach(wrapper => {
+        const minusBtn = wrapper.querySelector("#minus-btn");
+        const plusBtn = wrapper.querySelector("#plus-btn");
+        const qtyDisplay = wrapper.querySelector("#quan-disp");
+
+        if (!minusBtn || !plusBtn || !qtyDisplay) return;
+
+        let quantity = 1;
+        qtyDisplay.textContent = quantity;
+
+        minusBtn.addEventListener("click", () => {
+            if (quantity > 1) {
+                quantity--;
+                qtyDisplay.textContent = quantity;
+            }
+        });
+
+        plusBtn.addEventListener("click", () => {
+            quantity++;
+            qtyDisplay.textContent = quantity;
+        });
+    });
+});
 </script>
+
 
 <div id="cart-notification" class="cart-toast">Item added to cart!</div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const addCartButtons = document.querySelectorAll(".btn-addtocart");
+    const cartNotificationDiv = document.getElementById("cart-notification");
+
+    if (!cartNotificationDiv) return; // stop if div not found
+
+    // Hide original div
+    cartNotificationDiv.style.display = "none";
+
+    addCartButtons.forEach(button => {
+        button.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            // Show SweetAlert using the div text
+            Swal.fire({
+                icon: 'success',
+                title: cartNotificationDiv.textContent || 'Item added to cart!',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true
+            });
+
+            // Optional: reset quantity
+            const wrapper = this.closest(".product-view-wrapper");
+            const qtyDisplay = wrapper.querySelector("#quan-disp");
+            if (qtyDisplay) qtyDisplay.textContent = 1;
+        });
+    });
+});
+</script>
+<script>
+    document.getElementById('farmer-distance').innerText = 
+        `From farms within ${product.Distance} km of your location`;
+</script>
 </body>
 </html>
