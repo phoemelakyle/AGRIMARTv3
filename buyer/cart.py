@@ -359,22 +359,45 @@ def remove_item():
 def checkout():
     user_id = session.get("user_id")
     if not user_id:
-        return redirect('/login') 
+        return redirect('/login')
+
     selected_items = request.form.getlist('selected_items')
 
     if selected_items:
-        selected_items_details, payment_options, total_payment = fetch_selected_items_details(selected_items)
+        selected_items_details, payment_options, total_payment_db = fetch_selected_items_details(selected_items)
 
-        user_id = session.get('user_id')
         default_address = fetch_default_address(user_id)
 
-    return render_template(
-        'checkout.html',
-        selected_items_details=selected_items_details,
-        payment_options=payment_options,
-        total_payment=total_payment,
-        default_address=default_address
-    )
+        # --------------------------------------------
+        # CALCULATE USING YOUR JINJA FORMULA
+        # --------------------------------------------
+        subtotal = 0
+        shipping_total = 0
+        total_fixed_fee = 0
+
+        for item in selected_items_details:
+            quantity = item[5]
+            price = item[4]
+            shipping_fee = item[7]
+
+            subtotal += price * quantity
+            shipping_total += shipping_fee * quantity
+            
+
+        total_payment = subtotal + shipping_total
+        # --------------------------------------------
+
+        return render_template(
+            'checkout.html',
+            selected_items_details=selected_items_details,
+            payment_options=payment_options,
+            subtotal=subtotal,
+            shipping_total=shipping_total,
+            total_payment=total_payment,
+            default_address=default_address
+        )
+
+    return redirect('/cart')
 
 
 @cart_app.route('/process_checkout', methods=['POST'])

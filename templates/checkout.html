@@ -3,244 +3,231 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Agrimart - Checkout</title>
+    <title>AngkatAni - Checkout</title>
     <link rel="stylesheet" type="text/css" href="../static/css/checkout.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_buyer.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body>
 
-
-    <!-- Header -->
-  <header class="top-bar">
+<!-- Header -->
+<header class="top-bar">
     <div class="logo">
         <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-        Agrimart
+        AngkatAni
     </div>          
     <div class="tagline">Connecting you to Local Farmers</div>
-  </header>
+</header>
 
-
-  <!-- Navigation Menu -->
-  <nav class="nav-menu">
-    <ul>
-      <li><a href="/homepage_buyer">Home</a></li>
-        <li><a href="#contacts">Contacts</a></li>
-    </ul>
-  </nav>
- 
-  <!-- Breadcrumb Navigation -->
+<!-- Breadcrumb Navigation -->
 <nav class="main-nav">
-  <ul class="breadcrumb">
-    <li><a href="/homepage_buyer"> <i class="fas fa-home"></i></a></li>
-    <li>›</li>
-    <li>
-      <a href="/homepage_buyer" class="button">All Products</a>
-    </li>
-   
-     
-  </ul>
- 
-  <div class="icons">
-    <span class="cart">
-      <a href="{{ url_for('cart.cart') }}" class="cart-link">
-        <i class="fas fa-shopping-cart"></i>
-      </a>
-    </span>
-   
-    <div class="user-dropdown" id="userDropdown">
-      <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
-      <div class="user-menu" id="userMenu">
-        <a href="#">Profile</a>
-        <a href="#">Settings</a>
-        <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
-          <button class="logout-btn" type="submit">Logout</button>
-        </form>
-      </div>
+    <ul class="breadcrumb">
+        <li><a href="/homepage_buyer"> <i class="fas fa-home"></i></a></li>
+        <li>›</li>
+        <li><a href="#" class="button" onclick="location.reload(); return false;">Checkout</a></li>
+
+    </ul>
+
+    <div class="icons">
+        <span class="cart">
+            <a href="{{ url_for('cart.cart') }}" class="cart-link">
+                <i class="fas fa-shopping-cart"></i>
+            </a>
+        </span>
+       
+        <div class="user-dropdown" id="userDropdown">
+            <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
+            <div class="user-menu" id="userMenu">
+                <a href="#">Profile</a>
+                <a href="#">Settings</a>
+                <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
+                    <button class="logout-btn" type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </nav>
 
-<div class="container">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-   
-    <!-- Buyer Menu -->
-    <div class="status">
-      <h3>BUYER MENU</h3>
-      <ul class="status-list">
-        <li>
-          <form action="/homepage_buyer" method="get">
-            <button type="submit" class="status-item"><i class="fas fa-home"></i> Homepage</button>
-          </form>
-        </li>
-        <li>
-          <form action="{{ url_for('homepage_buyer.to_pay_orders') }}" method="get">
-            <button type="submit" class="status-item"><i class="fas fa-receipt"></i> Orders</button>
-          </form>
-        </li>
-      </ul>
-    </div>
-  </aside>
-
-
-   <main class="main-container">
-    <section class="cart-box">
-        <h2>Checkout</h2>
-        <form action="{{ url_for('cart.process_checkout') }}" method="post" enctype="multipart/form-data">
-            <div class="cart-items">
-                {% if selected_items_details %}
-                    {% for item in selected_items_details %}
-                        <div class="cart-item">
-                            <input type="hidden" name="selected_items" value="{{ item }}">
-                            <input type="hidden" name="product_total[]" value="{{ (item[5] * item[7]) + (item[4] * item[5]) + 10 }}">
-                            <input type="hidden" name="payment_option_id" id="payment_option_id" value="">
-
-
-                            <div class="cart-item-image">
-                                <img src="{{ url_for('static', filename='images/products/' + item[6]) }}" alt="Product Image">
-                            </div>
-                            <div class="cart-item-details">
-                                <p class="product-name">{{ item[2] }}</p>
-                                <p class="product-color-size">{{ item[3] }}</p>
-                                <p class="product-amount">₱{{ item[4] }} x {{item[5]}}</p>
-                                {% set product_total = (item[5] * item[7]) + (item[4] * item[5]) + 10 %}
-                                {% set shipping_fee = item[5] * item[7] %}
-                                <p class="product-shipping_fee">Shipping Fee: ₱{{shipping_fee}}</p>
-                                <p class="product-total total-amount">Product Total: ₱{{ product_total }}</p>
-                            </div>
-                        </div>
-                    {% endfor %}
-
-
-                    <hr class="custom-line">
-
-
-                    <div class="payment-section">
-                        <h3>Payment Options</h3>
-                        {% for variation_id, options in payment_options.items() %}
-                            <div class="payment-option">
-                                <h4>
-                                    Product Name:
-                                    {% for product_name in options['product_names'] %}
-                                        {{ product_name }}{% if not loop.last %}, {% endif %}
-                                    {% endfor %}
-                                </h4>
-                                <p>Unit: {{ options['options'][0]['unit'] }}</p>
-
-
-                                {% for option in options['options'] %}
-                                    <label class="payment-label">
-                                        <input type="radio" name="payment_option_{{ variation_id }}" value="{{ option['payment_optionsid'] }}" onchange="handlePaymentOptionSelection('{{ variation_id }}')">
-                                        {% if option['payment_method'] == 'Cash on Delivery' %}
-                                            <span>{{ option['payment_method'] }}</span>
-                                        {% else %}
-                                            <span>{{ option['payment_method'] }}, Account #: {{ option['account_number'] }}</span>
-                                        {% endif %}
-                                    </label><br>
-                                {% endfor %}
-                            </div>
-                        {% endfor %}
-                    </div>
-
-
-                    <hr class="custom-line">
-
-
-                    <div class="shipping-section">
-                        <h3>Shipping Address</h3>
-
-                        {% if default_address %}
-                            <div class="address-box">
-                                <p><strong>{{ default_address.Full_Name }}</strong></p>
-                                <p>{{ default_address.Phone_Number }}</p>
-                                <p>{{ default_address.Street }}, {{ default_address.Municipality }}</p>
-                                <p>{{ default_address.Province }}, {{ default_address.Region }}</p>
-                                <p>{{ default_address.Zip_Code }}</p>
-                            </div>
-                        {% else %}
-                            <p>No default address found. Please add one in your profile.</p>
-                        {% endif %}
-                        <button type="button" class="change-address-btn" onclick="openAddressPopup()">
-                            Change Address
-                        </button>
-                    </div>
-
-                    <div id="addressPopup" class="popup-overlay">
-                        <div class="popup-box">
-                            <h3>Select Address</h3>
-
-                            <div id="addressList">
-                                <!-- Ajax-loaded addresses appear here -->
-                            </div>
-
-                            <button class="close-btn" onclick="closeAddressPopup()">Close</button>
-                        </div>
-                    </div>
-
-                    <div class="total-payment-container">
-                        <h3>Total Payment: ₱{{ total_payment }}</h3>
-                    </div>
-
-
-                    <button class="checkout-btn" type="submit">Place Order</button>
-                {% elif message %}
-                    <p>{{ message }}</p>
-                {% endif %}
+<!-- Checkout Form -->
+<main class="checkout-container">
+ <form id="checkoutForm" action="{{ url_for('cart.process_checkout') }}" method="post" enctype="multipart/form-data">
+    <section class="checkout-grid">
+      <!-- Left Column -->
+      <div class="checkout-left">
+        {% if selected_items_details %}
+          <h3 class="order-summary-title">Order Summary</h3>
+          {% for item in selected_items_details %}
+            <div class="checkout-card cart-item">
+                <input type="hidden" name="selected_items" value="{{ item }}">
+                <input type="hidden" name="product_total[]" value="{{ (item[5] * item[7]) + (item[4] * item[5]) }}">
+                <div class="cart-item-image-wrapper">
+                    <img src="{{ url_for('static', filename='images/products/' + item[6]) }}" alt="Product Image" class="cart-item-image">
+                </div>
+                <div class="cart-item-details">
+                    <h3 class="product-name">{{ item[2] }}</h3>
+                    <p class="product-color-size">{{ item[3] }}</p>
+                    <p class="product-amount">₱{{ item[4] }} x {{ item[5] }}</p>
+                    {% set product_total = (item[5] * item[7]) + (item[4] * item[5]) %}
+                    {% set shipping_fee = item[5] * item[7] %}
+                    <p class="product-shipping_fee">Shipping Fee: ₱{{ shipping_fee }}</p>
+                    <p class="product-total">Product Total: ₱{{ product_total }}</p>
+                </div>
             </div>
-        </form>
+          {% endfor %}
+
+          <!-- Payment Section -->
+          <div class="checkout-card payment-section">
+    <h3 class="section-title">Payment Method</h3>
+    {% for variation_id, options in payment_options.items() %}
+      <div class="payment-option">
+        {% for option in options['options'] %}
+          <label class="payment-label">
+            <input type="radio" name="payment_option_{{ variation_id }}" 
+                   value="{{ option['payment_optionsid'] }}" 
+                   onchange="handlePaymentOptionSelection('{{ variation_id }}')">
+            {% if option['payment_method'] == 'Cash on Delivery' %}
+              <span><i class="fas fa-money-bill-wave"></i> {{ option['payment_method'] }}</span>
+            {% else %}
+              <span><i class="fas fa-credit-card"></i> {{ option['payment_method'] }}, Account #: {{ option['account_number'] }}</span>
+            {% endif %}
+          </label>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <input type="hidden" name="payment_option_id" id="payment_option_id" value="">
+</div>
+
+
+          <!-- Shipping Section -->
+         <div class="checkout-card shipping-section">
+    <h3 class="section-title">Shipping Address</h3>
+    {% if default_address %}
+      <div class="address-box">
+        <p><i class="fas fa-location-dot"></i>
+          <span>
+            <strong>{{ default_address.Full_Name }}</strong><br>
+            {{ default_address.Phone_Number }}<br>
+            {{ default_address.Street }}, {{ default_address.Municipality }}<br>
+            {{ default_address.Province }}, {{ default_address.Region }}<br>
+            {{ default_address.Zip_Code }}
+          </span>
+        </p>
+      </div>
+    {% else %}
+      <p>No default address found. Please add one in your profile.</p>
+    {% endif %}
+    <button type="button" class="change-address-btn" onclick="openAddressPopup()">Change Address</button>
+</div>
+
+
+         <!-- Address Modal -->
+<div id="addressPopup" class="popup-overlay">
+  <div class="popup-box">
+    <button class="close-btn" type="button" onclick="closeAddressPopup()">&times;</button>
+    <h3>Select Address</h3>
+    <div id="addressList"></div>
+  </div>
+</div>
+
+        {% endif %}
+      </div>
+
+      <!-- Right Column -->
+      <div class="checkout-right">
+        <div class="checkout-card order-total sticky">
+          <div class="total-section">
+            <p class="total-label">Total Amount</p>
+            <p class="total-amount-value">₱{{ total_payment }}</p>
+          </div>
+          <div class="subtotal-section">
+            <div class="flex-between">
+              <span>Subtotal</span>
+              <span>₱{{ subtotal }}</span>
+            </div>
+            <div class="flex-between">
+              <span>Shipping</span>
+              <span>₱{{ shipping_total }}</span>
+            </div>
+          </div>
+          <button class="checkout-btn" type="submit">Place Order</button>
+        </div>
+      </div>
     </section>
+  </form>
 </main>
 
+<script>
+  var selectedPaymentOptions = {};
 
-    <script>
-        var selectedPaymentOptions = {};
-   
-        function handlePaymentOptionSelection(variationId) {
-            var selectedOption = document.querySelector('input[name="payment_option_' + variationId + '"]:checked');
-            var paymentOptionsId = selectedOption ? selectedOption.value : '';
-           
-            selectedPaymentOptions[variationId] = paymentOptionsId;
-   
-            document.getElementById('payment_option_id').value = JSON.stringify(selectedPaymentOptions);
-        }
+  function handlePaymentOptionSelection(variationId) {
+      var selectedOption = document.querySelector('input[name="payment_option_' + variationId + '"]:checked');
+      var paymentOptionsId = selectedOption ? selectedOption.value : '';
+     
+      selectedPaymentOptions[variationId] = paymentOptionsId;
+      document.getElementById('payment_option_id').value = JSON.stringify(selectedPaymentOptions);
+  }
 
-        function openAddressPopup() {
-        fetch("/get_addresses")
-            .then(response => response.json())
-            .then(addresses => {
-                let html = "";
+  function openAddressPopup() {
+      fetch("/get_addresses")
+          .then(response => response.json())
+          .then(addresses => {
+              let html = "";
+              addresses.forEach(addr => {
+                  html += `
+                      <div class="address-choice" onclick="selectAddress('${addr.AddressID}')">
+                          <p><strong>${addr.Full_Name}</strong></p>
+                          <p>${addr.Phone_Number}</p>
+                          <p>${addr.Street}, ${addr.Municipality}</p>
+                          <p>${addr.Province}, ${addr.Region}</p>
+                          <p>${addr.Zip_Code}</p>
+                      </div>
+                  `;
+              });
+              document.getElementById("addressList").innerHTML = html;
+              document.getElementById("addressPopup").style.display = "flex";
+          });
+  }
 
-                addresses.forEach(addr => {
-                    html += `
-                        <div class="address-choice" onclick="selectAddress('${addr.AddressID}')">
-                            <p><strong>${addr.Full_Name}</strong></p>
-                            <p>${addr.Phone_Number}</p>
-                            <p>${addr.Street}, ${addr.Municipality}</p>
-                            <p>${addr.Province}, ${addr.Region}</p>
-                            <p>${addr.Zip_Code}</p>
-                        </div>
-                    `;
-                });
+  function closeAddressPopup() {
+      document.getElementById("addressPopup").style.display = "none";
+  }
 
-                document.getElementById("addressList").innerHTML = html;
-                document.getElementById("addressPopup").style.display = "flex";
-            });
-        }
+  function selectAddress(addressID) {
+      fetch("/select_address/" + addressID)
+          .then(res => res.json())
+          .then(data => {
+              if (data.success) {
+                  location.reload();
+              }
+          });
+  }
+</script>
+<script>
+  const checkoutForm = document.getElementById('checkoutForm');
 
-        function closeAddressPopup() {
-            document.getElementById("addressPopup").style.display = "none";
-        }
+  checkoutForm.addEventListener('submit', function(e) {
+    e.preventDefault(); // prevent default form submission
 
-        function selectAddress(addressID) {
-            fetch("/select_address/" + addressID)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    }
-                });
-        }
-    </script>    
+    Swal.fire({
+      icon: 'success',
+      title: 'Order Placed!',
+      text: 'Your items have been successfully checked out.',
+      showConfirmButton: false, // remove the OK button
+      timer: 1500,               // auto-close after 1.5 seconds
+      timerProgressBar: true,
+      background: '#ffffff',     // white background
+      iconColor: '#15803d'       // green icon
+    });
+
+    // Submit the form immediately while the alert shows
+    checkoutForm.submit();
+  });
+</script>
+
+
+
+
 </body>
 </html>

@@ -801,8 +801,9 @@ body {
     border-radius: 12px;
     border: 1px solid #ddd;
     width: 100%;
-    transform: scale(0.92);
+    transform: scale(0.96);
     transform-origin: top left;
+    
 }
 
 /* Stats container */
@@ -812,6 +813,7 @@ body {
     margin-top: 15px;
     transform: scale(0.9, 0.9);
     transform-origin: top left;
+    margin-left: 60px;
 }
 
 /* Stat box base style */
