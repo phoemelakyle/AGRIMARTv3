@@ -337,7 +337,7 @@ def edit_product(product_id):
 
 @homepage_seller_app.route('/logout', methods=['POST'])
 def logout():
-    session.pop('user_id', None)
+    session.clear()
     return redirect('/login')
 
 @homepage_seller_app.route('/edit_product/<string:product_id>')

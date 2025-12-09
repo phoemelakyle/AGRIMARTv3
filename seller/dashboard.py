@@ -295,5 +295,5 @@ def dashboard():
 
 @dashboard_app.route('/logout', methods=['POST'])
 def logout():
-    session.pop('user_id', None)
+    session.clear()
     return redirect('/login')
