@@ -231,6 +231,7 @@ body {
     color: #1c9f56;                 /* green text by default */
     transition: all 0.2s ease;
      margin-bottom: 10px; 
+     text-decoration: none;
 }
 
 .status-item i {

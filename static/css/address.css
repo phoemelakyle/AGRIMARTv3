@@ -312,7 +312,8 @@ body {
     box-sizing: border-box;
     color: #1c9f56;                 /* green text by default */
     transition: all 0.2s ease;
-     margin-bottom: 10px; 
+    margin-bottom: 10px; 
+    text-decoration: none;
 }
 
 .status-item i {
@@ -539,7 +540,7 @@ body {
     font-size: 25px;
     font-weight: 600;
     color: #3C2A21;                   
-    margin-bottom: 5px;
+    margin-bottom: 15px;
 }
 
 /* Subtitle / description */
@@ -673,98 +674,6 @@ body {
 }
 
 
-/* ===== Popup Modal Styling ===== */
-.modal {
-    display: none; /* hidden by default */
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6); /* semi-transparent background */
-    overflow: hidden; /* no scroll outside */
-}
-
-.modal-content {
-    background: #fff;
-    width: 450px; /* keep width same */
-    max-width: 90%; /* responsive for smaller screens */
-    max-height: 90vh; /* increase height from 80vh to 90vh */
-    margin: 3% auto; /* slightly top, reduced margin to fit taller modal */
-    padding: 20px;
-    border-radius: 12px;
-    animation: fadeIn 0.3s ease;
-    transform: scale(0.95); /* slight zoom-out */
-    overflow: hidden; /* no scroll inside */
-    box-sizing: border-box;
-}
-
-/* Form fields container in 2 columns */
-#addressForm {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* two columns */
-    gap: 12px; /* space between fields */
-}
-
-/* Make hidden fields span both columns */
-#addressForm input[type="hidden"] {
-    grid-column: span 2;
-}
-
-/* Inputs/Textboxes */
-#addressForm input[type="text"],
-#addressForm input[type="email"],
-#addressForm input[type="tel"] {
-    width: 100%;
-    padding: 8px;
-    font-size: 15px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-}
-
-/* Make the map span both columns */
-#map {
-    width: 100%;
-    height: 200px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    grid-column: span 2;
-    margin-top: 10px;
-    margin-bottom: 15px;
-}
-
-/* Modal title */
-#modalTitle {
-    grid-column: span 2;
-    margin-bottom: 10px;
-}
-
-/* Buttons */
-.save-btn {
-    width: 100%;
-    padding: 8px;
-    font-size: 15px;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    grid-column: span 2; /* spans both columns */
-}
-
-.save-btn:hover {
-    background-color: #45a049;
-}
-
-/* Close button */
-.close {
-    float: right;
-    cursor: pointer;
-    font-size: 22px;
-}
-
 /* ===== Animations ===== */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }
@@ -775,4 +684,111 @@ body {
     margin-top: 5px;
     
     font-size: 14px;
+}
+
+/* ===== Popup Modal Styling ===== */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+
+.modal-content {
+    background: #fff;
+    width: 450px;
+    max-width: 90%;
+    max-height: 90vh;
+    margin: 3% auto;
+    padding: 10px 25px 30px 25px;
+    animation: fadeIn 0.3s ease;
+    transform: scale(0.95);
+    overflow-y: auto; 
+    flex-direction: column;
+    gap: 15px; 
+    box-sizing: border-box;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.address-modal-field {
+    display: flex;         
+    align-items: center;    
+    gap: 10px;             
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+.address-modal-field label {
+    font-weight: 500;
+    color: #1c9f56;
+    white-space: nowrap;    
+}
+
+.address-modal-field input {
+    flex: 1;            
+    border: none;        
+    border-bottom: 1px solid #ccc;
+    outline: none;         
+    padding: 2px 8px;      /* smaller top/bottom padding */
+    line-height: 1.2; 
+}
+
+.address-modal-field input:focus {
+    border-bottom: 1px solid #1c9f56; 
+}
+
+#addressForm {
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 12px; 
+}
+
+
+#addressForm input[type="text"],
+#addressForm input[type="email"],
+#addressForm input[type="tel"] {
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+#map {
+    width: 100%;
+    height: 200px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+#modalTitle {
+    margin-bottom: 10px;
+}
+
+.save-btn {
+    width: 100%;
+    padding: 8px;
+    font-size: 15px;
+    background: #1c9f56;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.save-btn:hover {
+    background-color: #168842;
+}
+
+
+.close {
+    float: right;
+    cursor: pointer;
+    font-size: 22px;
 }

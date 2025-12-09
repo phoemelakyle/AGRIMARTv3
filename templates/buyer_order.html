@@ -3,228 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agrimart - Buyer Orders</title>
+    <title>AngkatAni - Orders</title>
     <link rel="stylesheet" type="text/css" href="../static/css/buyer_order.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_buyer.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-
-
-    <header class="top-bar">
-        <div class="logo">
-          <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon" />
-          Agrimart
-        </div>
-        <div class="tagline">Connecting you to Local Farmers</div>
-      </header>
+  <header class="top-bar">
+    <div class="logo">
+      <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon" />
+      AngkatAni
+    </div>
+    <div class="tagline">Connecting you to Local Farmers</div>
+  </header>
   
-   
-      <!-- Breadcrumb Navigation -->
-      <nav class="main-nav">
-        <ul class="breadcrumb">
-          <li><a href="/homepage_buyer"><i class="fas fa-home"></i></a></li>
-          <li>›</li>
-          <li><a href="/to-pay-orders" class="button">Orders</a></li>
-        </ul>
-        <div class="icons">
-          <span class="cart">
-            <a href="{{ url_for('cart.cart') }}" class="cart-link">
-              <i class="fas fa-shopping-cart"></i>
-            </a>
-          </span>
-          <div class="user-dropdown" id="userDropdown">
-            <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
-            <div class="user-menu" id="userMenu">
-              <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
-                <button class="logout-btn" type="submit">Logout</button>
-              </form>
-            </div>
-          </div>
+  <!-- Breadcrumb Navigation -->
+  <nav class="main-nav">
+    <ul class="breadcrumb">
+      <li><a href="/homepage_buyer"><i class="fas fa-home"></i></a></li>
+      <li>›</li>
+      <li><a href="/to-pay-orders" class="button">Orders</a></li>
+    </ul>
+    <div class="icons">
+      <span class="cart">
+        <a href="{{ url_for('cart.cart') }}" class="cart-link">
+          <i class="fas fa-shopping-cart"></i>
+        </a>
+      </span>
+      <div class="user-dropdown" id="userDropdown">
+        <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
+        <div class="user-menu" id="userMenu">
+          <form action="{{ url_for('homepage_buyer.logout') }}" method="post">
+            <button class="logout-btn" type="submit">Logout</button>
+          </form>
         </div>
-      </nav>
+      </div>
+    </div>
+  </nav>
    
-      <!-- Main Layout -->
-      <div class="container">
-        <!-- Sidebar (Left) -->
-        <aside class="sidebar">
-          <!-- Category Section -->
-          <div class="category-filter">
-             <!-- Categories -->
-       <h3>CATEGORIES</h3>
-<!-- 2-column category grid -->
-<div class="category-buttons two-column">
-    <!-- All Products (fixed) -->
-  <button type="button"
-    class="category-item {% if not selected_category or selected_category == 'all' %}active{% endif %}"
-    data-category="all">
-    <i class="fas fa-th-large"></i> All
-</button>
-    {% set icon_map = {
-        'Vegetables': 'fas fa-leaf',
-        'Fruits': 'fas fa-apple-whole',
-        'Dairy': 'fas fa-cheese',
-        'Grains': 'fas fa-wheat-awn',
-        'Spices': 'fas fa-pepper-hot',
-        'Fertilizers': 'fas fa-seedling',
-        'Pesticides': 'fas fa-spray-can',
-        'Seeds': 'fas fa-clipboard-check'
-    } %}
-    <!-- Database-driven categories -->
-    {% for category in categories %}
-    <button type="button"
-        class="category-item {% if selected_category == category.Category_Name|lower %}active{% endif %}"
-        data-category="{{ category.Category_Name }}">
-        <i class="{{ icon_map.get(category.Category_Name, 'fas fa-tag') }}"></i>
-        {{ category.Category_Name }}
-    </button>
-    {% endfor %}
-</div>
-<!-- Hidden field -->
-<input type="hidden" name="category" id="selectedCategory" value="{{ selected_category or 'all' }}">
+  <!-- Main Layout -->
+  <div class="container">
+    <!-- Sidebar (Left) -->
+    <aside class="sidebar">      
+      <!-- Buyer Menu -->
+      <div class="status">
+        <h3>BUYER MENU</h3>
+        <ul class="status-list">
+          <li>
+            <form action="/homepage_buyer" method="get">
+              <button type="submit" class="status-item"><i class="fas fa-home"></i> Homepage</button>
+            </form>
+          </li>
+          <li>
+            <form action="{{ url_for('homepage_buyer.to_pay_orders') }}" method="get">
+              <button type="submit" class="status-item active">
+                <i class="fas fa-receipt"></i> Orders
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </aside>
 
+    <div class="column-right">
+      <div class="status-container">
+        <h3>STATUS</h3>
+        <div class="status-tracker">
+          {% for status, icon in [('to_pay', 'wallet'), ('to_ship', 'box'), ('shipping', 'truck'), ('delivered', 'check-circle'), ('cancelled', 'times-circle')] %}
+          <form action="{{ url_for('homepage_buyer.' + status + '_orders') }}" method="get" class="step">
+            <button type="submit" class="circle {% if order_type == status %}active-status{% endif %}">
+              <i class="fas fa-{{ icon }}"></i>
+            </button>
+            <p>{{ status.replace('_', ' ').title() }}</p>
+          </form>
+          {% endfor %}
+        </div>
+      </div>
+  
+      <!-- Order Details Section -->
+      <div class="product-info">
+        <div class="section-header">
+          <h1>ORDER DETAILS</h1>
+          <form method="get" action="{{ url_for('homepage_buyer.' + order_type + '_orders') }}" class="sort-form">
+            <label for="sort">Sort by:</label>
+            <select name="sort" id="sort" onchange="this.form.submit()">
+              <option value="recent" {% if request.args.get('sort') == 'recent' %}selected{% endif %}>Recent</option>
+              <option value="old" {% if request.args.get('sort') == 'old' %}selected{% endif %}>Old</option>
+            </select>
+          </form>
+        </div>
+  
+        {% if order_details %}
+        <!-- Card Grid Layout -->
+          <div class="orders-grid">
+            {% for order_detail in order_details %}
+            <div class="order-card">
+                <!-- Main Content -->
+                <div class="card-content">
+                  <!-- Header Section -->
+                  <div class="card-header">
+                    <div>
+                      <p class="order-date"><i class="fas fa-calendar"></i> {{ order_detail['Order_Date'] }}</p>
+                    </div>
+                    <span class="status-badge {% if order_type == 'to_pay' %}to-pay{% elif order_type == 'to_ship' %}to-ship{% elif order_type == 'shipping' %}shipping{% elif order_type == 'delivered' %}completed{% elif order_type == 'cancelled' %}cancelled{% endif %}">
+                    {% if order_type == 'to_pay' %}
+                    To Pay
+                    {% elif order_type == 'to_ship' %}
+                    To Ship
+                    {% elif order_type == 'shipping' %}
+                    Shipping
+                    {% elif order_type == 'delivered' %}
+                    Delivered
+                    {% elif order_type == 'cancelled' %}
+                    Cancelled
+                    {% endif %}
+                    </span>
+                  </div>
 
+                  <div class="card-body-layout">
+                    <div class="left-side">
+                      <div class="details-section">
+                        <!-- Product Image -->
+                        <div class="product-image">
+                          <img src="{{ url_for('static', filename='images/products/' + order_detail['ImageFileName']) }}" 
+                              alt="{{ order_detail['Product_Name'] }}" width="120" height="120">
+                        </div>
 
+                        <!-- Product Details -->
+                        <div class="product-details">
+                          <h3 class="product-name">{{ order_detail['Product_Name'] }}</h3>
+                          <p><span class="label">Quantity:</span> <span class="value">{{ order_detail['Quantity'] }}</span></p>
+                          <p><span class="label">Variation:</span> <span class="value">{{ order_detail['Unit'] }}</span></p>
+                          <p><span class="label">Unit Price:</span> <span class="value">P{{ order_detail['Price'] }}</span></p>
+                          <p><span class="label">Shipping Fee:</span> <span class="value">P{{ order_detail['Shipping_Fee'] }}</span></p>
+                        </div>
+                      </div>
 
-   
-          <!-- Buyer Menu -->
-          <div class="status">
-            <h3>BUYER MENU</h3>
-            <ul class="status-list">
-              <li>
-                <form action="/homepage_buyer" method="get">
-                  <button type="submit" class="status-item"><i class="fas fa-home"></i> Homepage</button>
-                </form>
-              </li>
-              <li>
-                <form action="{{ url_for('homepage_buyer.to_pay_orders') }}" method="get">
-    <button type="submit" class="status-item active">
-        <i class="fas fa-receipt"></i> Orders
-    </button>
-</form>
+                      <!-- Buyer Address -->
+                      <div class="buyer-section">
+                        <h5><i class="fas fa-map-marker-alt"></i> Delivery Address</h5>
+                        <p>{{ order_detail['Buyer_Address'] }}</p>
+                      </div>
 
-              </li>
-            </ul>
-          </div>
-        </aside>
-   
-        <!-- Content Area (Right) -->
-        <div class="column-right">
-            <div class="status-container">
-              <h3>STATUS</h3>
-              <div class="status-tracker">
-                {% for status, icon in [('to_pay', 'wallet'), ('to_ship', 'box'), ('shipping', 'truck'), ('delivered', 'check-circle'), ('cancelled', 'times-circle')] %}
-                <form action="{{ url_for('homepage_buyer.' + status + '_orders') }}" method="get" class="step">
-                  <button type="submit" class="circle {% if order_type == status %}active-status{% endif %}">
-                    <i class="fas fa-{{ icon }}"></i>
-                  </button>
-                  <p>{{ status.replace('_', ' ').title() }}</p>
-                </form>
-                {% endfor %}
+                      <!-- Payment Method -->
+                      <div class="buyer-section">
+                        <h5><i class="fas fa-money-bill-wave"></i> Payment Method</h5>
+                        <p>{{ order_detail['Payment_Option'] }}</p>
+                      </div>
+                    </div>
+
+                    <!-- Total & Actions -->
+                    <div class="right-side">
+                      <div class="total-section-box">
+                          <h5>Order Summary</h5>
+
+                          <div class="total-row">
+                              <span>Subtotal</span>
+                              <span style="color: black;">₱{{ order_detail['Price'] * order_detail['Quantity'] }}</span>
+                          </div>
+
+                          <div class="total-row">
+                              <span>Total Shipping Fee</span>
+                              <span style="color: black;">₱{{ order_detail['Shipping_Fee'] * order_detail['Quantity'] }}</span>
+                          </div>
+
+                          <div class="total-row total-row-final">
+                              <span>Total</span>
+                              <span class="total-amount">₱{{ order_detail['Total_Amount'] }}</span>
+                          </div>
+                      </div>
+
+                      <!-- ACTION BUTTONS (unchanged) -->
+                      <div class="action-buttons">
+                        {% if order_type == 'to_pay' %}
+                        <form action="{{ url_for('homepage_buyer.pay_now', order_id=order_detail['OrderID']) }}" method="post" class="action-form">
+                          <button type="submit" class="btn btn-primary">Pay Now</button>
+                        </form>
+                        <form action="{{ url_for('homepage_buyer.cancel_to_pay', order_id=order_detail['OrderID']) }}" method="post" class="action-form">
+                          <button type="submit" class="btn btn-secondary">Cancel Order</button>
+                        </form>
+                        {% elif order_type == 'to_ship' %}
+                        <form action="{{ url_for('homepage_buyer.cancel_to_ship', order_id=order_detail['OrderID']) }}" method="post" class="action-form">
+                          <button type="submit" class="btn btn-secondary">Cancel Order</button>
+                        </form>
+                        {% elif order_type == 'shipping' %}
+                        <form action="{{ url_for('homepage_buyer.order_received', order_id=order_detail['OrderID']) }}" method="post" class="action-form">
+                          <button type="submit" class="btn btn-primary">Order Received</button>
+                        </form>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-         
-            <div class="product-info">
-              <h1>
-                {% if order_type == 'to_pay' %} TO PAY
-                {% elif order_type == 'to_ship' %} TO SHIP
-                  <div class="note">Note: Once your order is in the shipping process, <span style="color: red;">cancellation</span> is not possible.</div>
-                {% elif order_type == 'shipping' %} SHIPPING
-                {% elif order_type == 'delivered' %} DELIVERED
-                {% elif order_type == 'cancelled' %} CANCELLED
-                {% endif %}
-              </h1>
-                <form method="get" action="{{ url_for('homepage_buyer.' + order_type + '_orders') }}" class="sort-form">
-                <label for="sort">Sort by:</label>
-                  <select name="sort" id="sort" onchange="this.form.submit()">
-                    <option value="recent" {% if request.args.get('sort') == 'recent' %}selected{% endif %}>Recent</option>
-                    <option value="old" {% if request.args.get('sort') == 'old' %}selected{% endif %}>Old</option>
-                  </select>
-                </form>
-              {% if order_details %}
-              <table class="variation-table">
-                <thead>
-                  <tr>
-                    <th>Image</th>
-                    <th>Product</th>
-                    <th>Qty</th>
-                    <th>Variation</th>
-                    <th>Price</th>
-                    <th>Shipping Fee</th>
-                    <th>Buyer Address</th>
-                    <th>Payment Method</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for order_detail in order_details %}
-                  <tr>
-                    <td>
-                      
-                      <img src="{{ url_for('static', filename='images/products/' + order_detail['ImageFileName']) }}"
-                        alt="{{ order_detail['Product_Name'] }}" class="order-thumb">
-                    </td>
-                    <td>{{ order_detail['Product_Name'] }}</td>
-                    <td>x{{ order_detail['Quantity'] }}</td>
-                    <td>{{ order_detail['Unit'] }}</td>
-                    <td>P{{ order_detail['Price'] }}</td>
-                    <td>P{{ order_detail['Shipping_Fee'] }}</td>
-                    <td>{{ order_detail['Buyer_Address'] }}</td>
-                    <td>{{ order_detail['Payment_Option'] }}</td>
-                    <td>P{{ order_detail['Total_Amount'] }}</td>
-                    
-                    <td>
-                      {% if order_type == 'to_pay' %}
-                      <span class="status to-pay">To Pay</span>
-                      {% elif order_type == 'to_ship' %}
-                      <span class="status to-ship">To Ship</span>
-                      {% elif order_type == 'shipping' %}
-                      <span class="status shipping">Shipping</span>
-                      {% elif order_type == 'delivered' %}
-                      <span class="status delivered">Delivered</span>
-                      {% elif order_type == 'cancelled' %}
-                      <span class="status cancelled">Cancelled</span>
-                      {% endif %}
-                    </td>
-                    <td>
-                      {% if order_type == 'to_pay' %}
-                      <form action="{{ url_for('homepage_buyer.pay_now', order_id=order_detail['OrderID']) }}" method="post">
-                        <button type="submit" class="button1">Pay Now</button>
-                      </form>
-                      <form action="{{ url_for('homepage_buyer.cancel_to_pay', order_id=order_detail['OrderID']) }}" method="post">
-                        <button type="submit" class="button1 cancel-btn">Cancel Order</button>
-                      </form>
-                      {% elif order_type == 'to_ship' %}
-                      <form action="{{ url_for('homepage_buyer.cancel_to_ship', order_id=order_detail['OrderID']) }}" method="post">
-                        <button type="submit" class="button1 cancel-btn">Cancel Order</button>
-                      </form>
-                      {% elif order_type == 'shipping' %}
-                      <form action="{{ url_for('homepage_buyer.order_received', order_id=order_detail['OrderID']) }}" method="post">
-                        <button type="submit" class="button1">Order Received</button>
-                      </form>
-                      {% elif order_type == 'delivered' %}
-                      <p class="order-completed">Order completed.</p>
-                      {% elif order_type == 'cancelled' %}
-                      <p class="order-cancelled">Order Cancelled</p>
-                      {% endif %}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan="10" id="var-date"><b>Order Date & Time: </b>{{ order_detail['Order_Date'] }}</td>
-                  </tr>
-                  
-                  {% endfor %}
-                </tbody>
-              </table>
-              
-              {% else %}
-              <p class="no-orders-msg">No orders yet! Place an order now!</p>
-              {% endif %}
-            </div>
+            {% endfor %}
           </div>
+        {% else %}
+          <p class="no-orders-msg">No orders yet. Place an order now!</p>
+        {% endif %}
       </div>
+    </div>
+  </div>
          
       <!-- Newsletter -->
       <section id="contacts" class="newsletter">
@@ -250,9 +230,9 @@
     <div class="footer-content">
       <div class="footer-about">
         <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-        Agrimart
+        AngkatAni
         <p>Empowering farmers and connecting communities through sustainable commerce.</p>
-        <p><strong>09271674524</strong><br />agrimart@.com</p>
+        <p><strong>09271674524</strong><br />angkatani@.com</p>
       </div>
       <div class="footer-columns">
         <div>

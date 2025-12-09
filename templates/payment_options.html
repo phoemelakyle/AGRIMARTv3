@@ -4,7 +4,7 @@
     <link rel="stylesheet" type="text/css" href="../static/css/payment_options.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agrimart - Seller Payment Options</title>
+    <title>AngkatAni - Payment Options</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_buyer.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -14,19 +14,11 @@
     <header class="top-bar">
         <div class="logo">
             <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-            Agrimart
+            AngkatAni
         </div>          
         <div class="tagline">Connecting you to Local Farmers</div>
     </header>
- 
-    <!-- Navigation Menu -->
-    <nav class="nav-menu">
-        <ul>
-          <li><a href="/homepage_seller">Home</a></li>
-          <li><a href="#contacts">Contacts</a></li>
-        </ul>
-      </nav>
-   
+
     <!-- Breadcrumb Navigation -->
     <nav class="main-nav">
         <ul class="breadcrumb">
@@ -36,38 +28,39 @@
                 <a href="{{ url_for('payment_options.payment_options') }}" class="button">Payment Options</a>
             </li>
         </ul>
-   
-        <div class="icons">
-            <div class="user-dropdown" id="userDropdown">
-                <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
-                <div class="user-menu" id="userMenu">
-                    <a href="#">Profile</a>
-                    <a href="#">Settings</a>
-                    <form action="{{ url_for('homepage_seller.logout') }}" method="post">
-                        <button class="logout-btn" type="submit">Logout</button>
-                    </form>
-                </div>
-            </div>
-        </div>
     </nav>
    
     <div class="container">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="status">
-      <h3>ACCOUNT</h3>
-      <ul class="status-list">
-        <li>
-          <a href="{{ url_for('seller_account.seller_account') }}" class="account-btn">My Account</a>
-        </li>
-        <li><a href="{{ url_for('payment_options.payment_options') }}" class="account-btn">Banks & Cards</a></li>
-        <li><a href="{{ url_for('seller_address.seller_address') }}" class="account-btn">Addresses</a></li>
-        <form action="{{ url_for('homepage_seller.logout') }}" method="post">
-          <button class="logout-btn" type="submit">Logout</button>
-        </form>
-      </ul>
-    </div>
-  </aside>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="status">
+                <h3>ACCOUNT</h3>
+                <ul class="status-list">
+                    <li>
+                        <a href="{{ url_for('seller_account.seller_account') }}" class="status-item {% if active_page == 'account' %}active{% endif %}">
+                            <i class="fas fa-user"></i>My Account
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('payment_options.payment_options') }}" class="status-item active">
+                            <i class="fas fa-credit-card"></i> Banks & Cards
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('seller_address.seller_address') }}" class="status-item {% if active_page == 'addresses' %}active{% endif %}">
+                            <i class="fas fa-map-marker-alt"></i> Addresses
+                        </a>
+                    </li>
+                    <li>
+                        <form action="{{ url_for('homepage_seller.logout') }}" method="post">
+                            <button class="status-item logout-btn" type="submit">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </aside>
 
 
         <main class="main-container">

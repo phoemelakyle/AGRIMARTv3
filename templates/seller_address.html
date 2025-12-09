@@ -1,119 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" type="text/css" href="../static/css/account.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/address.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agrimart - Address</title>
+    <title>AngkatAni - Address</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- POPUP STYLES -->
-    <style>
-        .add-btn {
-            background-color: #28a745;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            display: inline-block;
-            transition: 0.2s ease;
-        }
-
-        .add-btn:hover {
-            background-color: #218838;
-            transform: scale(1.03);
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-        }
-
-        .modal-content {
-            background: #fff;
-            width: 400px;
-            margin: 10% auto;
-            padding: 20px;
-            border-radius: 10px;
-            animation: fadeIn 0.3s ease;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-
-        #map {
-            width: 100%;
-            height: 250px;
-            margin-top: 10px;
-            border-radius: 8px;
-        }
-
-
-        .save-btn {
-            width: 100%;
-            padding: 10px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .close {
-            float: right;
-            cursor: pointer;
-            font-size: 22px;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .custom-map-control-button {
-            background-color: #fff;
-            border: none;
-            outline: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            cursor: pointer;
-            margin: 10px;
-            font-size: 18px;
-        }
-    </style>
-
 </head>
 <body>
 
 <header class="top-bar">
     <div class="logo">
         <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-        Agrimart
+        AngkatAni
     </div>
     <div class="tagline">Connecting you to Local Farmers</div>
 </header>
-
-<nav class="nav-menu">
-    <ul>
-        <li><a href="/homepage_seller">Home</a></li>
-        <li><a href="#contacts">Contacts</a></li>
-    </ul>
-</nav>
 
 <nav class="main-nav">
     <ul class="breadcrumb">
@@ -129,15 +32,28 @@
         <div class="status">
             <h3>ACCOUNT</h3>
             <ul class="status-list">
-                <li><a href="{{ url_for('seller_account.seller_account') }}" class="account-btn">My Account</a></li>
-
-                <li><a href="{{ url_for('payment_options.payment_options') }}" class="account-btn">Banks & Cards</a></li>
-
-                <li><a href="{{ url_for('seller_address.seller_address') }}" class="account-btn">Addresses</a></li>
-
-                <form action="{{ url_for('homepage_seller.logout') }}" method="post">
-                    <button class="logout-btn" type="submit">Logout</button>
-                </form>
+                <li>
+                    <a href="{{ url_for('seller_account.seller_account') }}" class="status-item {% if active_page == 'account' %}active{% endif %}">
+                        <i class="fas fa-user"></i> My Account
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('payment_options.payment_options') }}" class="status-item {% if active_page == 'payments' %}active{% endif %}">
+                        <i class="fas fa-credit-card"></i> Banks & Cards
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('seller_address.seller_address') }}" class="status-item active">
+                        <i class="fas fa-map-marker-alt"></i> Addresses
+                    </a>
+                </li>
+                <li>
+                    <form action="{{ url_for('homepage_seller.logout') }}" method="post">
+                        <button class="status-item logout-btn" type="submit">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </li>
             </ul>
         </div>
     </aside>
@@ -151,15 +67,31 @@
                     <ul>
                         {% for addr in addresses %}
                         <li>
-                                <!-- Radio button to select default address -->
+                            <!-- Radio button to select default address -->
+                            <div class="radio-inline">
                                 <input type="radio" name="default_address" value="{{ addr.AddressID }}" id="addr_{{ addr.AddressID }}"
                                     {% if addr.IsDefaultInt == 1 %} checked {% endif %}
                                     onchange="setDefaultAddress('{{ addr.AddressID }}')">
-                                <label for="addr_{{ addr.AddressID }}"></label>
+                                <label for="addr_{{ addr.AddressID }}">Default</label>
+                            </div>
+                            <!-- Full Name -->
+                            <div class="address-field">
+                                <label>Full Name:</label>
+                                <span>{{ addr.Full_Name }}</span>
+                            </div>
+                            <!-- Phone Number -->
+                            <div class="address-field">
+                                <label>Phone Number:</label>
+                                <span>{{ addr.Phone_Number }}</span>
+                            </div>
 
-                                <strong>{{ addr.Full_Name }}</strong> - {{ addr.Phone_Number }}<br>
-                                {{ addr.Street }}, {{ addr.Municipality }}, {{ addr.Province }}, {{ addr.Region }} {{ addr.Zip_Code }}
+                            <!-- Address -->
+                            <div class="address-field">
+                                <label>Address:</label>
+                                <span>{{ addr.Street }}, {{ addr.Municipality }}, {{ addr.Province }}, {{ addr.Region }} {{ addr.Zip_Code }}</span>
+                            </div>
 
+                            <div class="address-actions">
                                 <button class="edit-btn"
                                     onclick="openEditAddress(
                                         '{{ addr.AddressID }}',
@@ -173,14 +105,18 @@
                                         '{{ addr.Latitude }}',
                                         '{{ addr.Longitude }}'
                                     )">
-                                    Edit
+                                    <i class="fas fa-edit"></i> Edit
                                 </button>
-                                <button class="delete-btn" onclick="confirmDelete('{{ addr.AddressID }}')">Delete</button>
-                            </li>
+                                
+                                <button class="delete-btn" onclick="confirmDelete('{{ addr.AddressID }}')">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </div>
+                        </li>
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p>No saved addresses yet.</p>
+                <p>No saved addresses yet.</p>
                 {% endif %}
             </div>
             <span class="add-btn" onclick="openAddAddress()">+ Add New Address</span>
@@ -193,26 +129,54 @@
     <div class="modal-content">
         <span class="close" onclick="closeAddAddress()">&times;</span>
         <h3 id="modalTitle">Add New Address</h3>
-        <form id="addressForm"  method="POST" action="{{ url_for('seller_address.save_seller_address') }}">
+        <form id="addressForm" method="POST" action="{{ url_for('seller_address.save_seller_address') }}">
             <input type="hidden" name="address_id" id="address_id">
-            <input type="text" name="full_name" placeholder="Full Name" required>
-            <input type="text" name="phone_number" placeholder="Phone Number" required>
-            <input type="text" name="street" placeholder="Street" required>
-            <input type="text" name="municipality" placeholder="Municipality" required>
-            <input type="text" name="province" placeholder="Province" required>
-            <input type="text" name="region" placeholder="Region" required>
-            <input type="text" name="zip_code" placeholder="Zip Code" required>
+
+            <div class="address-modal-field">
+                <label>Full Name:</label>
+                <input type="text" name="full_name" placeholder="Full Name" required>
+            </div>
+
+            <div class="address-modal-field">
+                <label>Phone Number:</label>
+                <input type="text" name="phone_number" placeholder="Phone Number" required>
+            </div>
+
+            <div class="address-modal-field">
+                <label>Street:</label>
+                <input type="text" name="street" placeholder="Street" required>
+            </div>
+
+            <div class="address-modal-field">
+                <label>Municipality:</label>
+                <input type="text" name="municipality" placeholder="Municipality" required>
+            </div>
+            
+            <div class="address-modal-field">
+                <label>Province:</label>
+                <input type="text" name="province" placeholder="Province" required>
+            </div>
+
+            <div class="address-modal-field">
+                <label>Region:</label>
+                <input type="text" name="region" placeholder="Region" required>
+            </div>
+            
+            <div class="address-modal-field">
+                <label>Zip Code:</label>
+                <input type="text" name="zip_code" placeholder="Zip Code" required>
+            </div>
+
             <input type="hidden" name="latitude" id="lat" value="0.0">
             <input type="hidden" name="longitude" id="lng" value="0.0">
-
-            <label><b>Pin Your Location:</b></label>
+            <label id="pinLocationLabel"><b>Pin Your Location:</b></label>
             <div id="map"></div>
 
             <button type="submit" class="save-btn">Save</button>
         </form>
-
     </div>
 </div>
+
 
 <!-- Newsletter -->
 <section class="newsletter">
@@ -238,9 +202,9 @@
     <div class="footer-content">
         <div class="footer-about">
             <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-            Agrimart
+            AngkatAni
             <p>Empowering farmers and connecting communities through sustainable commerce.</p>
-            <p><strong>09271674524</strong><br />agrimart@.com</p>
+            <p><strong>09271674524</strong><br />angkatani@.com</p>
         </div>
         <div class="footer-columns">
             <div>
@@ -445,12 +409,6 @@ function openAddAddress() {
     document.getElementById("addAddressModal").style.display = "block";
 
     setTimeout(initMap, 200);
-}
-
-function confirmDelete(id) {
-    if (confirm("Are you sure you want to delete this address?")) {
-        window.location.href = "/delete_seller_address/" + id;
-    }
 }
 
 function setDefaultAddress(addressID) {

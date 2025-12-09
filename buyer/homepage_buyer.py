@@ -35,15 +35,27 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * math.asin(math.sqrt(a))
     return R * c
 
+def count_total_products():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = "SELECT COUNT(*) FROM product"
+    cursor.execute(query)
+    count = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    return count
+
 @homepage_buyer_app.route('/homepage_buyer', methods=['GET', 'POST'])
 def homepage_buyer():
     user_id = session.get("user_id")
+    username = session.get("username")
     if not user_id:
         return redirect('/login') 
     product_data = []
     categories = []
     default_range_km = 25  # default slider value
     show_address_alert = False
+    total_products=count_total_products()
 
     try:
         with get_db_connection() as connection:
@@ -68,6 +80,7 @@ def homepage_buyer():
             buyer = cursor.fetchone()
             buyer_lat = float(buyer["Latitude"]) if buyer else None
             buyer_lon = float(buyer["Longitude"]) if buyer else None
+            print(f"Buyer coordinates: lat={buyer_lat}, lon={buyer_lon}")
 
             cursor.execute("""
                 SELECT Municipality, Province
@@ -89,10 +102,12 @@ def homepage_buyer():
 
             if buyer_lat and buyer_lon:
                 for p in all_products:
+                    print(f"Product {p['ProductID']} coordinates: lat={p['SellerLat']}, lon={p['SellerLon']}")
                     dist = haversine(
                         buyer_lat, buyer_lon,
                         float(p["SellerLat"]), float(p["SellerLon"])
                     )
+                    print(f"Distance to product {p['ProductID']}: {dist} km")
                     if dist <= default_range_km:
                         p["Distance"] = round(dist, 2)
                         product_data.append(p)
@@ -105,12 +120,15 @@ def homepage_buyer():
         print(f"Database error: {err}")
 
 
+    filtered_count = len(product_data)
     return render_template(
         'homepage_buyer.html',
         product_data=product_data,
         categories=categories,
         selected_km=default_range_km, 
-        show_address_alert=show_address_alert, default_address=default_address
+        show_address_alert=show_address_alert, default_address=default_address,
+        username=username,
+        total_products=total_products, filtered_count=filtered_count
     )
 
 @homepage_buyer_app.route('/logout', methods=['POST'])
@@ -122,11 +140,13 @@ def logout():
 @homepage_buyer_app.route('/filter', methods=['GET'])
 def filter_products():
     user_id = session.get("user_id")
+    username = session.get("username")
     if not user_id:
         return redirect('/login') 
     product_data = []
     selected_km = int(request.args.get("range_km", 25))
     selected_category = request.args.get("category", "all")
+    total_products=count_total_products()
 
     try:
         with get_db_connection() as connection:
@@ -185,8 +205,11 @@ def filter_products():
     except mysql.connector.Error as err:
         print(f"Database error: {err}")
 
+
+    filtered_count = len(product_data)
     return render_template('homepage_buyer.html', product_data=product_data, categories=categories,
-                           selected_km=selected_km, selected_category=selected_category.lower(), default_address=default_address)
+                           selected_km=selected_km, selected_category=selected_category.lower(), default_address=default_address,
+                           username=username,total_products=total_products, filtered_count = filtered_count)
 
 
 def get_categories ():

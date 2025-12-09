@@ -4,29 +4,15 @@
     <link rel="stylesheet" type="text/css" href="../static/css/account.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agrimart - Account</title>
+    <title>AngkatAni - Account</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .edit-btn {
-            margin-left: 10px;
-            cursor: pointer;
-            color: green;
-            background: none;
-            border: none;
-        }
-        .editable {
-            border: 1px solid #ccc;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
-    </style>
 </head>
 <body>
     <!-- Top Bar -->
     <header class="top-bar">
         <div class="logo">
             <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-            Agrimart
+            AngkatAni
         </div>
         <div class="tagline">Connecting you to Local Farmers</div>
     </header>
@@ -51,8 +37,8 @@
             <ul class="status-list">
                 <li>
                     <a href="{{ url_for('buyer_account.buyer_account') }}" class="status-item active">
-        <i class="fas fa-user"></i> My Account
-    </a>
+                        <i class="fas fa-user"></i> My Account
+                    </a>
                 </li>
                 <li>
                     <a href="{{ url_for('buyer_payment_options.buyer_payment_options') }}" class="status-item {% if active_page == 'payments' %}active{% endif %}">
@@ -137,9 +123,9 @@
         <div class="footer-content">
             <div class="footer-about">
                 <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-                Agrimart
+                AngkatAni
                 <p>Empowering farmers and connecting communities through sustainable commerce.</p>
-                <p><strong>09271674524</strong><br />agrimart@.com</p>
+                <p><strong>09271674524</strong><br />angkatani@.com</p>
             </div>
             <div class="footer-columns">
                 <div>

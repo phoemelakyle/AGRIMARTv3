@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agrimart - Homepage</title>
+    <title>AngkatAni - Orders</title>
     <link rel="stylesheet" type="text/css" href="../static/css/seller_orders.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage_buyer.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,80 +11,68 @@
 </head>
 <body>
 
+  <!-- Header -->
+  <header class="top-bar">
+    <div class="logo">
+        <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
+        AngkatAni
+    </div>          
+    <div class="tagline">Connecting you to Local Farmers</div>
+  </header>
 
-<!-- Header -->
-<header class="top-bar">
-  <div class="logo">
-      <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-      Agrimart
-  </div>          
-  <div class="tagline">Connecting you to Local Farmers</div>
-</header>
-
-
-<!-- Navigation Menu -->
-<nav class="nav-menu">
-  <ul>
-    <li><a href="/homepage_seller">Home</a></li>
-    <li><a href="#contacts">Contacts</a></li>
-  </ul>
-</nav>
-
-
-<!-- Breadcrumb Navigation -->
-<nav class="main-nav">
-  <ul class="breadcrumb">
-    <li><a href="/homepage_seller"> <i class="fas fa-home"></i></a></li>
-    <li>›</li>
-    <li><a href="/homepage_seller" class="button">Order Status</a></li>
-  </ul>
-  <div class="icons">
-    <div class="user-dropdown" id="userDropdown">
-      <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
-      <div class="user-menu" id="userMenu">
-        <form action="{{ url_for('homepage_seller.logout') }}" method="post">
-          <button class="logout-btn" type="submit">Logout</button>
-        </form>
+  <!-- Breadcrumb Navigation -->
+  <nav class="main-nav">
+    <ul class="breadcrumb">
+      <li><a href="/homepage_seller"> <i class="fas fa-home"></i></a></li>
+      <li>›</li>
+      <li><a href="/homepage_seller" class="button">Order Status</a></li>
+    </ul>
+    <div class="icons">
+      <div class="user-dropdown" id="userDropdown">
+        <span class="user" id="userIcon"><i class="fas fa-user"></i></span>
+        <div class="user-menu" id="userMenu">
+          <form action="{{ url_for('homepage_seller.logout') }}" method="post">
+            <button class="logout-btn" type="submit">Logout</button>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
 
-<div class="container">
-  <aside class="sidebar">
-    <div class="status">
-      <h3>SELLER MENU</h3>
-      <ul class="status-list">
-        <li>
-          <form action="/homepage_seller" method="get">
-            <button type="submit" class="status-item"><i class="fas fa-home"></i> Homepage</button>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="status">
+        <h3>SELLER MENU</h3>
+        <ul class="status-list">
+          <li>
+            <form action="/homepage_seller" method="get">
+              <button type="submit" class="status-item"><i class="fas fa-home"></i> Homepage</button>
+            </form>
+          </li>
+          <li>
+            <form action="{{ url_for('seller_orders.unpaid_orders') }}" method="get">
+              <button type="submit" class="status-item"><i class="fas fa-receipt"></i> Orders</button>
+            </form>
+          </li>
+          <li>
+            <button type="button" class="status-item" id="addProductBtn">
+                <i class="fas fa-plus-circle"></i> Add Product
+            </button>
+          </li>
+          <li>
+          <form action="/dashboard" method="get">
+            <button type="submit" class="status-item">
+              <i class="fas fa-tachometer-alt"></i> Dashboard
+            </button>
           </form>
         </li>
-        <li>
-          <form action="{{ url_for('seller_orders.unpaid_orders') }}" method="get">
-            <button type="submit" class="status-item"><i class="fas fa-receipt"></i> Orders</button>
-          </form>
-        </li>
-        <li>
-          <button type="button" class="status-item" id="addProductBtn">
-              <i class="fas fa-plus-circle"></i> Add Product
-          </button>
-        </li>
-        <li>
-        <form action="/dashboard" method="get">
-          <button type="submit" class="status-item">
-            <i class="fas fa-tachometer-alt"></i> Dashboard
-          </button>
-        </form>
-      </li>
-      </ul>
-    </div>
-  </aside>
+        </ul>
+      </div>
+    </aside>
 
-
-  <div class="column-right">
-    <div class="status-container">
+    <div class="column-right">
+      <div class="status-container">
         <h3>STATUS</h3>
         <div class="status-tracker">
           <form action="{{ url_for('seller_orders.unpaid_orders') }}" method="get" class="step">
@@ -93,28 +81,28 @@
             </button>
             <p>Unpaid</p>
           </form>
-     
+    
           <form action="{{ url_for('seller_orders.to_ship_orders') }}" method="get" class="step">
             <button type="submit" class="circle {% if order_type == 'to_ship' %}active-status{% endif %}">
               <i class="fas fa-box"></i>
             </button>
             <p><strong>To Ship</strong></p>
           </form>
-     
+    
           <form action="{{ url_for('seller_orders.shipping_orders') }}" method="get" class="step">
             <button type="submit" class="circle {% if order_type == 'shipping' %}active-status{% endif %}">
               <i class="fas fa-truck"></i>
             </button>
             <p>Shipping</p>
           </form>
-     
+    
           <form action="{{ url_for('seller_orders.delivered_orders') }}" method="get" class="step">
             <button type="submit" class="circle {% if order_type == 'delivered' %}active-status{% endif %}">
               <i class="fas fa-check-circle"></i>
             </button>
             <p>Completed</p>
           </form>
-     
+    
           <form action="{{ url_for('seller_orders.cancelled_orders') }}" method="get" class="step">
             <button type="submit" class="circle {% if order_type == 'cancelled' %}active-status{% endif %}">
               <i class="fas fa-times-circle"></i>
@@ -123,158 +111,197 @@
           </form>
         </div>      
       </div>
- 
 
-
+      
+      <!-- Order Details Section -->
       <div class="product-info">
-        <h1>ORDER DETAILS</h1>
-        <form method="get"  class="sort-form">
-                <label for="sort">Sort by:</label>
-                  <select name="sort" id="sort" onchange="this.form.submit()">
-                    <option value="recent" {% if request.args.get('sort') == 'recent' %}selected{% endif %}>Recent</option>
-                    <option value="old" {% if request.args.get('sort') == 'old' %}selected{% endif %}>Old</option>
-                  </select>
-                </form>
+        <div class="section-header">
+          <h1>ORDER DETAILS</h1>
+          <form method="get" class="sort-form">
+            <label for="sort">Sort by:</label>
+            <select name="sort" id="sort" onchange="this.form.submit()">
+              <option value="recent" {% if request.args.get('sort') == 'recent' %}selected{% endif %}>Recent</option>
+              <option value="old" {% if request.args.get('sort') == 'old' %}selected{% endif %}>Old</option>
+            </select>
+          </form>
+        </div>
+
         {% if order_details %}
-          <table class="variation-table">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Product</th>
-                <th>Qty</th>
-                <th>Variation</th>
-                <th>Price</th>
-                <th>Shipping Fee</th>
-                <th>Buyer Address</th>
-                <th>Payment Method</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for order_detail in order_details %}
-              <tr>
-                <td>
-                  <img src="{{ url_for('static', filename='images/products/' + order_detail['ImageFileName']) }}" alt="{{ order_detail['Product_Name'] }}" class="order-thumb">
-                </td>
-                <td>{{ order_detail['Product_Name'] }}</td>
-                <td>x{{ order_detail['Quantity'] }}</td>
-                <td>{{ order_detail['Unit'] }}</td>
-                <td>P{{ order_detail['Price'] }}</td>
-                <td>P{{ order_detail['Shipping_Fee'] }}</td>
-                <td>{{ order_detail['Buyer_Address'] }}</td>
-                <td>{{ order_detail['Payment_Option'] }}</td>
-                <td>P{{ order_detail['Total_Amount'] }}</td>
-                <td>
-                  {% if order_type == 'unpaid' %}
-                    <span class="status unpaid">Unpaid</span>
-                  {% elif order_type == 'to_ship' %}
-                    <span class="status to-ship">To Ship</span>
-                  {% elif order_type == 'shipping' %}
-                    <span class="status shipping">Shipping</span>
-                  {% elif order_type == 'delivered' %}
-                    <span class="status completed">Completed</span>
-                  {% elif order_type == 'cancelled' %}
-                    <span class="status cancelled">Cancelled</span>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if order_type == 'unpaid' %}
-                    <form action="{{ url_for('seller_orders.cancel_unpaid_order', order_id=order_detail['OrderID']) }}" method="post">
-                      <button type="submit" class="button1">Cancel</button>
-                    </form>
-                  {% elif order_type == 'to_ship' %}
-                    <form action="{{ url_for('seller_orders.ship_now', order_id=order_detail['OrderID']) }}" method="post">
-                      <button type="submit" class="button1">Ship</button>
-                    </form>
-                    <form action="{{ url_for('seller_orders.cancel_to_ship_order', order_id=order_detail['OrderID']) }}" method="post">
-                      <button type="submit" class="button1 delete-btn">Cancel</button>
-                    </form>
-                  {% endif %}
-                </td>
-              </tr>
-              <tr>
-                    <td colspan="10" id="var-date"><b>Order Date & Time: </b>{{ order_detail['Order_Date'] }}</td>
-                  </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          <!-- Card Grid Layout -->
+          <div class="orders-grid">
+            {% for order_detail in order_details %}
+              <div class="order-card">
+                <!-- Main Content -->
+                <div class="card-content">
+                  <!-- Header Section -->
+                  <div class="card-header">
+                    <div>
+                      <p class="order-date"><i class="fas fa-calendar"></i> {{ order_detail['Order_Date'] }}</p>
+                    </div>
+                    <span class="status-badge {% if order_type == 'unpaid' %}unpaid{% elif order_type == 'to_ship' %}to-ship{% elif order_type == 'shipping' %}shipping{% elif order_type == 'delivered' %}completed{% elif order_type == 'cancelled' %}cancelled{% endif %}">
+                      {% if order_type == 'unpaid' %}
+                        Unpaid
+                      {% elif order_type == 'to_ship' %}
+                        To Ship
+                      {% elif order_type == 'shipping' %}
+                        Shipping
+                      {% elif order_type == 'delivered' %}
+                        Delivered
+                      {% elif order_type == 'cancelled' %}
+                        Cancelled
+                      {% endif %}
+                    </span>
+                  </div>
+
+                  <div class="card-body-layout">
+                    <div class="left-side">
+                      <div class="details-section">
+                        <!-- Product Image -->
+                        <div class="product-image">
+                          <img src="{{ url_for('static', filename='images/products/' + order_detail['ImageFileName']) }}" 
+                              alt="{{ order_detail['Product_Name'] }}" width="120" height="120">
+                        </div>
+
+                        <!-- Product Details -->
+                        <div class="product-details">
+                          <h3 class="product-name">{{ order_detail['Product_Name'] }}</h3>
+                          <p><span class="label">Quantity:</span> <span class="value">{{ order_detail['Quantity'] }}</span></p>
+                          <p><span class="label">Variation:</span> <span class="value">{{ order_detail['Unit'] }}</span></p>
+                          <p><span class="label">Unit Price:</span> <span class="value">P{{ order_detail['Price'] }}</span></p>
+                          <p><span class="label">Shipping Fee:</span> <span class="value">P{{ order_detail['Shipping_Fee'] }}</span></p>
+                        </div>
+                      </div>
+
+                      <!-- Buyer Address -->
+                      <div class="buyer-section">
+                        <h5><i class="fas fa-map-marker-alt"></i> Delivery Address</h5>
+                        <p>{{ order_detail['Buyer_Address'] }}</p>
+                      </div>
+
+                      <!-- Payment Method -->
+                      <div class="buyer-section">
+                        <h5><i class="fas fa-money-bill-wave"></i> Payment Method</h5>
+                        <p>{{ order_detail['Payment_Option'] }}</p>
+                      </div>
+                    </div>
+
+                    <!-- Total & Actions -->
+                    <div class="right-side">
+                      <div class="total-section-box">
+                          <h5>Order Summary</h5>
+
+                          <div class="total-row">
+                              <span>Subtotal</span>
+                              <span style="color: black;">₱{{ order_detail['Price'] * order_detail['Quantity'] }}</span>
+                          </div>
+
+                          <div class="total-row">
+                              <span>Total Shipping Fee</span>
+                              <span style="color: black;"">₱{{ order_detail['Shipping_Fee'] * order_detail['Quantity'] }}</span>
+                          </div>
+
+                          <div class="total-row total-row-final">
+                              <span>Total</span>
+                              <span class="total-amount">₱{{ order_detail['Total_Amount'] }}</span>
+                          </div>
+                      </div>
+
+                      <!-- ACTION BUTTONS (unchanged) -->
+                      <div class="action-buttons">
+                        {% if order_type == 'unpaid' %}
+                            <form action="{{ url_for('seller_orders.cancel_unpaid_order', order_id=order_detail['OrderID']) }}" method="post" class="action-form">
+                                <button type="submit" class="btn btn-secondary">Cancel Order</button>
+                            </form>
+                        {% elif order_type == 'to_ship' %}
+                            <form action="{{ url_for('seller_orders.ship_now', order_id=order_detail['OrderID']) }}" method="post" class="action-form">
+                                <button type="submit" class="btn btn-primary">Ship Now</button>
+                            </form>
+                            <form action="{{ url_for('seller_orders.cancel_to_ship_order', order_id=order_detail['OrderID']) }}" method="post" class="action-form">
+                                <button type="submit" class="btn btn-secondary">Cancel</button>
+                            </form>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
         {% else %}
-          <p class="no-orders-msg">No orders yet! Place an order now!</p>
+          <p class="no-orders-msg">No orders yet!</p>
         {% endif %}
       </div>
-  </div>    
-</div>
-<!-- Newsletter -->
-<section id ="contacts" class="newsletter">
-  <div class="newsletter-content">
-    <div class="newsletter-text">
-      <h3><i class="fas fa-envelope"></i> Subscribe to our Newsletter</h3>
-      <p>Stay connected with the latest updates and local farm offers.</p>
-    </div>
-    <form class="newsletter-form">
-      <input type="email" placeholder="Your email address" required />
-      <button type="submit">Subscribe</button>
-    </form>
-    <div class="social-icons">
-      <a href="#"><i class="fab fa-facebook-f"></i></a>
-      <a href="#"><i class="fab fa-twitter"></i></a>
-      <a href="#"><i class="fab fa-instagram"></i></a>
     </div>
   </div>
-</section>
 
-
-<!-- Footer -->
-<footer class="main-footer">
-  <div class="footer-content">
-    <div class="footer-about">
-      <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-      Agrimart
-      <p>Empowering farmers and connecting communities through sustainable commerce.</p>
-      <p><strong>09271674524</strong><br />agrimart@.com</p>
-    </div>
-    <div class="footer-columns">
-      <div>
-        <h5>My Account</h5>
-        <ul>
-          <li>My Account</li>
-          <li>Order History</li>
-          <li>Shopping Cart</li>
-          <li>Wishlist</li>
-        </ul>
+  <!-- Newsletter -->
+  <section id ="contacts" class="newsletter">
+    <div class="newsletter-content">
+      <div class="newsletter-text">
+        <h3><i class="fas fa-envelope"></i> Subscribe to our Newsletter</h3>
+        <p>Stay connected with the latest updates and local farm offers.</p>
       </div>
-      <div>
-        <h5>Help</h5>
-        <ul>
-          <li>Contact</li>
-          <li>FAQs</li>
-          <li>Terms & Conditions</li>
-          <li>Privacy Policy</li>
-        </ul>
-      </div>
-      <div>
-        <h5>Proxy</h5>
-        <ul>
-          <li>About</li>
-          <li>Shop</li>
-          <li>Product</li>
-          <li>Track Order</li>
-        </ul>
-      </div>
-      <div>
-        <h5>Categories</h5>
-        <ul>
-          <li>Order History</li>
-          <li>Shopping Cart</li>
-          <li>Wishlist</li>
-        </ul>
+      <form class="newsletter-form">
+        <input type="email" placeholder="Your email address" required />
+        <button type="submit">Subscribe</button>
+      </form>
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
       </div>
     </div>
-  </div>
-</footer>
+  </section>
 
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="footer-content">
+      <div class="footer-about">
+        <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
+        AngkatAni
+        <p>Empowering farmers and connecting communities through sustainable commerce.</p>
+        <p><strong>09271674524</strong><br />angkatani@.com</p>
+      </div>
+      <div class="footer-columns">
+        <div>
+          <h5>My Account</h5>
+          <ul>
+            <li>My Account</li>
+            <li>Order History</li>
+            <li>Shopping Cart</li>
+            <li>Wishlist</li>
+          </ul>
+        </div>
+        <div>
+          <h5>Help</h5>
+          <ul>
+            <li>Contact</li>
+            <li>FAQs</li>
+            <li>Terms & Conditions</li>
+            <li>Privacy Policy</li>
+          </ul>
+        </div>
+        <div>
+          <h5>Proxy</h5>
+          <ul>
+            <li>About</li>
+            <li>Shop</li>
+            <li>Product</li>
+            <li>Track Order</li>
+          </ul>
+        </div>
+        <div>
+          <h5>Categories</h5>
+          <ul>
+            <li>Order History</li>
+            <li>Shopping Cart</li>
+            <li>Wishlist</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
 
 <!-- Scripts -->
 <script>
@@ -326,10 +353,5 @@
         });
 });
 </script>
-
-
 </body>
 </html>
-
-
-

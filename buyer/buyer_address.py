@@ -114,20 +114,43 @@ def save_buyer_address():
 def delete_buyer_address(address_id):
     buyer_id = session.get('BuyerID')
     if not buyer_id:
-            return redirect('/login') 
+        return redirect('/login') 
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    query = "DELETE FROM buyer_addresses WHERE AddressID = %s AND BuyerID = %s"
-    cursor.execute(query, (address_id, buyer_id))
-    conn.commit()
+    try:
+        # Check if address is used in any order with restricted statuses
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM buyer_order 
+            WHERE AddressID = %s AND Status IN ('waiting for payment', 'shipping', 'pending')
+        """, (address_id,))
+        count = cursor.fetchone()[0]
 
-    cursor.close()
-    conn.close()
+        if count > 0:
+            # Address is in use in pending orders, prevent deletion
+            cursor.close()
+            conn.close()
+            return redirect(url_for('buyer_address.buyer_address', delete_error=1))
+        else:
+            # Safe to delete
+            cursor.execute(
+                "DELETE FROM buyer_addresses WHERE AddressID = %s AND BuyerID = %s",
+                (address_id, buyer_id)
+            )
+            conn.commit()
+            cursor.close()
+            conn.close()
+            flash("Address deleted successfully!")
+            return redirect(url_for('buyer_address.buyer_address'))
 
-    flash("Address deleted successfully!")
-    return redirect(url_for('buyer_address.buyer_address'))
+    except Exception as e:
+        print(e)
+        cursor.close()
+        conn.close()
+        flash("Something went wrong!")
+        return redirect(url_for('buyer_address.buyer_address'))
 
 @buyer_address_app.route('/set_default_buyer_address', methods=['POST'])
 def set_default_address():
