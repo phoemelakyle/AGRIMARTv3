@@ -424,17 +424,18 @@ body.modal-active {
 }
 
 .buttonreset {
-    background-color: #009013;
+    background-color: #2e7d32;
     color: white;
     padding: 10px 15px;
     border: none;
     border-radius: 100px;
     cursor: pointer;
     width: 100%;
+    margin-top: 20px;
 }
 
 
 .buttonreset:hover {
-    background-color: #005804;
+    background-color: #1b5e20;
 }
 

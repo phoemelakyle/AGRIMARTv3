@@ -41,7 +41,28 @@ def forgot_password():
                 cursor.execute("UPDATE seller SET reset_token = %s WHERE email = %s", (token, email))
             db.commit()
 
-            if send_reset_email(email, user[1], token):
+            reset_url = url_for('reset.reset_password', token=token, _external=True)
+
+            html_body = f"""
+            <html>
+                <body>
+                    <div style="text-align: center; font-family: Arial, sans-serif;">
+                        <h1 style="color: green;">AngkatAni</h1>
+                        <p><strong>Connecting you to Local Farmers</strong></p>
+                        <p>Hey, {user[1]}</p>
+                        <p>Your AngkatAni password can be reset by clicking the link below. If you did not request a new password, please ignore this email.</p>
+                        <p><a href="{reset_url}" style="text-decoration: none; font-size: 16px; font-weight: bold; color: #007BFF;">Click this to reset your password</a></p>
+                    </div>
+                </body>
+            </html>
+            """
+
+            msg = Message('Reset Your Password', recipients=[email])
+            msg.html = html_body
+
+            try:
+                mail = current_app.extensions['mail']
+                mail.send(msg)
                 flash('A password reset link has been sent to your email.', 'success')
             else:
                 flash('Unable to send reset email at this time. Please try again later.', 'danger')

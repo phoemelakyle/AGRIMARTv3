@@ -78,26 +78,43 @@
           {% endfor %}
 
           <!-- Payment Section -->
-          <div class="checkout-card payment-section">
+<div class="checkout-card payment-section">
     <h3 class="section-title">Payment Method</h3>
-    {% for variation_id, options in payment_options.items() %}
-      <div class="payment-option">
-        {% for option in options['options'] %}
-          <label class="payment-label">
-            <input type="radio" name="payment_option_{{ variation_id }}" 
-                   value="{{ option['payment_optionsid'] }}" 
-                   onchange="handlePaymentOptionSelection('{{ variation_id }}')">
-            {% if option['payment_method'] == 'Cash on Delivery' %}
-              <span><i class="fas fa-money-bill-wave"></i> {{ option['payment_method'] }}</span>
-            {% else %}
-              <span><i class="fas fa-credit-card"></i> {{ option['payment_method'] }}, Account #: {{ option['account_number'] }}</span>
-            {% endif %}
-          </label>
-        {% endfor %}
-      </div>
+
+    {% for variation_id, data in payment_options.items() %}
+        <div class="payment-option">
+
+            <!-- Show product name - unit -->
+            {% for name in data.product_names %}
+                <h4 style="margin-bottom: 6px; font-size: 16px; color:#333;">
+                    {{ name }} - {{ data.options[0].unit }}
+                </h4>
+            {% endfor %}
+
+            <!-- List available payment methods -->
+            {% for option in data.options %}
+                <label class="payment-label">
+                    <input type="radio" 
+                        name="payment_option_{{ variation_id }}" 
+                        value="{{ option.payment_optionsid }}"
+                        onchange="handlePaymentOptionSelection('{{ variation_id }}')">
+
+                    {% if option.payment_method == 'Cash on Delivery' %}
+                        <span><i class="fas fa-money-bill-wave"></i> {{ option.payment_method }}</span>
+                    {% else %}
+                        <span>
+                            <i class="fas fa-credit-card"></i> 
+                            {{ option.payment_method }}, Account #: {{ option.account_number }}
+                        </span>
+                    {% endif %}
+                </label>
+            {% endfor %}
+        </div>
     {% endfor %}
-    <input type="hidden" name="payment_option_id" id="payment_option_id" value="">
+
+    <input type="hidden" name="payment_option_id" id="payment_option_id">
 </div>
+
 
 
           <!-- Shipping Section -->

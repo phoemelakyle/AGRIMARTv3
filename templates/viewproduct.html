@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Agrimart - Product Details</title>
+  <title>AngkatAni - Product Details</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/viewproduct.css') }}">
     <script src="{{ url_for('static', filename='viewproduct.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -16,7 +16,7 @@
   <header class="top-bar">
     <div class="logo">
         <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Agrimart Logo" class="logo-icon">
-        Agrimart
+        AngkatAni
     </div>          
     <div class="tagline">Connecting you to Local Farmers</div>
   </header>
@@ -55,54 +55,6 @@
 
 
 <aside class="sidenav"> 
-    <!-- Redesigned CATEGORY Section -->
-    <div class="category-filter">
-    <form id="filterForm" action="{{ url_for('homepage_buyer.filter_products') }}" method="get">
-      <div class="location-range">
-  <label for="locationRange">Location Range (km):</label>
-  <div class="range-wrapper">
-    <input type="range" id="locationRange" name="range_km" min="0" max="50" step="1" value="{{ selected_km }}" oninput="this.nextElementSibling.value = this.value">
-    <output>{{ selected_km }}</output>
-    <button type="submit" class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
-  </div>
-</div>
-
-
-        <!-- Categories -->
-       <h3>CATEGORIES</h3>
-<!-- 2-column category grid -->
-<div class="category-buttons two-column">
-    <!-- All Products (fixed) -->
-  <button type="button"
-    class="category-item {% if not selected_category or selected_category == 'all' %}active{% endif %}"
-    data-category="all">
-    <i class="fas fa-th-large"></i> All
-</button>
-    {% set icon_map = {
-        'Vegetables': 'fas fa-leaf',
-        'Fruits': 'fas fa-apple-whole',
-        'Dairy': 'fas fa-cheese',
-        'Grains': 'fas fa-wheat-awn',
-        'Spices': 'fas fa-pepper-hot',
-        'Fertilizers': 'fas fa-seedling',
-        'Pesticides': 'fas fa-spray-can',
-        'Seeds': 'fas fa-clipboard-check'
-    } %}
-    <!-- Database-driven categories -->
-    {% for category in categories %}
-    <button type="button"
-        class="category-item {% if selected_category == category.Category_Name|lower %}active{% endif %}"
-        data-category="{{ category.Category_Name }}">
-        <i class="{{ icon_map.get(category.Category_Name, 'fas fa-tag') }}"></i>
-        {{ category.Category_Name }}
-    </button>
-    {% endfor %}
-</div>
-<!-- Hidden field -->
-<input type="hidden" name="category" id="selectedCategory" value="{{ selected_category or 'all' }}">
-
-
-
 
     <!-- Buyer Menu -->
     <div class="status">
@@ -170,7 +122,11 @@
                     <label class="section-label">Select Unit</label>
                     <div class="unit-wrap">
                         {% for unit in product['Units'] %}
-                            <button class="unit-button styled-unit" data-unit="{{ unit }}">{{ unit }}</button>
+                            <button class="unit-button styled-unit" 
+                                    data-unit="{{ unit }}" 
+                                    data-price="{{ product['UnitPriceMap'][unit] }}">
+                                {{ unit }}
+                            </button>
                         {% endfor %}
                     </div>
                 </div>
@@ -231,30 +187,38 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ---------------------- UNIT + PRICE + QUANTITY ---------------------- */
-  const unitButtons = document.querySelectorAll(".unit-button");
+const unitButtons = document.querySelectorAll(".unit-button");
 
 unitButtons.forEach(unitBtn => {
     unitBtn.addEventListener("click", function () {
         const wrapper = this.closest(".product-view-wrapper");
         const priceButtons = wrapper.querySelectorAll(".price-button");
+        const unitButtonsInWrapper = wrapper.querySelectorAll(".unit-button");
 
-        // Remove previous active classes
-        unitButtons.forEach(btn => btn.classList.remove("active-unit"));
+        // Remove previous active classes within the wrapper
+        unitButtonsInWrapper.forEach(btn => btn.classList.remove("active-unit"));
         priceButtons.forEach(btn => btn.classList.remove("active-price"));
 
         // Activate the clicked unit
         this.classList.add("active-unit");
 
-        // Get index of clicked unit
-        const unitIndex = Array.from(unitButtons).indexOf(this);
+        // Get the price for this unit
+        const selectedUnit = this.dataset.unit;
+        const selectedPrice = this.dataset.price.toString();
 
-        // Activate the corresponding price
-        if (priceButtons[unitIndex]) {
-            priceButtons[unitIndex].classList.add("active-price");
-        }
+        // Highlight the price button that matches the selected price
+        priceButtons.forEach(btn => {
+            if (btn.dataset.price.toString() === selectedPrice) {
+                btn.classList.add("active-price");
+            }
+        });
+
+        // Debugging logs
+        console.log("DEBUG: Selected Unit:", selectedUnit);
+        console.log("DEBUG: Selected Price:", selectedPrice);
+        console.log("DEBUG: All price buttons in wrapper:", Array.from(priceButtons).map(b => b.dataset.price));
     });
 });
-
 
     // Quantity increment/decrement
     document.querySelectorAll(".product-view-wrapper").forEach(wrapper => {
