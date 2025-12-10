@@ -131,7 +131,7 @@
       <div class="banner-text">
         <h1>Where Local Harvest Meets Your Basket</h1>
         <p><span class="highlight">Curated goods from nearby farms, delivered to support local livelihoods and healthy living </p>
-        <button class="shop-btn">Shop now →</button>
+        <a class="shop-btn" href="{{ url_for('login.login') }}">Shop now →</a>
       </div>
       <div class="banner-image">
         <img src="{{ url_for('static', filename='images/landingpage.png') }}" alt="Vegetables"/>

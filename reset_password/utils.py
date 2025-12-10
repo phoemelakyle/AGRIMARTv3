@@ -1,20 +1,21 @@
-from flask_mail import Message
+import logging
 from itsdangerous import URLSafeTimedSerializer
-from flask import url_for
-from app import app, mail  # Import app from app.py
+from flask_mail import Message
+from flask import url_for, current_app
 
-# Function to generate the reset token
+logger = logging.getLogger(__name__)
+
+
 def generate_reset_token(email):
-    s = URLSafeTimedSerializer(app.secret_key)  # You can directly import app from app.py
-    return s.dumps(email, salt='password-reset') 
+    s = URLSafeTimedSerializer(current_app.secret_key)
+    return s.dumps(email, salt='password-reset')
 
-# Function to send reset email
-def send_reset_email(user_email, reset_token, username):
-    reset_url = url_for('reset.reset_password', token=reset_token, _external=True)  # Adjusted route name if needed
+
+def send_reset_email(user_email, username, token):
+    reset_url = url_for('reset.reset_password', token=token, _external=True)
 
     msg = Message('Reset Your Password', recipients=[user_email])
-
-    html_body = f"""
+    msg.html = f"""
     <html>
         <body>
             <div style="text-align: center; font-family: Arial, sans-serif;">
@@ -28,9 +29,14 @@ def send_reset_email(user_email, reset_token, username):
     </html>
     """
 
-    msg.html = html_body
+    mail = current_app.extensions.get('mail')
+    if mail is None:
+        logger.error('Mail extension is not initialized when sending reset email')
+        return False
 
     try:
-        mail.send(msg)  # Sending the email via the mail object imported from app.py
-    except Exception as e:
-        print(f"Error sending email: {e}")
+        mail.send(msg)
+        return True
+    except Exception as exc:
+        current_app.logger.exception('Failed to send reset email')
+        return False
