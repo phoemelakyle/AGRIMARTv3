@@ -103,10 +103,10 @@
     <div class="footer-content">
       <div class="footer-about">
         <img src="static/images/logo.png" alt="Agrimart Logo" class="logo-icon">
-        Agrimart
+        AngkatAni
     
         <p>Empowering farmers and connecting communities through sustainable commerce.</p>
-        <p><strong>09271674524</strong><br />agrimart@.com</p>
+        <p><strong>09271674524</strong><br />angkatani@.com</p>
       </div>
       <div class="footer-columns">
         <div>
@@ -254,6 +254,57 @@ document.addEventListener('DOMContentLoaded', function() {
         // else, form will submit normally
     });
 });
+
+function removeCartItem(itemId) {
+    event.preventDefault();
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to remove this item from your cart?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, remove it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/remove_item', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    item_id: itemId,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+
+                if (data.success) {
+                    const cartItem = document.querySelector(`.cart-item input[value="${itemId}"]`).closest('.cart-item');
+                    cartItem.remove();
+
+                    // Show success toast
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Removed!',
+                        text: 'Item has been removed from your cart.',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    });
+}
+
     </script>
 </body>
 </html>

@@ -46,10 +46,10 @@ def forgot_password():
             <html>
                 <body>
                     <div style="text-align: center; font-family: Arial, sans-serif;">
-                        <h1 style="color: green;">AgriMart</h1>
+                        <h1 style="color: green;">AngkatAni</h1>
                         <p><strong>Connecting you to Local Farmers</strong></p>
                         <p>Hey, {user[1]}</p>
-                        <p>Your AgriMart password can be reset by clicking the link below. If you did not request a new password, please ignore this email.</p>
+                        <p>Your AngkatAni password can be reset by clicking the link below. If you did not request a new password, please ignore this email.</p>
                         <p><a href="{reset_url}" style="text-decoration: none; font-size: 16px; font-weight: bold; color: #007BFF;">Click this to reset your password</a></p>
                     </div>
                 </body>

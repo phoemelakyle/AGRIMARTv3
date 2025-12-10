@@ -101,14 +101,14 @@ def viewproduct(product_id):
         cursor.execute(quantities_query)
         quantities = [row['Quantity'] for row in cursor.fetchall()]
 
-        prices_query = f"""
-        SELECT DISTINCT Price
-        FROM product_variation
-        WHERE ProductID = '{product_id}'
-        """
-        cursor.execute(prices_query)
-        prices = [row['Price'] for row in cursor.fetchall()]
-   
+        # Get mapping of unit -> price
+        cursor.execute(f"SELECT Unit, Price FROM product_variation WHERE ProductID = %s", (product_id,))
+        unit_price_map = {row['Unit']: row['Price'] for row in cursor.fetchall()}
+
+        # Pass units and mapping to template
+        units = list(unit_price_map.keys())
+        prices = list(set(unit_price_map.values()))  # unique prices
+
         grouped_products = {}
         for product in product_data:
             key = (product['ProductID'], product['Product_Name'])
@@ -120,6 +120,7 @@ def viewproduct(product_id):
                                          'Prices': prices,
                                          'Units': units,
                                          'Quantities': quantities,
+                                         'UnitPriceMap': unit_price_map,
                                          'Distance_km': product['Distance_km'],
                                          'Municipality': product['Municipality'],
                                          'Region': product['Region']}
