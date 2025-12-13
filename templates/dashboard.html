@@ -20,7 +20,7 @@
         </div>          
         <div class="tagline">Connecting you to Local Farmers</div>
       </header>
-  
+ 
      
       <!-- Breadcrumb Navigation -->
     <nav class="main-nav">
@@ -28,8 +28,8 @@
         <li><a href="/homepage_seller"> <i class="fas fa-home"></i></a></li>
         <li>›</li>
         <li>
-          <a href="/dashboard" class="button">Seller Dashboard</a>
-        </li> 
+          <a href="/homepage_seller" class="button">Homepage Seller</a>
+        </li>
       </ul>
    
       <div class="user-dropdown" id="userDropdown">
@@ -78,34 +78,46 @@
         </div>
       </aside>
 
+
       <main class="main-content">
-        <h2 class="market-title">Marketplace Overview</h2>
-        <p class="market-subtitle">Get insights into the current state of the marketplace.</p>
-        <section class="top-performing-products container-box">
-          <div class="header mb-6">
-            <h2 class="title">Top 5 Performing Products in the Market</h2>
+       <h2 class="market-title">Marketplace Overview</h2>
+<p class="market-subtitle">Get insights into the current state of the marketplace.</p>
+<section class="top-performing-products container-box">
+  <div class="header mb-6">
+    <h2 class="title">Top 5 Performing Products in the Market</h2>
+  </div>
+
+
+  <div class="top-products">
+    {% set market_top_products = [
+        {'Product_Name':'Apple','Unit':'Green','total_sold':50},
+        {'Product_Name':'Eggplant','Unit':'Purple','total_sold':42},
+        {'Product_Name':'Capsicum','Unit':'Red','total_sold':35},
+        {'Product_Name':'Grapes','Unit':'Green','total_sold':30},
+        {'Product_Name':'Avocado','Unit':'Fuerte','total_sold':28}
+    ] %}
+
+
+    {% for product in market_top_products %}
+    <div class="product-card">
+      <!-- Product Info -->
+      <div class="product-info">
+        <h3 class="product-name">{{ product.Product_Name }}</h3>
+        <p class="product-unit">{{ product.Unit }}</p>
+        <div class="product-stats">
+          <div class="stat">
+            <span class="label">Sold</span>
+            <span class="value">{{ product.total_sold }} {{ 'unit' if product.total_sold == 1 else 'units' }}</span>
           </div>
-  
-          <div class="top-products">
-            {% for product in market_top_products %}
-            <div class="product-card">
-              <!-- Product Info -->
-              <div class="product-info">
-                <h3 class="product-name">{{ product.Product_Name }}</h3>
-                <p class="product-unit">{{ product.Unit }}</p>
-                <div class="product-stats">
-                  <div class="stat">
-                    <span class="label">Sold</span>
-                    <span class="value">{{ product.total_sold }} {{ 'unit' if product.total_sold == 1 else 'units' }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {% else %}
-            <p>No products sold yet.</p>
-            {% endfor %}
-          </div>
-        </section>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <p>No products sold yet.</p>
+    {% endfor %}
+  </div>
+</section>
+
 
         <h2 class="market-title">Your Products' Performance</h2>
         <p class="market-subtitle">Check out your dashboard and see how your farm business is growing.</p>
@@ -115,28 +127,30 @@
         <div class="snapshot-stats">
           <div class="stat-item">
             <h4>TOTAL REVENUE</h4>
-            <h2>₱{{ total_revenue }}</h2>
+            <h2>₱53,550</h2>
             <p>From all sold products</p>
           </div>
           <div class="stat-item">
             <h4>TOTAL SOLD</h4>
-            <h2>{{ total_sold_variations }}</h2>
+            <h2>30</h2>
             <p>Unique products sold</p>
           </div>
           <div class="stat-item">
             <h4>DELIVERED ORDERS</h4>
-            <h2>{{ total_delivered_orders }}</h2>
+            <h2>50</h2>
             <p>Orders successfully delivered</p>
           </div>
           <div class="stat-item">
             <h4>AVERAGE ORDER VALUE</h4>
-            <h2>₱{{ average_order_value }}</h2>
+            <h2>₱2,677</h2>
             <p>Average amount spent per order</p>
           </div>
         </div>
       </section>
 
-        <!-- 2. Statistics -->
+
+
+
    <!-- Statistics Section -->
       <section class="statistics container-box">
         <h3>Statistics</h3>
@@ -153,74 +167,142 @@
       </section>
      
 
+
         <!-- 3. Tracking Orders -->
         <section class="tracking-orders container-box">
           <h3>Tracking Orders</h3>
           <div class="track-orders">
 
+
             <div class="track-item">
               <h4>UNPAID</h4>
-              <h2>{{ pending_payments }}</h2>
+              <h2>20</h2>
               <p>Orders waiting for payment</p>
             </div>
 
+
             <div class="track-item">
               <h4>TO SHIP</h4>
-              <h2>{{ to_ship }}</h2>
+              <h2>6</h2>
               <p>Orders ready for shipment</p>
             </div>
 
+
             <div class="track-item">
               <h4>SHIPPING</h4>
-              <h2>{{ shipping }}</h2>
+              <h2>4</h2>
               <p>Orders currently in transit</p>
             </div>
 
+
             <div class="track-item">
               <h4>CANCELLED</h4>
-              <h2>{{ cancelled }}</h2>
+              <h2>2</h2>
               <p>Orders canceled by buyer</p>
             </div>
+
 
           </div>
         </section>
    
 
-        <section class="top-performing-products container-box">
-          <div class="header mb-6">
-            <h2 class="title">Top 5 Performing Products</h2>
-            <p class="subtitle">Your best selling items</p>
+
+        <!-- Seller's Top 5 Products (Updated) -->
+<section class="top-performing-products container-box">
+  <div class="header mb-6">
+    <h2 class="title">Top 5 Performing Products</h2>
+    <p class="subtitle">Your best selling items</p>
+  </div>
+  <div class="top-products">
+    <div class="product-card">
+      <img class="product-img" src="static/images/products/apple.jpg" alt="Apple">
+      <div class="product-info">
+        <h3 class="product-name">Apple</h3>
+        <p class="product-unit">Green</p>
+        <div class="product-stats">
+          <div class="stat">
+            <span class="label">Sold</span>
+            <span class="value">50 units</span>
           </div>
-  
-          <div class="top-products">
-            {% for product in top_products %}
-            <div class="product-card">
-              <!-- Product Image -->
-              <img class="product-img"
-                  src="{{ url_for('static', filename='images/products/' + product['ImageFilename']) }}"
-                  alt="{{ product.Product_Name }}">
-              
-              <!-- Product Info -->
-              <div class="product-info">
-                <h3 class="product-name">{{ product.Product_Name }}</h3>
-                <p class="product-unit">{{ product.Unit }}</p>
-                <div class="product-stats">
-                  <div class="stat">
-                    <span class="label">Sold</span>
-                    <span class="value">{{ product.total_sold }} {{ 'unit' if product.total_sold == 1 else 'units' }}</span>
-                  </div>
-                  <div class="stat">
-                    <span class="label">Revenue</span>
-                    <span class="value">₱{{ "%.2f"|format(product.revenue) }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {% else %}
-            <p>No products sold yet.</p>
-            {% endfor %}
+          <div class="stat">
+            <span class="label">Revenue</span>
+            <span class="value">₱12000.00</span>
           </div>
-        </section>
+        </div>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="static/images/products/eggplant.jpg" alt="Eggplant">
+      <div class="product-info">
+        <h3 class="product-name">Eggplant</h3>
+        <p class="product-unit">Purple</p>
+        <div class="product-stats">
+          <div class="stat">
+            <span class="label">Sold</span>
+            <span class="value">42 units</span>
+          </div>
+          <div class="stat">
+            <span class="label">Revenue</span>
+            <span class="value">₱12600.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="static/images/products/capsicum.jpg" alt="Capsicum">
+      <div class="product-info">
+        <h3 class="product-name">Capsicum</h3>
+        <p class="product-unit">Red</p>
+        <div class="product-stats">
+          <div class="stat">
+            <span class="label">Sold</span>
+            <span class="value">35 units</span>
+          </div>
+          <div class="stat">
+            <span class="label">Revenue</span>
+            <span class="value">₱8750.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="static/images/products/grapes.jpg" alt="Grapes">
+      <div class="product-info">
+        <h3 class="product-name">Grapes</h3>
+        <p class="product-unit">Green</p>
+        <div class="product-stats">
+          <div class="stat">
+            <span class="label">Sold</span>
+            <span class="value">30 units</span>
+          </div>
+          <div class="stat">
+            <span class="label">Revenue</span>
+            <span class="value">₱9000.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="static/images/products/avocado.jpg" alt="Avocado">
+      <div class="product-info">
+        <h3 class="product-name">Avocado</h3>
+        <p class="product-unit">Fuerte</p>
+        <div class="product-stats">
+          <div class="stat">
+            <span class="label">Sold</span>
+            <span class="value">28 units</span>
+          </div>
+          <div class="stat">
+            <span class="label">Revenue</span>
+            <span class="value">₱11200.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
       </main>
      
  
@@ -232,14 +314,16 @@
         });
       });
 
+
       document.addEventListener('DOMContentLoaded', function () {
         const userIcon = document.getElementById('userIcon');
         const userMenu = document.getElementById('userMenu');
    
         userIcon.addEventListener('click', function (event) {
           userMenu.classList.toggle('show');
-          event.stopPropagation(); 
+          event.stopPropagation();
         });
+
 
         document.addEventListener('click', function (event) {
           if (!userMenu.contains(event.target)) {
@@ -247,6 +331,7 @@
           }
         });
       });
+
 
        document.getElementById("addProductBtn").addEventListener("click", function () {
           fetch("/check_payment_options")
@@ -262,114 +347,65 @@
                           confirmButtonText: 'Go to Payment Options'
                       }).then((result) => {
                           if (result.isConfirmed) {
-                              window.location.href = "/payment_options"; 
+                              window.location.href = "/payment_options";
                           }
                       });
                   }
               });
       });
 
-      // For graph 
+
+      // For graph
 Chart.register(ChartDataLabels);
 
+
 // Last 7 days
-const salesData7 = {{ sales_last_7_days | tojson }};
-const values7 = Object.values(salesData7);
-const avg7 = values7.reduce((a,b) => a + b, 0) / values7.length;
+ // Last 7 days sales data (mock)
+    const salesData7 = { "Mon":2400, "Tue":3100, "Wed":1800, "Thu":4200, "Fri":3900, "Sat":5100, "Sun":3600 };
+    const values7 = Object.values(salesData7);
+    const avg7 = values7.reduce((a,b) => a + b, 0) / values7.length;
+    const colors7 = values7.map(v => v>=avg7 ? 'rgba(40,255,69,0.7)' : 'rgba(255,53,69,0.7)');
+    const borderColors7 = colors7.map(c=>c.replace('0.7','1'));
+    const ctx7 = document.getElementById('salesBarChart7').getContext('2d');
+    new Chart(ctx7,{
+      type:'bar',
+      data:{
+        labels:Object.keys(salesData7),
+        datasets:[{label:'Revenue (₱)', data:values7, backgroundColor:colors7, borderColor:borderColors7, borderWidth:1, borderRadius:10}]
+      },
+      options:{
+        plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>'₱'+ctx.raw}}, datalabels:{anchor:'end', align:'end', color:'#000', font:{weight:'bold'}}},
+        scales:{x:{grid:{display:false}}, y:{beginAtZero:true, grid:{display:false}, ticks:{callback:v=>'₱'+v}}}
+      },
+      plugins:[ChartDataLabels]
+    });
 
-// Function to interpolate colors
-function getGradientColor(value, avg) {
-    const diff = Math.abs(value - avg);
-    const factor = Math.min(diff / avg, 1); // normalize 0-1
-    if (value >= avg) {
-        // Green gradient: light to solid
-        return `rgba(${40 - factor*20}, ${167 + factor*88}, ${69 - factor*69}, 0.7)`; 
-    } else {
-        // Red gradient: light to solid
-        return `rgba(${220 + factor*35}, ${53 - factor*53}, ${69 - factor*69}, 0.7)`;
-    }
-}
 
-const colors7 = values7.map(v => getGradientColor(v, avg7));
-const borderColors7 = colors7.map(c => c.replace('0.7','1'));
-
-const ctx7 = document.getElementById('salesBarChart7').getContext('2d');
-new Chart(ctx7, {
-    type: 'bar',
-    data: {
-        labels: Object.keys(salesData7),
-        datasets: [{
-            label: 'Revenue (₱)',
-            data: values7,
-            backgroundColor: colors7,
-            borderColor: borderColors7,
-            borderWidth: 1,
-            borderRadius: 10
-        }]
-    },
-    options: {
-        plugins: {
-            legend: { display: false },
-            tooltip: { callbacks: { label: ctx => '₱' + ctx.raw } },
-            datalabels: { anchor: 'end', align: 'end', color: '#000', font: { weight: 'bold' } }
-        },
-        scales: {
-            x: { grid: { display: false } },
-            y: { beginAtZero: true, grid: { display: false }, ticks: { callback: v => '₱' + v } }
-        }
-    },
-    plugins: [ChartDataLabels]
-});
-
-// Last 30 days
-const salesData30 = {{ sales_last_30_days | tojson }};
-const values30 = Object.values(salesData30);
-const avg30 = values30.reduce((a,b) => a + b, 0) / values30.length;
-
-// Function to interpolate colors
-function getGradientColor(value, avg) {
-    const diff = Math.abs(value - avg);
-    const factor = Math.min(diff / avg, 1); // normalize 0-1
-    if (value >= avg) {
-        // Green gradient: light to solid
-        return `rgba(${40 - factor*20}, ${167 + factor*88}, ${69 - factor*69}, 0.7)`; 
-    } else {
-        // Red gradient: light to solid
-        return `rgba(${220 + factor*35}, ${53 - factor*53}, ${69 - factor*69}, 0.7)`;
-    }
-}
-
-const colors30 = values30.map(v => getGradientColor(v, avg30));
-const borderColors30 = colors30.map(c => c.replace('0.7','1'));
-
-const ctx30 = document.getElementById('salesBarChart30').getContext('2d');
-new Chart(ctx30, {
-    type: 'bar',
-    data: {
-        labels: Object.keys(salesData30),
-        datasets: [{
-            label: 'Revenue (₱)',
-            data: values30,
-            backgroundColor: colors30,
-            borderColor: borderColors30,
-            borderWidth: 1,
-            borderRadius: 10
-        }]
-    },
-    options: {
-        plugins: {
-            legend: { display: false },
-            tooltip: { callbacks: { label: ctx => '₱' + ctx.raw } },
-            datalabels: { anchor: 'end', align: 'end', color: '#000', font: { weight: 'bold' } }
-        },
-        scales: {
-            x: { grid: { display: false } },
-            y: { beginAtZero: true, grid: { display: false }, ticks: { callback: v => '₱' + v } }
-        }
-    },
-    plugins: [ChartDataLabels]
-});
-
+    // Last 30 days sales data (mock)
+    const salesData30 = {
+      "Day 1":1500,"Day 2":1800,"Day 3":2200,"Day 4":1400,"Day 5":3100,"Day 6":3500,"Day 7":2800,
+      "Day 8":1900,"Day 9":2300,"Day10":2000,"Day11":2600,"Day12":3300,"Day13":2900,"Day14":1700,"Day15":1200,
+      "Day16":3500,"Day17":2100,"Day18":2700,"Day19":4000,"Day20":3800,"Day21":3200,"Day22":1500,"Day23":1600,
+      "Day24":2500,"Day25":2900,"Day26":3100,"Day27":4500,"Day28":3900,"Day29":2800,"Day30":2200
+    };
+    const values30 = Object.values(salesData30);
+    const avg30 = values30.reduce((a,b)=>a+b,0)/values30.length;
+    const colors30 = values30.map(v => v>=avg30 ? 'rgba(40,255,69,0.7)' : 'rgba(255,53,69,0.7)');
+    const borderColors30 = colors30.map(c=>c.replace('0.7','1'));
+    const ctx30 = document.getElementById('salesBarChart30').getContext('2d');
+    new Chart(ctx30,{
+      type:'bar',
+      data:{
+        labels:Object.keys(salesData30),
+        datasets:[{label:'Revenue (₱)', data:values30, backgroundColor:colors30, borderColor:borderColors30, borderWidth:1, borderRadius:10}]
+      },
+      options:{
+        plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>'₱'+ctx.raw}}, datalabels:{anchor:'end', align:'end', color:'#000', font:{weight:'bold'}}},
+        scales:{x:{grid:{display:false}}, y:{beginAtZero:true, grid:{display:false}, ticks:{callback:v=>'₱'+v}}}
+      },
+      plugins:[ChartDataLabels]
+    });
     </script>
   </body>
   </html>
+
