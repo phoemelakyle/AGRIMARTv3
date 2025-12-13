@@ -60,10 +60,18 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER")
 mail = Mail(app)
 
 # File upload path
-home_directory = os.path.expanduser("~")
-relative_path = 'Desktop/AGRIMARTv3/static/images/products'
-upload_folder = os.path.join(home_directory, relative_path)
-app.config['UPLOAD_FOLDER'] = upload_folder
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+UPLOAD_FOLDER = os.path.join(
+    BASE_DIR,
+    'static',
+    'images',
+    'products'
+)
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Register blueprints (except reset_app for now)
 app.register_blueprint(registration_app)
